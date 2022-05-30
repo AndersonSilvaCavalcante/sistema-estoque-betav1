@@ -48,6 +48,14 @@ namespace Api
                 });
             });
 
+            services.AddCors(o => o.AddPolicy("CorsPolicy", builder =>
+            {
+                builder
+                    .AllowAnyOrigin()
+                    .AllowAnyMethod()
+                    .AllowAnyHeader()
+                    .WithExposedHeaders("*");
+            }));
 
         }
 
@@ -66,6 +74,7 @@ namespace Api
             }
 
             app.UseRouting();
+            app.UseCors("CorsPolicy");
 
             app.UseEndpoints(endpoints =>
             {

@@ -1,0 +1,21 @@
+.menu{
+    width: 20%;
+    height: 100vh;
+
+    background-color: var(--primary);
+}
+
+.link {
+    padding: 20px 40px;
+
+    display: block;
+    text-decoration: none;
+
+    color: white;
+}
+
+
+.link:hover {
+    cursor: pointer;
+    color: var(--yellow);
+}
