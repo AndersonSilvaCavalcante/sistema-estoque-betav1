@@ -1,5 +1,5 @@
 const Fornecedores = () => {
-  return <div>Fornecedores</div>;
+  return <div>Fornecedor</div>;
 };
 
 export { Fornecedores };
