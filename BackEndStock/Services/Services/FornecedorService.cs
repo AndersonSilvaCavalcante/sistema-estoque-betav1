@@ -18,11 +18,26 @@ namespace Services.Swevices
             _contexto = contexto;
         }
 
+        public async Task<bool> NameExists(string name)
+        {
+            var fornecedores = await _contexto.Fornecedor.ToListAsync();
+            return fornecedores.Exists(o => o.Name.Equals(name));
+        }
+
         public async Task Create(Fornecedores item)
         {
-            item.Id_Fornecedor = new Guid();
-            _contexto.Fornecedor.Add(item);
-            await _contexto.SaveChangesAsync();
+
+            var nameExist = await NameExists(item.Name);
+
+            if (nameExist.Equals(true))
+            {
+            }
+            else
+            {
+                item.Id_Fornecedor = new Guid();
+                _contexto.Fornecedor.Add(item);
+                _ = await _contexto.SaveChangesAsync();
+            }
         }
 
         public async Task Delete(Fornecedores item)
@@ -40,6 +55,7 @@ namespace Services.Swevices
         {
             var fornecedor = await _contexto.Fornecedor.FindAsync(id);
             return fornecedor;
+            
         }
 
         public async Task Update(Fornecedores item)

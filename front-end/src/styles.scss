@@ -1,0 +1,25 @@
+.mr-2{
+    margin-right: 2rem;
+}
+
+.justify-space-between{
+    justify-content: space-between;
+}
+
+table, th, td {
+    padding: 5px;
+    border: 1px solid var(--disable);
+}
+
+th, .icon {
+    color: var(--disable);
+}
+
+.icon:hover{
+    cursor: pointer;
+    color: var(--blue);
+}
+
+td {
+    color: var(--gray);
+}

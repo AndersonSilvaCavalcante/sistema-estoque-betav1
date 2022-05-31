@@ -10,7 +10,7 @@ const Layout = () => {
           Fornecedores
         </Link>
       </div>
-      <div>
+      <div className="conteudo">
         <TheContent />
       </div>
     </div>
