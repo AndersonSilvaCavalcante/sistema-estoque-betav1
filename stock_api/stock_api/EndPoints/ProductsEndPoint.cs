@@ -7,9 +7,11 @@ namespace stock_api.EndPoints
     {
         public static void MapProductsEndPoint(this WebApplication app)
         {
-            app.MapGet("ListProducts", async (Int32? id) => {
+            app.MapGet("ListProducts", async (Int32? id, string? name, string? barcode) => {
                 List<ParametroValor> pv = new List<ParametroValor>();
-                pv.Add(new ParametroValor("@Id", id));
+                pv.Add(new ParametroValor("@id", id));
+                pv.Add(new ParametroValor("@barcode", barcode));
+                pv.Add(new ParametroValor("@name", name));
                 return Persistencia.ExecutarSql<Products>(@"get_products", pv, tipoconsulta: TipoConsulta.STORED_PROCEDURE).ToList();
             }).WithTags("products");
 

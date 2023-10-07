@@ -18,6 +18,7 @@ var app = builder.Build();
 
 app.MapProductsEndPoint();
 app.MapSupplierEndPoint();
+app.MapServicesEndPoint();
 
 app.UseSwagger();
 app.UseSwaggerUI();
