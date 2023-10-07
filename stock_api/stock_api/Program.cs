@@ -17,6 +17,7 @@ builder.Services.AddAuthentication(IISDefaults.AuthenticationScheme);
 var app = builder.Build();
 
 app.MapProductsEndPoint();
+app.MapSupplierEndPoint();
 
 app.UseSwagger();
 app.UseSwaggerUI();
