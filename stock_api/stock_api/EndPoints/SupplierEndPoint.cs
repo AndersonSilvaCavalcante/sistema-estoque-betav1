@@ -9,7 +9,7 @@ namespace stock_api.EndPoints
         {
             app.MapGet("ListSupplier", async (Int32? id, string? name) => {
                 List<ParametroValor> pv = new List<ParametroValor>();
-                pv.Add(new ParametroValor("@=id", id));
+                pv.Add(new ParametroValor("@id", id));
                 pv.Add(new ParametroValor("@name", name));
                 return Persistencia.ExecutarSql<Supplier>(@"get_supplier", pv, tipoconsulta: TipoConsulta.STORED_PROCEDURE).ToList();
             }).WithTags("supplier");
