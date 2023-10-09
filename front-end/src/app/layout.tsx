@@ -22,7 +22,7 @@ export default function RootLayout({
       <body className={inter.className}>
         <StyledComponentsRegistry>
           <Header />
-          <Container sx={{ backgroundColor: 'red', minWidth: '90vw' }}>
+          <Container sx={{ minWidth: '90vw' }}>
             <Box pt={3} pb={3}>
               {children}
             </Box>
