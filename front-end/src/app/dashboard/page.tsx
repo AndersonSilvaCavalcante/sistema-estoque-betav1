@@ -1,174 +1,45 @@
-import { Box, Card, CardContent, Grid } from "@mui/material"
+"use client"
+import Container from "@/components/Container"
+import CustomCard from "@/components/Layout/CustomCard"
+import Section from "@/components/Layout/Section"
+import PageHeader from "@/components/PageHeader"
+import { Box, Grid } from "@mui/material"
+import { NextPage } from "next"
+import Link from "next/link"
+import React from "react"
 
-const Dashboard = () => {
+const Dashboard: NextPage = () => {
     return (
-        <Box sx={{ color: 'white' }}>
-            <Box mt={2} sx={{ backgroundColor: 'green', borderRadius: '20px' }} p={2}>
-                <header>
-                    <p className="title">Resumo do dia</p>
-                </header>
-                <Grid container spacing={2}>
-                    <Grid item xs={6} md={3}>
-                        <Card>
-                            <CardContent >
-                                <p>Teste</p>
-                                {/*icon*/}
-                                {/*tile*/}
-                                {/*description*/}
-                                {/*children*/}
-                                {/*footer */}
-                            </CardContent>
-                        </Card>
+        <React.Fragment>
+            <PageHeader title="Dashboard" />
+            <Box mb={4}>
+
+            <Container title="Resumo do dia">
+                <Box mt={4}>
+                    <Grid container spacing={2}>
+                        <Grid item xs={6} md={3}>
+                            <CustomCard />
+                        </Grid>
+                        <Grid item xs={6} md={3}>
+                            <CustomCard />
+                        </Grid>
+                        <Grid item xs={6} md={3}>
+                            <CustomCard />
+                        </Grid>
+                        <Grid item xs={6} md={3}>
+                            <CustomCard />
+                        </Grid>
                     </Grid>
-                    <Grid item xs={6} md={3}>
-                        <Card>
-                            <CardContent >
-                                <p>Teste</p>
-                                {/*icon*/}
-                                {/*tile*/}
-                                {/*description*/}
-                                {/*children*/}
-                                {/*footer */}
-                            </CardContent>
-                        </Card>
-                    </Grid>
-                    <Grid item xs={6} md={3}>
-                        <Card>
-                            <CardContent >
-                                <p>Teste</p>
-                                {/*icon*/}
-                                {/*tile*/}
-                                {/*description*/}
-                                {/*children*/}
-                                {/*footer */}
-                            </CardContent>
-                        </Card>
-                    </Grid>
-                    <Grid item xs={6} md={3}>
-                        <Card>
-                            <CardContent >
-                                <p>Teste</p>
-                                {/*icon*/}
-                                {/*tile*/}
-                                {/*description*/}
-                                {/*children*/}
-                                {/*footer */}
-                            </CardContent>
-                        </Card>
-                    </Grid>
-                </Grid>
-            </Box>
-            <Box mt={2} sx={{ backgroundColor: 'purple', borderRadius: '20px' }} p={2}>
-                <header>
-                    <p className="title">Avisos do estoque</p>
-                </header>
-                <Box className="grid-container" pt={2}>
-                    <Box sx={{ minWidth: 275 }} className="grid-item">
-                        <Card>
-                            <CardContent >
-                                <p>Teste</p>
-                                {/*icon*/}
-                                {/*tile*/}
-                                {/*description*/}
-                                {/*children*/}
-                                {/*footer */}
-                            </CardContent>
-                        </Card>
-                    </Box>
-                    <Box sx={{ minWidth: 275 }} className="grid-item">
-                        <Card>
-                            <CardContent >
-                                <p>Teste</p>
-                                {/*icon*/}
-                                {/*tile*/}
-                                {/*description*/}
-                                {/*children*/}
-                                {/*footer */}
-                            </CardContent>
-                        </Card>
-                    </Box>
-                    <Box sx={{ minWidth: 275 }} className="grid-item">
-                        <Card>
-                            <CardContent >
-                                <p>Teste</p>
-                                {/*icon*/}
-                                {/*tile*/}
-                                {/*description*/}
-                                {/*children*/}
-                                {/*footer */}
-                            </CardContent>
-                        </Card>
-                    </Box>
-                    <Box sx={{ minWidth: 275 }} className="grid-item">
-                        <Card>
-                            <CardContent >
-                                <p>Teste</p>
-                                {/*icon*/}
-                                {/*tile*/}
-                                {/*description*/}
-                                {/*children*/}
-                                {/*footer */}
-                            </CardContent>
-                        </Card>
-                    </Box>
                 </Box>
+            </Container>
             </Box>
-            <Box mt={2} sx={{ backgroundColor: 'blue', borderRadius: '20px' }} p={2}>
-                <header>
-                    <p className="title">Ultimas entradas/ saídas</p>
-                </header>
-                <Box className="grid-container" pt={2}>
-                    <Box sx={{ minWidth: 275 }} className="grid-item">
-                        <Card>
-                            <CardContent >
-                                <p>Teste</p>
-                                {/*icon*/}
-                                {/*tile*/}
-                                {/*description*/}
-                                {/*children*/}
-                                {/*footer */}
-                            </CardContent>
-                        </Card>
-                    </Box>
-                    <Box sx={{ minWidth: 275 }} className="grid-item">
-                        <Card>
-                            <CardContent >
-                                <p>Teste</p>
-                                {/*icon*/}
-                                {/*tile*/}
-                                {/*description*/}
-                                {/*children*/}
-                                {/*footer */}
-                            </CardContent>
-                        </Card>
-                    </Box>
-                    <Box sx={{ minWidth: 275 }} className="grid-item">
-                        <Card>
-                            <CardContent >
-                                <p>Teste</p>
-                                {/*icon*/}
-                                {/*tile*/}
-                                {/*description*/}
-                                {/*children*/}
-                                {/*footer */}
-                            </CardContent>
-                        </Card>
-                    </Box>
-                    <Box sx={{ minWidth: 275 }} className="grid-item">
-                        <Card>
-                            <CardContent >
-                                <p>Teste</p>
-                                {/*icon*/}
-                                {/*tile*/}
-                                {/*description*/}
-                                {/*children*/}
-                                {/*footer */}
-                            </CardContent>
-                        </Card>
-                    </Box>
+            <Box mb={4}>
+            <Container title="Avisos do estoque">
+                <Box mt={4}>
                 </Box>
+            </Container>
             </Box>
-        </Box>
+        </React.Fragment>
     )
 }
 export default Dashboard

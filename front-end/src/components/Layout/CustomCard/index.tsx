@@ -1,5 +1,3 @@
-"use client"
-
 import { Card, CardContent, Container, Typography } from "@mui/material"
 import ShoppingBagIcon from '@mui/icons-material/ShoppingBag';
 

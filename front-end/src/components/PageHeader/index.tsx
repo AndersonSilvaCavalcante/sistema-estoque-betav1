@@ -2,7 +2,7 @@ import { Box, Typography } from "@mui/material"
 
 interface IProps {
     title: string
-    children: React.ReactNode
+    children?: React.ReactNode
 }
 
 const PageHeader = ({ title, children }: IProps) => {
