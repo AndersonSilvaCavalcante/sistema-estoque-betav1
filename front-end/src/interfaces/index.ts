@@ -16,4 +16,10 @@ declare global {
         costPrice: Number,
         salePrice: Number
     }
+
+    // Tabela
+    interface ITitles {
+        label: string,
+        value: string
+    }
 }

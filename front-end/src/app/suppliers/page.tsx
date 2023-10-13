@@ -7,18 +7,21 @@ import React, { useEffect, useState } from "react"
 import { deleteSupplierById, getSuppliers, saveSupplier } from "@/actions/suppliers"
 
 /**Components */
-import Section from "@/components/Layout/Section"
-import { Box, Button, Modal, Paper, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography } from "@mui/material"
+import { Box, Button, Modal, Stack, TextField, Typography } from "@mui/material"
 
 /**Icons */
-import DeleteIcon from '@mui/icons-material/Delete';
-import EditIcon from '@mui/icons-material/Edit';
+
 import SaveIcon from '@mui/icons-material/Save';
 import CancelIcon from '@mui/icons-material/Cancel';
 import Container from "@/components/Container"
 import PageHeader from "@/components/PageHeader"
+import TableCustom from "@/components/TableCustom"
 
-const titles: Array<string> = ["ID", "Nome", "Telefone", "Ações"]
+const titles: Array<ITitles> = [
+    { label: "ID", value: 'id' },
+    { label: "Nome", value: 'name' },
+    { label: "Telefone", value: 'contact' },
+]
 
 const style = {
     position: 'absolute' as 'absolute',
@@ -46,12 +49,12 @@ const Suppliers: NextPage = () => {
         setSuppliers(await getSuppliers())
     }
 
-    const saveNewSupplier = async (supplier: ISupplier) =>{
+    const saveNewSupplier = async (supplier: ISupplier) => {
         await saveSupplier(supplier)
         handleClose()
         returnSuppliersList()
     }
-    
+
     const deleteSupplier = async (id: ISupplier["id"]) => {
         await deleteSupplierById(id)
         returnSuppliersList()
@@ -66,7 +69,6 @@ const Suppliers: NextPage = () => {
         returnSuppliersList()
     }
     useEffect(() => {
-        console.log("filtro", filter)
     }, [filter])
 
     useEffect(() => {
@@ -88,10 +90,10 @@ const Suppliers: NextPage = () => {
                         <Typography component="p" variant="h6">Fornecedor</Typography>
                     </Box>
                     <Box>
-                        <TextField value={supplier?.name} id="outlined-basic" required onChange={(e)=> setSupplier({name: e.target.value, contact: supplier?.contact})} label="Nome" variant="outlined" />
+                        <TextField value={supplier?.name} id="outlined-basic" required onChange={(e) => setSupplier({ name: e.target.value, contact: supplier?.contact })} label="Nome" variant="outlined" />
                     </Box>
                     <Box>
-                        <TextField id="outlined-basic" value={supplier?.contact} required onChange={(e)=> setSupplier({name: supplier?.name, contact: e.target.value})} label="Contato" variant="outlined" />
+                        <TextField id="outlined-basic" value={supplier?.contact} required onChange={(e) => setSupplier({ name: supplier?.name, contact: e.target.value })} label="Contato" variant="outlined" />
                     </Box>
                     <Stack direction="row" spacing={2}>
                         <Button variant="outlined" color="error" onClick={handleClose} startIcon={<CancelIcon />} >Cancelar</Button>
@@ -115,35 +117,14 @@ const Suppliers: NextPage = () => {
             </Container>
             <Box mt={4}>
                 <Container>
-                    <Table sx={{ minWidth: 650 }} aria-label="simple table">
-                        <TableHead>
-                            <TableRow>
-                                {titles.map((title: string) => (<TableCell>{title}</TableCell>))}
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            {suppliers.map((supplier: ISupplier) => (
-                                <TableRow
-                                    key={supplier.id.toString()}
-                                    sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                                >
-                                    <TableCell component="th" scope="row">
-                                        {supplier.id.toString()}
-                                    </TableCell>
-                                    <TableCell>
-                                        {supplier.name}
-                                    </TableCell>
-                                    <TableCell>{supplier.contact}</TableCell>
-                                    <TableCell>
-                                        <Stack direction="row" spacing={2}>
-                                            <Button variant="outlined" color="warning" startIcon={<EditIcon />} onClick={handleOpen} >Editar</Button>
-                                            <Button onClick={() => deleteSupplier(supplier.id)} color="error" variant="outlined" startIcon={<DeleteIcon />}>Deletar</Button>
-                                        </Stack>
-                                    </TableCell>
-                                </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
+                    <TableCustom
+                        data={suppliers}
+                        titles={titles}
+                        edit={true}
+                        remove={true}
+                        editFunction={handleOpen}
+                        removeFunction={deleteSupplier}
+                    />
                 </Container>
             </Box>
         </React.Fragment>

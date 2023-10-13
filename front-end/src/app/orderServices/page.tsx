@@ -6,6 +6,7 @@ import styled from "styled-components";
 
 import CircleIcon from '@mui/icons-material/Circle';
 import Container from "@/components/Container"
+import OrderService from "@/actions/orderServices";
 
 
 const Card = styled.div`
@@ -23,6 +24,10 @@ const ContainerOrderService = styled.div`
 `;
 
 
+const teste = async () => {
+    await OrderService.getListOrderService()
+}
+
 const OrderServices: NextPage = () => {
     return (
         <React.Fragment>
@@ -30,7 +35,6 @@ const OrderServices: NextPage = () => {
                 <ContainerOrderService>
                     <Card>
                         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-
                             <label>asdasd</label>
                             <CircleIcon color='success' />
                         </div>

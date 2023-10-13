@@ -27,6 +27,31 @@ CREATE TABLE services(
 	salePrice float NOT NULL
 )
 
+CREATE TABLE client(
+	id INT PRIMARY KEY IDENTITY(1,1),
+	name VARCHAR(255) NOT NULL,
+	phone VARCHAR(255) NOT NULL,
+	model VARCHAR(255) NOT NULL,
+	plate VARCHAR(255) NOT NULL
+)
+
+INSERT INTO client 
+	(name, phone, model, plate)
+VALUES
+	('name', 'phone', 'model', 'plate')
+
+
+CREATE TABLE orderService (
+	id INT PRIMARY KEY IDENTITY(1,1),
+	clientId INT NOT NULL,
+	services VARCHAR(255) NOT NULL,
+	comments VARCHAR(255),
+	status VARCHAR(255) NOT NULL DEFAULT('started'),
+	dateCreated date default(GETDATE()),
+	dateClosed date,
+	FOREIGN KEY (clientId) REFERENCES client(id)
+)
+
 CREATE OR ALTER PROCEDURE get_products
 	@id int,
 	@name varchar(255),
@@ -199,4 +224,45 @@ CREATE PROCEDURE delete_services
 AS
 	DELETE FROM services
 	WHERE (id = @id)
+GO
+
+
+CREATE PROCEDURE get_OrderService
+	@status varchar(255),
+	@plateOrOrder varchar(255)
+AS
+	SELECT 
+		s.id 'order' ,
+		s.dateCreated,
+		c.plate 'plate',
+		s.status,
+		s.dateClosed
+	FROM orderService s
+	INNER JOIN client c on c.id = s.clientId
+	WHERE 
+		(s.status = @status or @status IS NULL) AND
+		(c.plate = @plateOrOrder or s.id = @plateOrOrder or @plateOrOrder IS NULL)
+GO
+
+select * from orderService
+
+CREATE PROCEDURE post_OrderService
+	@clientId VARCHAR(255),
+	@services float,
+	@comments float 
+AS
+	INSERT INTO orderService
+		(clientId, services, comments) 
+	VALUES
+		(@clientId, @services, @comments);
+GO
+
+CREATE PROCEDURE closeOrderService
+	@id int
+AS
+	UPDATE 
+		orderService
+	SET
+		status =  'closed'
+	WHERE id = @id;
 GO
