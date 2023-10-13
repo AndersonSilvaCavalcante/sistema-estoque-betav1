@@ -1,21 +1,28 @@
 'use client'
-import { AppBar, Box, Button, Container, IconButton, Link, Toolbar, Typography } from "@mui/material"
+import { AppBar, Button, Container, IconButton, Link, Toolbar, Typography } from "@mui/material"
 import Image from "next/image"
 import MenuIcon from '@mui/icons-material/Menu';
 import SideBar from "../SideBar";
+import { useState } from "react";
+
+
 const Header = () => {
+    const [toggle, setOpen] = useState<boolean>(false);
+    const handleToggle = () => setOpen(!toggle);
+
     return (
         <AppBar position="sticky" sx={{ backgroundColor: 'white' }}>
             <Container sx={{ minWidth: '95vw' }}>
                 <Toolbar>
                     <IconButton
+                        onClick={() => handleToggle()}
                         size="large"
                         edge="start"
                         aria-label="menu"
                         sx={{ mr: 0.5 }}
                     >
                         <MenuIcon />
-                        <SideBar/>
+                        <SideBar toggle={toggle}/>
                     </IconButton>
                     <Typography sx={{ flexGrow: 1 }}>
                         <Link href="/dashboard" >

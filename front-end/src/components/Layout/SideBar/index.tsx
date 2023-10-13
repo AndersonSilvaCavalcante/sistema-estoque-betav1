@@ -1,54 +1,85 @@
-import React from "react";
-import { Box, Button, Divider, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText } from "@mui/material";
+import React, { useEffect } from "react";
+import { Box, Divider, Drawer, IconButton, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Typography, styled } from "@mui/material";
 import InboxIcon from '@mui/icons-material/MoveToInbox';
 import MailIcon from '@mui/icons-material/Mail';
+import Image from "next/image"
+import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
+import Link from "next/link";
 
-type Anchor = 'top' | 'left' | 'bottom' | 'right';
+const DrawerHeader = styled('div')(({ theme }) => ({
+    display: 'flex',
+    alignItems: 'center',
+    padding: theme.spacing(0, 1),
+    // necessary for content to be below app bar
+    ...theme.mixins.toolbar,
+    justifyContent: 'flex-end',
+}));
 
-const SideBar = () => {
-    const [state, setState] = React.useState({
-        top: false,
-        left: false,
-        bottom: false,
-        right: false,
-    });
+const menuOptions =
+    [
+        {
+            name: "Dashboard",
+            path: "/dashboard"
+        }, {
+            name: "Vendas",
+            path: "/dashboard"
+        }, {
+            name: "Ordens de Serviço",
+            path: "/orderServices"
+        }, {
+            name: "Fornecedores",
+            path: "/suppliers"
+        }, {
+            name: "Produtos",
+            path: "/products"
+        }, {
+            name: "Serviços",
+            path: "/services"
+        }
+    ]
 
-    const toggleDrawer =
-        (anchor: Anchor, open: boolean) =>
-            (event: React.KeyboardEvent | React.MouseEvent) => {
-                if (
-                    event.type === 'keydown' &&
-                    ((event as React.KeyboardEvent).key === 'Tab' ||
-                        (event as React.KeyboardEvent).key === 'Shift')
-                ) {
-                    return;
-                }
+interface IProps {
+    toggle: boolean
+}
 
-                setState({ ...state, [anchor]: open });
-            };
+const SideBar = ({ toggle }: IProps) => {
+    const [state, setState] = React.useState<boolean>(false);
 
-    const list = (anchor: Anchor) => (
+    useEffect(() => {
+        setState(toggle);
+    }, [toggle])
+
+    const list = () => (
         <Box
-            sx={{ width: anchor === 'top' || anchor === 'bottom' ? 'auto' : 250 }}
+            sx={{ width: 250 }}
             role="presentation"
-            onClick={toggleDrawer(anchor, false)}
-            onKeyDown={toggleDrawer(anchor, false)}
         >
+            <DrawerHeader>
+                <Box flexGrow={1}>
+                    <Image src={"/logo_supermotos_no_bg.svg"} alt={""} width={120} height={80} />
+                </Box>
+                <IconButton onClick={() => setState(false)}>
+                    <ArrowBackIosNewIcon />
+                </IconButton>
+            </DrawerHeader>
+            <Divider />
             <List>
-                {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
-                    <ListItem key={text} disablePadding>
-                        <ListItemButton>
-                            <ListItemIcon>
-                                {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                            </ListItemIcon>
-                            <ListItemText primary={text} />
-                        </ListItemButton>
-                    </ListItem>
+                {menuOptions.map((option: any, index: number) => (
+                    <Link href={option.path}>
+                        <ListItem key={option.name} disablePadding>
+                            <ListItemButton>
+                                <ListItemIcon>
+                                    {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+                                </ListItemIcon>
+                                <ListItemText primary={option.name} />
+                            </ListItemButton>
+                        </ListItem>
+                    </Link>
                 ))}
             </List>
             <Divider />
             <List>
-                {['All mail', 'Trash', 'Spam'].map((text, index) => (
+                {['Configurações', 'Sobre'].map((text, index) => (
                     <ListItem key={text} disablePadding>
                         <ListItemButton>
                             <ListItemIcon>
@@ -63,15 +94,11 @@ const SideBar = () => {
     );
 
     return (
-        <Box onClick={toggleDrawer('left', true)}>
-            <Drawer
-                anchor={'left'}
-                open={state['left']}
-                onClose={toggleDrawer('left', false)}
-            >
-                {list('left')}
-            </Drawer>
-        </Box>
+        <Drawer
+            open={state}
+        >
+            {list()}
+        </Drawer>
     );
 }
 export default SideBar
