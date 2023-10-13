@@ -1,9 +1,14 @@
 import axios, { AxiosResponse } from "axios"
 import api from "../api"
 
-export const getSuppliers = async () => {
+export const getSuppliers = async (filter?: any) => {
     try {
-        const { data }: AxiosResponse<Array<ISupplier>> = await api.get("ListSupplier")
+        let filterBody = null
+        if (filter) {
+            filter.name !== '' ? filterBody = 'name=' + filter.name : null
+            filter.id ? filterBody = `&id=` + filter.id : null
+        }
+        const { data }: AxiosResponse<Array<ISupplier>> = await api.get(`ListSupplier?${filterBody}`)
         console.log("aqui", data)
         return data
     } catch (error) {
@@ -19,20 +24,21 @@ export const deleteSupplierById = async (id: ISupplier["id"]) => {
     }
 }
 
-export const editSupplier = async (supplier: ISupplier)=>{
+export const editSupplier = async (supplier: ISupplier) => {
     try {
-       let teste = await api.put(`EditSupplier`, supplier)
-       console.log(teste)
+        let teste = await api.put(`EditSupplier`, supplier)
+        console.log(teste)
     } catch (error) {
-        
+
     }
 }
 
-export const saveSupplier = async (supplier: ISupplier)=>{
+export const saveSupplier = async (supplier: ISupplier) => {
     try {
+        console.log("chegou aqui", supplier)
         let teste = await axios.post("https://localhost:44390/SaveSupplier", supplier)
-        console.log(teste)
+        console.log("sjhdb",teste)
     } catch (error) {
-        
+
     }
 }

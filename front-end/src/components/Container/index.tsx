@@ -9,15 +9,18 @@ const ContainerCustom = styled.div`
 `;
 
 interface IProps {
-    children: React.ReactNode,
-    title: string
+    children: React.ReactNode
+    title?: string
 }
 
 const Container = ({ children, title }: IProps) => {
     return (
         <ContainerCustom>
-            <label>{title}</label>
-            <Divider></Divider>
+            {typeof title == 'string' ? (<>
+                <label>{title}</label>
+                <Divider></Divider>
+            </>
+            ) : null}
             {children}
         </ContainerCustom>
     )

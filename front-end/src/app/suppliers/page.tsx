@@ -4,17 +4,19 @@ import { NextPage } from "next"
 import React, { useEffect, useState } from "react"
 
 /**Actions */
-import { deleteSupplierById, getSuppliers } from "@/actions/suppliers"
+import { deleteSupplierById, getSuppliers, saveSupplier } from "@/actions/suppliers"
 
 /**Components */
 import Section from "@/components/Layout/Section"
-import { Box, Button, Container, Modal, Paper, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography } from "@mui/material"
+import { Box, Button, Modal, Paper, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography } from "@mui/material"
 
 /**Icons */
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import SaveIcon from '@mui/icons-material/Save';
 import CancelIcon from '@mui/icons-material/Cancel';
+import Container from "@/components/Container"
+import PageHeader from "@/components/PageHeader"
 
 const titles: Array<string> = ["ID", "Nome", "Telefone", "Ações"]
 
@@ -32,27 +34,47 @@ const style = {
 };
 
 const Suppliers: NextPage = () => {
-    const [open, setOpen] = React.useState(false);
+    const [open, setOpen] = useState(false);
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
 
     const [suppliers, setSuppliers] = useState(Array<ISupplier>)
+    const [supplier, setSupplier] = useState<ISupplier>()
+    const [filter, setFilter] = useState<ISupplier>()
 
     const returnSuppliersList = async () => {
         setSuppliers(await getSuppliers())
     }
 
+    const saveNewSupplier = async (supplier: ISupplier) =>{
+        await saveSupplier(supplier)
+        handleClose()
+        returnSuppliersList()
+    }
+    
     const deleteSupplier = async (id: ISupplier["id"]) => {
         await deleteSupplierById(id)
         returnSuppliersList()
     }
+
+    const filterSupplier = async () => {
+        setSuppliers(await getSuppliers(filter))
+    }
+
+    const cleanFilterSupplir = async () => {
+        setFilter({ name: '' })
+        returnSuppliersList()
+    }
+    useEffect(() => {
+        console.log("filtro", filter)
+    }, [filter])
 
     useEffect(() => {
         returnSuppliersList()
     }, [])
 
     return (
-        <Section title="Fornecedores">
+        <React.Fragment>
             <Modal
                 open={open}
                 aria-labelledby="modal-modal-title"
@@ -63,26 +85,36 @@ const Suppliers: NextPage = () => {
                     noValidate
                     autoComplete="off">
                     <Box>
-                        <Typography component="p" variant="h6">Cadastrar Fornecedor</Typography>
+                        <Typography component="p" variant="h6">Fornecedor</Typography>
                     </Box>
                     <Box>
-                        <TextField id="outlined-basic" label="Nome" variant="outlined" />
+                        <TextField value={supplier?.name} id="outlined-basic" required onChange={(e)=> setSupplier({name: e.target.value, contact: supplier?.contact})} label="Nome" variant="outlined" />
                     </Box>
                     <Box>
-                        <TextField id="outlined-basic" label="Contato" variant="outlined" />
+                        <TextField id="outlined-basic" value={supplier?.contact} required onChange={(e)=> setSupplier({name: supplier?.name, contact: e.target.value})} label="Contato" variant="outlined" />
                     </Box>
                     <Stack direction="row" spacing={2}>
                         <Button variant="outlined" color="error" onClick={handleClose} startIcon={<CancelIcon />} >Cancelar</Button>
-                        <Button color="success" variant="outlined" startIcon={<SaveIcon />}>Salvar</Button>
+                        <Button color="success" variant="outlined" onClick={() => saveNewSupplier(supplier)} startIcon={<SaveIcon />}>Salvar</Button>
                     </Stack>
                 </Box>
             </Modal>
-            <Section title="Filtrar Fornecedores">
-                <></>
-                <Button onClick={handleOpen} variant="outlined" endIcon={<SaveIcon />} color="success">Cadastrar Fornecedor</Button>
-            </Section>
-            <Section>
-                <TableContainer component={Paper}>
+            <PageHeader title="Fornecedores">
+                <Button onClick={handleOpen} color="success" variant="outlined" endIcon={<SaveIcon />}>Cadastrar Fornecedor</Button>
+            </PageHeader>
+            <Container title="Filtrar">
+                <Box mb={2} mt={2}>
+                    <TextField value={filter?.name} onChange={(e) => setFilter({ name: e.target.value })} id="outlined-basic" label="Nome" size="small" variant="outlined" />
+                </Box>
+                <Box sx={{ display: 'flex', placeContent: 'flex-end' }}>
+                    <Stack direction="row" spacing={2}>
+                        <Button onClick={() => cleanFilterSupplir()} color="error" variant="outlined" endIcon={<SaveIcon />}>Limpar</Button>
+                        <Button onClick={() => filterSupplier()} color="success" variant="outlined" endIcon={<SaveIcon />}>Filtrar</Button>
+                    </Stack>
+                </Box>
+            </Container>
+            <Box mt={4}>
+                <Container>
                     <Table sx={{ minWidth: 650 }} aria-label="simple table">
                         <TableHead>
                             <TableRow>
@@ -92,6 +124,7 @@ const Suppliers: NextPage = () => {
                         <TableBody>
                             {suppliers.map((supplier: ISupplier) => (
                                 <TableRow
+                                    key={supplier.id.toString()}
                                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                                 >
                                     <TableCell component="th" scope="row">
@@ -111,9 +144,9 @@ const Suppliers: NextPage = () => {
                             ))}
                         </TableBody>
                     </Table>
-                </TableContainer>
-            </Section>
-        </Section>
+                </Container>
+            </Box>
+        </React.Fragment>
     )
 }
 
