@@ -1,19 +1,15 @@
+/**Dependencies */
 import React, { useEffect } from "react";
-import { Box, Divider, Drawer, IconButton, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Typography, styled } from "@mui/material";
-import InboxIcon from '@mui/icons-material/MoveToInbox';
-import MailIcon from '@mui/icons-material/Mail';
+
+/**Components */
+import { Box, Divider, Drawer, IconButton, List, ListItem, ListItemButton, ListItemIcon, ListItemText } from "@mui/material";
 import Image from "next/image"
-import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import Link from "next/link";
 
-const DrawerHeader = styled('div')(({ theme }) => ({
-    display: 'flex',
-    alignItems: 'center',
-    padding: theme.spacing(0, 1),
-    // necessary for content to be below app bar
-    ...theme.mixins.toolbar,
-    justifyContent: 'flex-end',
-}));
+/**Icons */
+import InboxIcon from '@mui/icons-material/MoveToInbox';
+import MailIcon from '@mui/icons-material/Mail';
+import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 
 const menuOptions =
     [
@@ -35,6 +31,12 @@ const menuOptions =
         }, {
             name: "Serviços",
             path: "/services"
+        }, {
+            name: "Configurações",
+            path: "/settings"
+        }, {
+            name: "Sobre",
+            path: "/about"
         }
     ]
 
@@ -54,19 +56,25 @@ const SideBar = ({ toggle }: IProps) => {
             sx={{ width: 250 }}
             role="presentation"
         >
-            <DrawerHeader>
+            <Box
+                sx={{
+                    display: 'flex',
+                    justifyContent: 'flex-end',
+                    alignItems: 'center'
+                }}
+            >
                 <Box flexGrow={1}>
                     <Image src={"/logo_supermotos_no_bg.svg"} alt={""} width={120} height={80} />
                 </Box>
                 <IconButton onClick={() => setState(false)}>
                     <ArrowBackIosNewIcon />
                 </IconButton>
-            </DrawerHeader>
+            </Box>
             <Divider />
             <List>
                 {menuOptions.map((option: any, index: number) => (
-                    <Link href={option.path}>
-                        <ListItem key={option.name} disablePadding>
+                    <Link href={option.path} key={option.name}>
+                        <ListItem disablePadding>
                             <ListItemButton>
                                 <ListItemIcon>
                                     {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
@@ -75,19 +83,6 @@ const SideBar = ({ toggle }: IProps) => {
                             </ListItemButton>
                         </ListItem>
                     </Link>
-                ))}
-            </List>
-            <Divider />
-            <List>
-                {['Configurações', 'Sobre'].map((text, index) => (
-                    <ListItem key={text} disablePadding>
-                        <ListItemButton>
-                            <ListItemIcon>
-                                {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                            </ListItemIcon>
-                            <ListItemText primary={text} />
-                        </ListItemButton>
-                    </ListItem>
                 ))}
             </List>
         </Box>
