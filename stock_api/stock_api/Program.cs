@@ -20,6 +20,7 @@ app.MapProductsEndPoint();
 app.MapSupplierEndPoint();
 app.MapServicesEndPoint();
 app.MapOrderServiceEndPoint();
+app.MapClientsEndPoint();
 
 app.UseSwagger();
 app.UseSwaggerUI();

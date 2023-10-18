@@ -31,8 +31,9 @@ CREATE TABLE client(
 	id INT PRIMARY KEY IDENTITY(1,1),
 	name VARCHAR(255) NOT NULL,
 	phone VARCHAR(255) NOT NULL,
+	plate VARCHAR(255) NOT NULL,
 	model VARCHAR(255) NOT NULL,
-	plate VARCHAR(255) NOT NULL
+	dateCreated date default(GETDATE())
 )
 
 INSERT INTO client 
@@ -141,7 +142,7 @@ CREATE PROCEDURE put_supplier
 	@id int,
 	@name VARCHAR(255),
 	@contact VARCHAR(255)
-ASp
+AS
 	UPDATE 
 		supplier
 	SET
@@ -170,7 +171,7 @@ DECLARE @nErrorNum INT;
 
     IF @nErrorNum = 547
     BEGIN
-        INSERT INTO #error (ErrorMessage) VALUES('Fornecedor n�o pode ser excluido porque existe um produto atrelado a ele.');
+        INSERT INTO #error (ErrorMessage) VALUES('Fornecedor n�o pode ser excluido porque existe um produto atrelado a ele.');
     END
     ELSE
        THROW
@@ -248,8 +249,8 @@ select * from orderService
 
 CREATE PROCEDURE post_OrderService
 	@clientId VARCHAR(255),
-	@services float,
-	@comments float 
+	@services VARCHAR(255),
+	@comments VARCHAR(255) 
 AS
 	INSERT INTO orderService
 		(clientId, services, comments) 
@@ -266,3 +267,81 @@ AS
 		status =  'closed'
 	WHERE id = @id;
 GO
+
+CREATE PROCEDURE get_Client
+	@id int,
+	@name VARCHAR(255),
+	@plate VARCHAR(255)
+AS
+	SELECT 
+		id,
+		name,
+		phone,
+		plate,
+		model
+
+	FROM client
+	WHERE 
+		(id = @id or @id IS NULL) AND
+		(name = @name or @name IS NULL) AND
+		(plate = @plate or @plate IS NULL)
+GO
+
+CREATE PROCEDURE post_Clients
+	@name VARCHAR(255),
+	@phone VARCHAR(255),
+	@plate VARCHAR(255),
+	@model VARCHAR(255)
+AS
+	INSERT INTO client
+		(name, phone, plate, model)
+	VALUES
+		(@name, @phone, @plate, @model)
+GO
+
+CREATE PROCEDURE put_Clients
+	@id int,
+	@name VARCHAR(255),
+	@phone VARCHAR(255),
+	@plate VARCHAR(255),
+	@model VARCHAR(255)
+AS
+	UPDATE 
+		client
+	SET
+		name = @name, 
+		phone = @phone, 
+		plate = @plate, 
+		model = @model
+	WHERE id = @id;
+GO
+
+CREATE PROCEDURE delete_client
+	@id int
+AS
+BEGIN TRY
+	DELETE FROM client
+	WHERE (id = @id)
+END TRY
+BEGIN CATCH
+
+DECLARE @nErrorNum INT;
+
+	CREATE TABLE #error(
+		id INT PRIMARY KEY IDENTITY(1,1),
+		ErrorMessage VARCHAR(255) NOT NULL
+	)
+
+    SELECT  @nErrorNum = ERROR_NUMBER()
+
+    IF @nErrorNum = 547
+    BEGIN
+        INSERT INTO #error (ErrorMessage) VALUES('Cliente não pode ser excluido porque existe uma ordem de serviço atrelada a ele.');
+    END
+    ELSE
+       THROW
+
+	SELECT ErrorMessage FROM #error
+	DROP TABLE #error
+END CATCH;
+GO	
