@@ -227,8 +227,9 @@ AS
 	WHERE (id = @id)
 GO
 
+select * from orderService
 
-CREATE PROCEDURE get_OrderService
+CREATE OR ALTER PROCEDURE get_OrderService
 	@status varchar(255),
 	@plateOrOrder varchar(255)
 AS
@@ -241,13 +242,19 @@ AS
 	FROM orderService s
 	INNER JOIN client c on c.id = s.clientId
 	WHERE 
-		(s.status = @status or @status IS NULL) AND
-		(c.plate = @plateOrOrder or s.id = @plateOrOrder or @plateOrOrder IS NULL)
+		(s.status = @status or @status like '') AND
+		(c.plate = @plateOrOrder or CONVERT ( VARCHAR , s.id ) = @plateOrOrder  or @plateOrOrder like '')
 GO
+
+sp_helptext get_OrderService
+
+
+SELECT CONVERT(VARCHAR, s.id ) FROM orderService s
+SELECT CAST(1.9 AS INT) FROM client c
 
 select * from orderService
 
-CREATE PROCEDURE post_OrderService
+CREATE OR ALTER PROCEDURE post_OrderService
 	@clientId VARCHAR(255),
 	@services VARCHAR(255),
 	@comments VARCHAR(255) 

@@ -1,6 +1,6 @@
 @tailwind components;
 @tailwind utilities;
-@tailwind base;
+/* @tailwind base; */
 
 /*
 :root {
@@ -43,4 +43,5 @@ body {
 
 body {
   background-color: #EEEEEE;
+  margin: 0;
 }

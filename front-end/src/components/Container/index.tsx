@@ -2,10 +2,11 @@ import { Divider } from "@mui/material";
 import styled from "styled-components";
 
 
-const ContainerCustom = styled.div`
+const ContainerStyle = styled.div`
   padding: 15px;
   background-color: #FFF;
-  border-radius: 10px
+  border-radius: 10px;
+  margin-bottom: 20px;
 `;
 
 interface IProps {
@@ -13,17 +14,17 @@ interface IProps {
     title?: string
 }
 
-const Container = ({ children, title }: IProps) => {
+const ContainerCustom = ({ children, title }: IProps) => {
     return (
-        <ContainerCustom>
+        <ContainerStyle>
             {typeof title == 'string' ? (<>
                 <label>{title}</label>
                 <Divider></Divider>
             </>
             ) : null}
             {children}
-        </ContainerCustom>
+        </ContainerStyle>
     )
 }
 
-export default Container
+export default ContainerCustom

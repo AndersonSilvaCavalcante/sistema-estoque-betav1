@@ -11,7 +11,7 @@ namespace stock_api.EndPoints
                 List<ParametroValor> pv = new List<ParametroValor>();
                 pv.Add(new ParametroValor("@status", status));
                 pv.Add(new ParametroValor("@plateOrOrder", plateOrOrder));
-                return Persistencia.ExecutarSql<Products>(@"get_OrderService", pv, tipoconsulta: TipoConsulta.STORED_PROCEDURE).ToList();
+                return Persistencia.ExecutarSql<OrderService>(@"get_OrderService", pv, tipoconsulta: TipoConsulta.STORED_PROCEDURE).ToList();
             }).WithTags("orderService");
 
             app.MapPost("SaveOrderService", async ([FromBody] OrderService orderService) => {

@@ -17,6 +17,22 @@ declare global {
         salePrice: Number
     }
 
+    //order service
+
+    interface IOrderService {
+        clientId: string,
+        services: string,
+        comments: string
+    }
+
+    interface IServicesToBePerformed {
+        id: Number,
+        name: string,
+        salePrice: number,
+    }
+
+    //
+
     // Tabela
     interface ITitles {
         label: string,

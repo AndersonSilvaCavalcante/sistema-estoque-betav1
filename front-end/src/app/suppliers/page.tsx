@@ -13,9 +13,9 @@ import { Box, Button, Modal, Stack, TextField, Typography } from "@mui/material"
 
 import SaveIcon from '@mui/icons-material/Save';
 import CancelIcon from '@mui/icons-material/Cancel';
-import Container from "@/components/Container"
 import PageHeader from "@/components/PageHeader"
 import TableCustom from "@/components/TableCustom"
+import ContainerCustom from "@/components/Container"
 
 const titles: Array<ITitles> = [
     { label: "ID", value: 'id' },
@@ -104,7 +104,7 @@ const Suppliers: NextPage = () => {
             <PageHeader title="Fornecedores">
                 <Button onClick={handleOpen} color="success" variant="outlined" endIcon={<SaveIcon />}>Cadastrar Fornecedor</Button>
             </PageHeader>
-            <Container title="Filtrar">
+            <ContainerCustom title="Filtrar">
                 <Box mb={2} mt={2}>
                     <TextField value={filter?.name} onChange={(e) => setFilter({ name: e.target.value })} id="outlined-basic" label="Nome" size="small" variant="outlined" />
                 </Box>
@@ -114,19 +114,17 @@ const Suppliers: NextPage = () => {
                         <Button onClick={() => filterSupplier()} color="success" variant="outlined" endIcon={<SaveIcon />}>Filtrar</Button>
                     </Stack>
                 </Box>
-            </Container>
-            <Box mt={4}>
-                <Container>
-                    <TableCustom
-                        data={suppliers}
-                        titles={titles}
-                        edit={true}
-                        remove={true}
-                        editFunction={handleOpen}
-                        removeFunction={deleteSupplier}
-                    />
-                </Container>
-            </Box>
+            </ContainerCustom>
+            <ContainerCustom>
+                <TableCustom
+                    data={suppliers}
+                    titles={titles}
+                    edit={true}
+                    remove={true}
+                    editFunction={handleOpen}
+                    removeFunction={deleteSupplier}
+                />
+            </ContainerCustom>
         </React.Fragment>
     )
 }

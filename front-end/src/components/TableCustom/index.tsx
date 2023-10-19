@@ -4,7 +4,7 @@ import EditIcon from '@mui/icons-material/Edit';
 
 interface IProps {
     titles: Array<ITitles>,
-    data: Array<ISupplier>,
+    data: Array<ISupplier> | Array<IServicesToBePerformed>,
     edit?: boolean,
     remove?: boolean,
     editFunction?: () => void,
@@ -17,19 +17,19 @@ const TableCustom = ({ titles, data, edit, remove, editFunction, removeFunction 
         <Table sx={{ minWidth: 650 }} aria-label="simple table">
             <TableHead>
                 <TableRow>
-                    {titles.map((title: ITitles) => (<TableCell>{title.label}</TableCell>))}
+                    {titles.map((title: ITitles, index: number) => (<TableCell key={index} >{title.label}</TableCell>))}
                     {(edit || remove) && (
                         <TableCell>Ações</TableCell>
                     )}
                 </TableRow>
             </TableHead>
             <TableBody>
-                {data.map((data: any) => (
+                {data.map((data: any, index: number) => (
                     <TableRow
-                        key={data.id.toString()}
+                        key={data.id}
                         sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                     >
-                        {titles.map((title: any) => (<TableCell>{data[title.value]}</TableCell>))}
+                        {titles.map((title: any) => (<TableCell key={title.id} >{data[title.value]}</TableCell>))}
 
                         <TableCell>
                             <Stack direction="row" spacing={2}>
