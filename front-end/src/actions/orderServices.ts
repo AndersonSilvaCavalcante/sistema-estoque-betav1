@@ -3,8 +3,18 @@ import api from "./api"
 
 class OrderService {
     static getListOrderService(filter: IFilter) {
-        const { status, plateOrOrder } = filter
-        return api.get(`ListOrderService?status=${status}&plateOrOrder=${plateOrOrder}`)
+        const { status, plate, order } = filter
+        let addFilter = `?status=${status}`
+        
+        if(plate){
+            addFilter = addFilter + `&plate=${plate}`
+        }
+
+        if(order){
+            addFilter = addFilter + `&order=${order}`
+        }
+
+        return api.get(`ListOrderService${addFilter}`)
     }
 
     static saveOrderService(payload: IOrderService) {

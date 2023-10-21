@@ -7,7 +7,7 @@
         public string Plate { get; set; }
         public string Status { get; set; }
         public DateTime DateClosed { get; set; }
-        public string ClientId { get; set; }
+        public int ClientId { get; set; }
         public string Services { get; set; }
         public string Comments { get; set; }
     }

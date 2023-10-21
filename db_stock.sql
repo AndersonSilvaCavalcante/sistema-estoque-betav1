@@ -36,12 +36,6 @@ CREATE TABLE client(
 	dateCreated date default(GETDATE())
 )
 
-INSERT INTO client 
-	(name, phone, model, plate)
-VALUES
-	('name', 'phone', 'model', 'plate')
-
-
 CREATE TABLE orderService (
 	id INT PRIMARY KEY IDENTITY(1,1),
 	clientId INT NOT NULL,
@@ -227,11 +221,11 @@ AS
 	WHERE (id = @id)
 GO
 
-select * from orderService
 
 CREATE OR ALTER PROCEDURE get_OrderService
 	@status varchar(255),
-	@plateOrOrder varchar(255)
+	@plate varchar(255),
+	@order int
 AS
 	SELECT 
 		s.id 'order' ,
@@ -242,8 +236,9 @@ AS
 	FROM orderService s
 	INNER JOIN client c on c.id = s.clientId
 	WHERE 
-		(s.status = @status or @status like '') AND
-		(c.plate = @plateOrOrder or CONVERT ( VARCHAR , s.id ) = @plateOrOrder  or @plateOrOrder like '')
+		(s.status = @status or @status LIKE '') AND
+		(c.plate LIKE @plate  or @plate IS NULL) AND
+		(s.id = @order  or @order IS NULL) 
 GO
 
 sp_helptext get_OrderService

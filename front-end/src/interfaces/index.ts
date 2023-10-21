@@ -17,10 +17,20 @@ declare global {
         salePrice: Number
     }
 
+    interface ICLient {
+        id: number,
+        name: string,
+        plate: string,
+        dateCreated: Date,
+        model: string,
+        phone: string
+
+    }
+
     //order service
 
     interface IOrderService {
-        clientId: string,
+        clientId: number | null,
         services: string,
         comments: string
     }

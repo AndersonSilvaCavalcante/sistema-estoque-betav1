@@ -9,8 +9,8 @@ import ContainerCustom from "@/components/Container";
 import FilterListIcon from '@mui/icons-material/FilterList';
 import SaveIcon from '@mui/icons-material/Save';
 import CloseIcon from '@mui/icons-material/Close';
-
-import { Box, Button, Stack, TextField, Select, MenuItem, FormControl, InputLabel, SelectChangeEvent } from "@mui/material"
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import { Box, Button, Stack, TextField, Select, MenuItem, FormControl, InputLabel, SelectChangeEvent, IconButton, Menu } from "@mui/material"
 import { NextPage } from 'next';
 import PageHeader from '@/components/PageHeader';
 import Link from 'next/link';
@@ -18,6 +18,13 @@ import moment from 'moment';
 
 import "../../assets/css/orderServices.scss"
 import { toast } from 'react-toastify';
+
+
+const options = [
+    'Editar',
+    'Visualizar'
+];
+
 
 const Card = styled.div`
   padding: 15px;
@@ -36,8 +43,14 @@ const ContainerOrderService = styled.div`
 `;
 
 export interface IFilter {
-    plateOrOrder: string,
+    plate: string,
+    order: number | string,
     status: string
+}
+
+interface ICardsListOrderService {
+    type: string,
+    list: Array<listOrderService>
 }
 
 interface IStatus {
@@ -54,7 +67,7 @@ interface listOrderService {
 
 const OrderServices: NextPage = () => {
 
-    const initialFIlter: IFilter = { plateOrOrder: ' ', status: 'started' }
+    const initialFIlter: IFilter = { plate: '', order: '', status: 'started' }
     const listStatus: Array<IStatus> = [
         { label: "Todos", value: ' ', },
         { label: "Abertas", value: 'started' },
@@ -62,13 +75,36 @@ const OrderServices: NextPage = () => {
     ]
 
     const [filter, setFIlter] = useState<IFilter>(initialFIlter)
-    const [listOrderService, setListOrderService] = useState<Array<listOrderService>>([])
+    const [listOrderService, setListOrderService] = useState<Array<ICardsListOrderService>>([])
+
+    const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+    const open = Boolean(anchorEl);
+    const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+        setAnchorEl(event.currentTarget);
+    };
+    const handleOption = (option: string) => {
+s        if(option === "Editar"){
+
+        }
+        // setAnchorEl(null);
+    };
+
 
     const getListOrderService = async (clean?: boolean) => {
         try {
             const { data } = await OrderService.getListOrderService(clean ? initialFIlter : filter)
 
-            setListOrderService(data)
+            const list = data as Array<listOrderService>
+
+            const started = list.filter(list => list.status === "started")
+            const closed = list.filter(list => list.status === "closed")
+
+            const payload: Array<ICardsListOrderService> = [
+                { type: "Abertas", list: started },
+                { type: "Fechadas", list: closed }
+            ]
+
+            setListOrderService(payload)
         } catch {
 
         }
@@ -112,7 +148,8 @@ const OrderServices: NextPage = () => {
             </PageHeader>
             <ContainerCustom title="Filtrar">
                 <Stack direction="row" spacing={2} mb={2} mt={2}>
-                    <TextField value={filter?.plateOrOrder} onChange={changeValues} id="outlined-basic" name='plateOrOrder' label="Placa ou n° da ordem" size="small" variant="outlined" />
+                    <TextField value={filter?.plate} onChange={changeValues} name='plate' label="Placa" size="small" variant="outlined" />
+                    <TextField value={filter?.order} onChange={changeValues} name='order' type='number' label="N° da ordem" size="small" variant="outlined" />
                     <FormControl variant="outlined" sx={{ m: 1, minWidth: 120 }} size="small">
                         <InputLabel id="demo-simple-select-standard-label">Status</InputLabel>
                         <Select
@@ -134,29 +171,67 @@ const OrderServices: NextPage = () => {
                     </Stack>
                 </Box>
             </ContainerCustom>
-            <ContainerCustom title="Abertas">
-                <ContainerOrderService>
-                    {listOrderService.map((list, index: number) => (
-                        <Card key={index} className='cardOrderService' >
-                            <div className='d-flex'>
-                                <label>nº {list.order}</label>
-                                {list.status === 'started' ? (
-                                    <CircleIcon color='success' />
-                                ) : (
-                                    <CircleIcon color='error' />
-                                )}
-                            </div>
-                            <p>{list.plate}</p>
-                            <div className='d-flex'>
-                                <label>Criada em: {moment(list.dateCreated).format("DD/MM/YYYY")}</label>
-                                {list.status === "started" && (
-                                    <Button color="error" onClick={() => closeOrderService(list.order)} >FInalizar</Button>
-                                )}
-                            </div>
-                        </Card>
-                    ))}
-                </ContainerOrderService>
-            </ContainerCustom>
+            {listOrderService.map((card, index: number) => (
+                card.list.length > 0 && (
+                    <ContainerCustom title={card.type} key={index}>
+                        <ContainerOrderService>
+                            {card.list.map((list, index: number) => (
+                                <Card key={index} className='cardOrderService' >
+                                    <div className='d-flex'>
+                                        <label>nº {list.order}</label>
+                                        <div>
+                                            <IconButton
+                                                aria-label="more"
+                                                id="long-button"
+                                                aria-controls={open ? 'long-menu' : undefined}
+                                                aria-expanded={open ? 'true' : undefined}
+                                                aria-haspopup="true"
+                                                onClick={handleClick}
+                                            >
+                                                <MoreVertIcon />
+                                            </IconButton>
+                                            <Menu
+                                                id="long-menu"
+                                                MenuListProps={{
+                                                    'aria-labelledby': 'long-button',
+                                                }}
+                                                anchorEl={anchorEl}
+                                                open={open}
+                                                onClose={() => setAnchorEl(null)}
+                                                PaperProps={{
+                                                    style: {
+                                                        maxHeight: 48 * 4.5,
+                                                        width: '20ch',
+                                                    },
+                                                }}
+                                            >
+                                                {options.map((option) => (
+                                                    <MenuItem key={option} onClick={() => handleOption(option)}>
+                                                        {option}
+                                                    </MenuItem>
+                                                ))}
+                                            </Menu>
+                                            {list.status === 'started' ? (
+                                                <CircleIcon color='success' />
+                                            ) : (
+                                                <CircleIcon color='error' />
+                                            )}
+                                        </div>
+
+                                    </div>
+                                    <p>{list.plate}</p>
+                                    <div className='d-flex'>
+                                        <label>Criada em: {moment(list.dateCreated).format("DD/MM/YYYY")}</label>
+                                        {list.status === "started" && (
+                                            <Button color="error" onClick={() => closeOrderService(list.order)} >FInalizar</Button>
+                                        )}
+                                    </div>
+                                </Card>
+                            ))}
+                        </ContainerOrderService>
+                    </ContainerCustom>
+                )
+            ))}
         </React.Fragment>
     )
 }

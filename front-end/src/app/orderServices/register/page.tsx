@@ -5,7 +5,6 @@ import PageHeader from "@/components/PageHeader"
 import { NextPage } from "next"
 import React, { useState, useEffect } from 'react'
 import ContainerCustom from "@/components/Container";
-import FilterListIcon from '@mui/icons-material/FilterList';
 import SaveIcon from '@mui/icons-material/Save';
 import CloseIcon from '@mui/icons-material/Close';
 import AddIcon from '@mui/icons-material/Add';
@@ -13,12 +12,12 @@ import CreateIcon from '@mui/icons-material/Create';
 
 import { Box, Button, Stack, TextField, Select, SelectChangeEvent, FormControl, InputLabel, MenuItem, FormHelperText } from "@mui/material"
 
-import Link from 'next/link';
 import Services from "@/actions/services";
 import TableCustom from "@/components/TableCustom";
 import OrderService from "@/actions/orderServices";
 import { toast } from "react-toastify";
-
+import Client from "@/actions/client";
+import { useRouter } from "next/navigation";
 
 
 interface IlistServices {
@@ -26,8 +25,6 @@ interface IlistServices {
     name: string,
     salePrice: number
 }
-
-
 
 const OrderServicesRegister: NextPage = () => {
 
@@ -37,20 +34,31 @@ const OrderServicesRegister: NextPage = () => {
     ]
 
     const initialOrderService: IOrderService = {
-        clientId: '',
+        clientId: null,
         services: '',
         comments: ''
     }
 
+    const initialInfoClients: ICLient = {
+        id: 0,
+        dateCreated: new Date(),
+        model: '',
+        name: '',
+        phone: '',
+        plate: ''
+    }
+
+    const router = useRouter()
+
     const [orderService, setOrderService] = useState<IOrderService>(initialOrderService)
 
-    const [listClients, setClients] = useState([{ nome: "asdasd", id: "1" }, { nome: "bbb", id: "1" }])
+    const [listClients, setClients] = useState<Array<ICLient>>([])
     const [listServices, setListServices] = useState<Array<IlistServices>>([])
 
     const [servicesToBePerformed, setServicesToBePerformed] = useState<Array<IServicesToBePerformed>>([])
 
-    const [infoClients, setClientsInfo] = useState({ id: "" })
-    const [viewClient, setViewCLiwnt] = useState<boolean>(false)
+    const [infoClients, setClientsInfo] = useState<ICLient>(initialInfoClients)
+    const [viewClient, setViewCLient] = useState<boolean>(false)
     const [disableCLient, setDIsableCLient] = useState<boolean>(true)
 
     const [errorInput, setErrorInput] = useState<boolean>(false)
@@ -60,6 +68,13 @@ const OrderServicesRegister: NextPage = () => {
         const value = e.target.value
 
         setOrderService({ ...orderService, [name]: value })
+    }
+
+    const changeValuesClients = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | SelectChangeEvent<string> | React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        const name = e.target.name
+        const value = e.target.value
+
+        setClientsInfo({ ...infoClients, [name]: value })
     }
 
     const getListOrderService = async () => {
@@ -88,7 +103,7 @@ const OrderServicesRegister: NextPage = () => {
 
         setErrorInput(false)
 
-        if (orderService.clientId === "" || servicesToBePerformed.length === 0) {
+        if (!orderService.clientId || servicesToBePerformed.length === 0) {
             return setErrorInput(true)
         }
 
@@ -98,22 +113,45 @@ const OrderServicesRegister: NextPage = () => {
             setOrderService(initialOrderService)
             setServicesToBePerformed([])
             toast.success("Sucesso ao criar ordem de serviço!")
+            goBack()
         } catch {
             toast.error("Erro ao criar ordem de serviço!")
         }
     }
 
+    const getListClients = async () => {
+        try {
+            const { data } = await Client.getListClients()
+            setClients(data)
+        } catch { }
+    }
+
+    const saveClient = async () => {
+        try {
+            await Client.editClient(infoClients)
+            toast.success("Sucesso ao editar cliente!")
+            getListClients()
+            setDIsableCLient(true)
+        } catch {
+            toast.error("Erro ao editar cliente!")
+         }
+    }
+
+    const goBack = () => {
+        router.push("/orderServices")
+    }
 
     useEffect(() => {
         getListOrderService()
+        getListClients()
     }, [])
 
     useEffect(() => {
-        if (orderService.clientId !== "") {
-            setViewCLiwnt(true)
-            setClientsInfo({ id: orderService.clientId })
+        if (orderService.clientId) {
+            setViewCLient(true)
+            setClientsInfo(listClients.filter(list => list.id == orderService.clientId)[0])
         } else {
-            setViewCLiwnt(false)
+            setViewCLient(false)
         }
     }, [orderService.clientId])
 
@@ -127,12 +165,12 @@ const OrderServicesRegister: NextPage = () => {
                         <InputLabel id="demo-simple-select-standard-label">Cliente *</InputLabel>
                         <Select
                             label="Cliente *"
-                            value={orderService?.clientId}
+                            value={orderService?.clientId?.toString()}
                             name="clientId"
                             onChange={changeValues}
                         >
                             {listClients.map((list, index: number) => (
-                                <MenuItem key={list.id} value={list.id}>{list.nome}</MenuItem>
+                                <MenuItem key={list.id} value={list.id}>{list.name}</MenuItem>
                             ))}
                         </Select>
                         {errorInput && (
@@ -142,10 +180,10 @@ const OrderServicesRegister: NextPage = () => {
                 </Stack>
                 {viewClient && (
                     <Stack direction="row" spacing={2} mb={2} mt={2}>
-                        <TextField value={infoClients?.id} name='plateOrOrder' label="Placa" size="small" variant="outlined" disabled={disableCLient} />
-                        <TextField name='plateOrOrder' label="Modelo" size="small" variant="outlined" disabled={disableCLient} />
-                        <TextField name='plateOrOrder' label="Nome" size="small" variant="outlined" disabled={disableCLient} />
-                        <TextField name='plateOrOrder' label="Telefone" size="small" variant="outlined" disabled={disableCLient} />
+                        <TextField value={infoClients?.plate} onChange={changeValuesClients} name='plate' label="Placa" size="small" variant="outlined" disabled={disableCLient} />
+                        <TextField value={infoClients?.model} onChange={changeValuesClients} name='model' label="Modelo" size="small" variant="outlined" disabled={disableCLient} />
+                        <TextField value={infoClients?.name} onChange={changeValuesClients} name='name' label="Nome" size="small" variant="outlined" disabled={disableCLient} />
+                        <TextField value={infoClients?.phone} onChange={changeValuesClients} name='phone' label="Telefone" size="small" variant="outlined" disabled={disableCLient} />
                         {disableCLient && (<Button color="warning" variant="outlined" onClick={() => setDIsableCLient(false)} endIcon={<CreateIcon />}>Editar</Button>)}
                     </Stack>
                 )}
@@ -153,7 +191,7 @@ const OrderServicesRegister: NextPage = () => {
                     <Box sx={{ display: 'flex', placeContent: 'flex-end' }}>
                         <Stack direction="row" spacing={2}>
                             <Button color="error" variant="outlined" onClick={() => setDIsableCLient(true)} endIcon={<CloseIcon />}>Cancelar</Button>
-                            <Button color="success" variant="outlined" onClick={() => setDIsableCLient(true)} endIcon={<SaveIcon />}>Salvar</Button>
+                            <Button color="success" variant="outlined" onClick={saveClient} endIcon={<SaveIcon />}>Salvar</Button>
                         </Stack>
                     </Box>
                 )}
@@ -182,6 +220,7 @@ const OrderServicesRegister: NextPage = () => {
                         titles={titles}
                         remove={true}
                         removeFunction={deleteServicesToBePerformed}
+                        sum={true}
                     />
                 )}
                 <Stack spacing={2} mb={2} mt={2}>
@@ -198,7 +237,7 @@ const OrderServicesRegister: NextPage = () => {
                 </Stack>
                 <Box sx={{ display: 'flex', placeContent: 'flex-end' }}>
                     <Stack direction="row" spacing={2}>
-                        <Button color="error" variant="outlined" endIcon={<CloseIcon />}>Cancelar</Button>
+                        <Button color="error" variant="outlined" endIcon={<CloseIcon />} onClick={goBack} >Cancelar</Button>
                         <Button color="success" variant="outlined" onClick={addOrderService} endIcon={<SaveIcon />}>Salvar</Button>
                     </Stack>
                 </Box>
