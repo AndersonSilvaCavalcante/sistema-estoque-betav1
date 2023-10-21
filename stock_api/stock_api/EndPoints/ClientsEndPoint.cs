@@ -25,9 +25,9 @@ namespace stock_api.EndPoints
                 Persistencia.ExecutarSqlSemRetorno(@"post_Clients", pv, tipoconsulta: TipoConsulta.STORED_PROCEDURE);
             }).WithTags("clients");
 
-            app.MapPut("EditClient", async ([FromBody] Clients clients) => {
+            app.MapPut("EditClient", async ([FromBody] Clients clients, Int32 id) => {
                 List<ParametroValor> pv = new List<ParametroValor>();
-                pv.Add(new ParametroValor("@id", clients.Id));
+                pv.Add(new ParametroValor("@id", id));
                 pv.Add(new ParametroValor("@name", clients.Name));
                 pv.Add(new ParametroValor("@phone", clients.Phone));
                 pv.Add(new ParametroValor("@plate", clients.Plate));
