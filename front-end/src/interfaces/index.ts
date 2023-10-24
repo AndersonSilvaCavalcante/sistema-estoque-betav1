@@ -1,3 +1,5 @@
+import { INTERNAL_HEADERS } from "next/dist/shared/lib/constants"
+
 export { }
 declare global {
     interface ISupplier {
@@ -24,6 +26,11 @@ declare global {
         dateCreated: Date,
         model: string,
         phone: string
+
+    }
+
+    interface ISale {
+        id: Number,
 
     }
 

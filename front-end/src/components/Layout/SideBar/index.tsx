@@ -18,7 +18,7 @@ const menuOptions =
             path: "/dashboard"
         }, {
             name: "Vendas",
-            path: "/dashboard"
+            path: "/sales"
         }, {
             name: "Ordens de Serviço",
             path: "/orderServices"

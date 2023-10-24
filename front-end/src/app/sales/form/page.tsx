@@ -17,7 +17,7 @@ import TableCustom from "@/components/TableCustom";
 import OrderService from "@/actions/orderServices";
 import { toast } from "react-toastify";
 import Client from "@/actions/client";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
 
 
 interface IlistServices {
@@ -26,7 +26,15 @@ interface IlistServices {
     salePrice: number
 }
 
-const OrderServicesRegister: NextPage = () => {
+interface IProps {
+    params: {
+        slug: Array<string>
+    }
+}
+
+const SalesForm = ({ params }: IProps) => {
+
+    const { slug } = params;
 
     const titles: Array<ITitles> = [
         { label: "Nome", value: 'name' },
@@ -49,6 +57,7 @@ const OrderServicesRegister: NextPage = () => {
     }
 
     const router = useRouter()
+    const searchParams = usePathname()
 
     const [orderService, setOrderService] = useState<IOrderService>(initialOrderService)
 
@@ -134,12 +143,16 @@ const OrderServicesRegister: NextPage = () => {
             setDIsableCLient(true)
         } catch {
             toast.error("Erro ao editar cliente!")
-         }
+        }
     }
 
     const goBack = () => {
-        router.push("/orderServices")
+        router.back()
     }
+
+    useEffect(() => {
+        console.log('slug', slug)
+    }, [slug])
 
     useEffect(() => {
         getListOrderService()
@@ -246,4 +259,4 @@ const OrderServicesRegister: NextPage = () => {
     )
 }
 
-export default OrderServicesRegister
+export default SalesForm

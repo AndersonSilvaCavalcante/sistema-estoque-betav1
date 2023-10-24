@@ -83,7 +83,7 @@ const OrderServices: NextPage = () => {
         setAnchorEl(event.currentTarget);
     };
     const handleOption = (option: string) => {
-s        if(option === "Editar"){
+        if(option === "Editar"){
 
         }
         // setAnchorEl(null);
@@ -142,7 +142,7 @@ s        if(option === "Editar"){
     return (
         <React.Fragment>
             <PageHeader title="Ordem de serviço">
-                <Link href="/orderServices/register" >
+                <Link href="/orderServices/form/register">
                     <Button color="success" variant="contained" endIcon={<SaveIcon />}>Cadastrar Ordem de Serviço</Button>
                 </Link>
             </PageHeader>
