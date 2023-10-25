@@ -8,6 +8,10 @@ class SalesService {
         }
         return api.get(`ListSales${filter}`)
     }
+
+    static saveSale(sale: ISale) {
+        return api.post('SaveSales', sale)
+    }
 }
 
 export default SalesService

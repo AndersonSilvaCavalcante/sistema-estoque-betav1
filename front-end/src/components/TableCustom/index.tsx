@@ -24,7 +24,7 @@ interface IPopupData {
     id: number
 }
 
-const valuePrefixes = {currency: "R$"}
+const valuePrefixes = { currency: "R$" }
 
 const TableCustom = ({ titles, data, edit, remove, editFunction, removeFunction, sum }: IProps) => {
     const [popupData, setPopupData] = useState<IPopupData>({ toggle: false, id: 0 })
@@ -36,9 +36,14 @@ const TableCustom = ({ titles, data, edit, remove, editFunction, removeFunction,
     const sumValues = () => {
         let sum = 0
 
-        data.map((data: { salePrice: number; }) => (
-            sum = sum + data.salePrice
-        ))
+        data.map((data: { salePrice: number, totalCurrentPrice: number }) => {
+            if (data.salePrice) {
+                sum = sum + data.salePrice
+            } else {
+                sum = sum + data.totalCurrentPrice
+            }
+        }
+        )
 
         setSumPrice(sum)
     }
@@ -86,14 +91,14 @@ const TableCustom = ({ titles, data, edit, remove, editFunction, removeFunction,
                                 </TableCell>
                             </TableRow>
                         ))}
-                         {sum && (
-                    <TableRow
-                        sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                    >
-                        <TableCell>TOTAL</TableCell>
-                        <TableCell colSpan={2}>R$ {sunPrice}</TableCell>
-                    </TableRow>
-                )}
+                        {sum && (
+                            <TableRow
+                                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                            >
+                                <TableCell>TOTAL</TableCell>
+                                <TableCell colSpan={2}>R$ {sunPrice}</TableCell>
+                            </TableRow>
+                        )}
                     </TableBody>
                 </Table>
             </TableContainer>

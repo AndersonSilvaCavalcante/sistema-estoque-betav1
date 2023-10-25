@@ -21,7 +21,8 @@ declare global {
         qtdMin: number,
         qtdCurrent: number,
         costPrice: number,
-        salePrice: number
+        salePrice: number,
+        qtdChange: number
     }
 
     interface ICLient {
@@ -36,13 +37,23 @@ declare global {
 
     interface ISale {
         id: number,
-        products: any,
-        qtd: number,
-        clientId: number,
+        products: Array<IProductSale>,
+        qtd: number | string,
+        clientId: number | string,
         value: number,
         clientName: string,
         discount: number,
         dateCreated: Date
+    }
+
+    interface IProductSale {
+        id: number
+        productName: string
+        productId: number
+        newQtd: number
+        qtdChange: number | string
+        totalCostPrice: number
+        totalCurrentPrice: number
     }
 
     //order service

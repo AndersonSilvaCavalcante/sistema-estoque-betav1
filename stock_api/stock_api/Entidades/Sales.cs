@@ -16,13 +16,12 @@
 
     public class ProductsList
     {
-        public int productId { get; set; }
-        public int newQtd { get; set; }
-        public int qtdChange { get; set; }
-        public int totalCostPrice { get; set; }
-        public int valueTotal { get; set; }
-        public int totalCurrentPrice { get; set; }
-        public int discont { get; set; }
+        public int ProductId { get; set; }
+        public string ProductName { get; set; }
+        public int NewQtd { get; set; }
+        public int QtdChange { get; set; }
+        public float TotalCostPrice { get; set; }
+        public float TotalCurrentPrice { get; set; }
 
         
     }

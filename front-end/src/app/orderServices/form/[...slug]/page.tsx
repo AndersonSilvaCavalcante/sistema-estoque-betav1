@@ -187,7 +187,7 @@ const OrderServicesRegister = ({ params }: IProps) => {
                             ))}
                         </Select>
                         {errorInput && (
-                            <FormHelperText>Caampo obrigatório</FormHelperText>
+                            <FormHelperText>Campo obrigatório</FormHelperText>
                         )}
                     </FormControl>
                 </Stack>
@@ -222,7 +222,7 @@ const OrderServicesRegister = ({ params }: IProps) => {
                             ))}
                         </Select>
                         {errorInput && (
-                            <FormHelperText>Caampo obrigatório</FormHelperText>
+                            <FormHelperText>Campo obrigatório</FormHelperText>
                         )}
                     </FormControl>
                     <Button color="success" variant="outlined" endIcon={<AddIcon />} onClick={addServicesToBePerformed} >Adicionar</Button>

@@ -2,73 +2,52 @@
 
 
 import PageHeader from "@/components/PageHeader"
-import { NextPage } from "next"
 import React, { useState, useEffect } from 'react'
 import ContainerCustom from "@/components/Container";
 import SaveIcon from '@mui/icons-material/Save';
 import CloseIcon from '@mui/icons-material/Close';
-import AddIcon from '@mui/icons-material/Add';
-import CreateIcon from '@mui/icons-material/Create';
 
-import { Box, Button, Stack, TextField, Select, SelectChangeEvent, FormControl, InputLabel, MenuItem, FormHelperText } from "@mui/material"
+import { Box, Button, Stack, TextField, Select, SelectChangeEvent, FormControl, InputLabel, MenuItem, FormHelperText, Autocomplete } from "@mui/material"
 
-import Services from "@/actions/services";
 import TableCustom from "@/components/TableCustom";
-import OrderService from "@/actions/orderServices";
 import { toast } from "react-toastify";
 import Client from "@/actions/client";
-import { useRouter, useSearchParams, usePathname } from "next/navigation";
+import { useRouter} from "next/navigation";
 
+import ProductServices from "@/actions/productServices";
+import SalesService from "@/actions/sales";
 
-interface IlistServices {
-    id: number,
-    name: string,
-    salePrice: number
-}
-
-interface IProps {
-    params: {
-        slug: Array<string>
-    }
-}
-
-const SalesForm = ({ params }: IProps) => {
-
-    const { slug } = params;
+const SalesForm = () => {
 
     const titles: Array<ITitles> = [
-        { label: "Nome", value: 'name' },
-        { label: "Preço", value: 'salePrice' },
+        { label: "Produto", value: 'productName' },
+        { label: "Quantidade", value: 'qtdChange' },
+        { label: "Total", value: 'totalCurrentPrice' },
     ]
 
-    const initialOrderService: IOrderService = {
-        clientId: null,
-        services: '',
-        comments: ''
+    const initialSale: ISale = {
+        id: 0,
+        products: [],
+        qtd: '',
+        clientId: '',
+        value: 0,
+        clientName: "",
+        discount: 0,
+        dateCreated: new Date
     }
 
-    const initialInfoClients: ICLient = {
-        id: 0,
-        dateCreated: new Date(),
-        model: '',
-        name: '',
-        phone: '',
-        plate: ''
-    }
 
     const router = useRouter()
-    const searchParams = usePathname()
 
-    const [orderService, setOrderService] = useState<IOrderService>(initialOrderService)
+    const [sale, setSale] = useState<ISale>(initialSale)
 
     const [listClients, setClients] = useState<Array<ICLient>>([])
-    const [listServices, setListServices] = useState<Array<IlistServices>>([])
 
-    const [servicesToBePerformed, setServicesToBePerformed] = useState<Array<IServicesToBePerformed>>([])
+    const [productSelecioned, setProductSelecioned] = useState<IProduct | null>(null)
 
-    const [infoClients, setClientsInfo] = useState<ICLient>(initialInfoClients)
-    const [viewClient, setViewCLient] = useState<boolean>(false)
-    const [disableCLient, setDIsableCLient] = useState<boolean>(true)
+    const [msgErro, setMsgErro] = useState<string>("")
+
+    const [products, setProducts] = useState<Array<IProduct>>([])
 
     const [errorInput, setErrorInput] = useState<boolean>(false)
 
@@ -76,55 +55,33 @@ const SalesForm = ({ params }: IProps) => {
         const name = e.target.name
         const value = e.target.value
 
-        setOrderService({ ...orderService, [name]: value })
+        setSale({ ...sale, [name]: value })
     }
 
-    const changeValuesClients = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | SelectChangeEvent<string> | React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        const name = e.target.name
-        const value = e.target.value
+    const changeProductSelecioned = (newProduct: IProduct | null) => {
+        setMsgErro('')
+        const exist = sale.products.filter(p => p.id === newProduct?.id)
 
-        setClientsInfo({ ...infoClients, [name]: value })
-    }
-
-    const getListOrderService = async () => {
-        try {
-            const { data } = await Services.getListServices()
-            setListServices(data)
-        } catch { }
-    }
-
-    const addServicesToBePerformed = () => {
-        const data = listServices.filter(list => list.id == parseInt(orderService?.services))[0]
-        setOrderService({ ...orderService, services: '' })
-
-        const dados = [...servicesToBePerformed, { name: data.name, salePrice: data.salePrice, id: data.id }].map((e, index: number) => ({
-            ...e,
-            id: index
-        }))
-        setServicesToBePerformed(dados)
-    }
-
-    const deleteServicesToBePerformed = (id: number) => {
-        setServicesToBePerformed(listServices.filter(list => list.id !== id))
-    }
-
-    const addOrderService = async () => {
-
-        setErrorInput(false)
-
-        if (!orderService.clientId || servicesToBePerformed.length === 0) {
-            return setErrorInput(true)
+        if (exist.length > 0) {
+            return setMsgErro("Produto já adicionado")
         }
 
+        setProductSelecioned(newProduct)
+    }
+
+    const deleteProducList = (id: number) => {
+        setSale({ ...sale, products: sale.products.filter(p => p.id !== id) })
+    }
+
+    const addSale = async () => {
+        setErrorInput(false)
+
         try {
-            const payload: IOrderService = { ...orderService, services: JSON.stringify(servicesToBePerformed) }
-            await OrderService.saveOrderService(payload)
-            setOrderService(initialOrderService)
-            setServicesToBePerformed([])
-            toast.success("Sucesso ao criar ordem de serviço!")
+            await SalesService.saveSale(sale)
+            toast.success("Sucesso ao realizar venda!")
             goBack()
         } catch {
-            toast.error("Erro ao criar ordem de serviço!")
+            toast.error("Erro ao realizar venda!")
         }
     }
 
@@ -135,126 +92,150 @@ const SalesForm = ({ params }: IProps) => {
         } catch { }
     }
 
-    const saveClient = async () => {
-        try {
-            await Client.editClient(infoClients)
-            toast.success("Sucesso ao editar cliente!")
-            getListClients()
-            setDIsableCLient(true)
-        } catch {
-            toast.error("Erro ao editar cliente!")
-        }
-    }
-
     const goBack = () => {
         router.back()
     }
 
-    useEffect(() => {
-        console.log('slug', slug)
-    }, [slug])
-
-    useEffect(() => {
-        getListOrderService()
-        getListClients()
-    }, [])
-
-    useEffect(() => {
-        if (orderService.clientId) {
-            setViewCLient(true)
-            setClientsInfo(listClients.filter(list => list.id == orderService.clientId)[0])
-        } else {
-            setViewCLient(false)
+    const getProductsList = async () => {
+        try {
+            const { data } = await ProductServices.getProducts({ name: '', barcode: '' })
+            setProducts(data)
+        } catch (error) {
+            toast.error("Algo deu errado")
         }
-    }, [orderService.clientId])
+    }
+
+    const edtProductList = (product: IProduct) => {
+        setProductSelecioned(products.filter(p => p.id === product.id)[0])
+        setSale({ ...sale, qtd: product.qtdChange, products: sale.products.filter(p => p.id !== product.id)  })
+
+    }
+
+    const addProductList = () => {
+
+        setErrorInput(false)
+        setMsgErro('')
+
+        const exist = sale.products.filter(p => p.id === productSelecioned?.id)
+
+        if (exist.length > 0) {
+            setErrorInput(true)
+            return setMsgErro("Produto já adicionado")
+        }
+
+        if (sale.clientId === '' || sale.qtd === 0 || sale.qtd === '' || !productSelecioned) {
+            return setErrorInput(true)
+        }
+
+
+        setSale({
+            ...sale,
+            qtd: '',
+            products: [
+                ...sale.products,
+                {
+                    id: productSelecioned?.id ?? 0,
+                    productName: productSelecioned?.name ?? "",
+                    productId: productSelecioned?.id ?? 0,
+                    newQtd: productSelecioned?.qtdCurrent ? productSelecioned?.qtdCurrent - parseInt(sale.qtd.toString()) : 0,
+                    qtdChange: sale.qtd,
+                    totalCostPrice: productSelecioned?.costPrice ? productSelecioned?.costPrice * parseInt(sale.qtd.toString()) : 0,
+                    totalCurrentPrice: productSelecioned?.qtdCurrent ? productSelecioned?.qtdCurrent * parseInt(sale.qtd.toString()) : 0,
+                }]
+        })
+
+        setProductSelecioned(null)
+    }
+
+    useEffect(() => {
+        getListClients()
+        getProductsList()
+    }, [])
 
     return (
         <React.Fragment>
-            <PageHeader title="Cadastrar Ordem de Serviço">
+            <PageHeader title="Cadastrar Venda">
             </PageHeader>
+
             <ContainerCustom>
-                <Stack direction="row" spacing={2} mb={2} mt={2}>
-                    <FormControl variant="outlined" sx={{ m: 1, minWidth: 120 }} size="small" error={errorInput}>
+                <Stack
+                    direction="row"
+                    spacing={2}>
+                    <FormControl variant="outlined" sx={{ m: 1, minWidth: 220 }} size="small" error={errorInput}>
                         <InputLabel id="demo-simple-select-standard-label">Cliente *</InputLabel>
                         <Select
                             label="Cliente *"
-                            value={orderService?.clientId?.toString()}
+                            value={sale?.clientId?.toString()}
                             name="clientId"
                             onChange={changeValues}
+                            disabled={sale.products.length > 0}
                         >
                             {listClients.map((list, index: number) => (
                                 <MenuItem key={list.id} value={list.id}>{list.name}</MenuItem>
                             ))}
                         </Select>
-                        {errorInput && (
-                            <FormHelperText>Caampo obrigatório</FormHelperText>
+                        {(errorInput) && (
+                            <FormHelperText>Campo obrigatório</FormHelperText>
                         )}
                     </FormControl>
-                </Stack>
-                {viewClient && (
-                    <Stack direction="row" spacing={2} mb={2} mt={2}>
-                        <TextField value={infoClients?.plate} onChange={changeValuesClients} name='plate' label="Placa" size="small" variant="outlined" disabled={disableCLient} />
-                        <TextField value={infoClients?.model} onChange={changeValuesClients} name='model' label="Modelo" size="small" variant="outlined" disabled={disableCLient} />
-                        <TextField value={infoClients?.name} onChange={changeValuesClients} name='name' label="Nome" size="small" variant="outlined" disabled={disableCLient} />
-                        <TextField value={infoClients?.phone} onChange={changeValuesClients} name='phone' label="Telefone" size="small" variant="outlined" disabled={disableCLient} />
-                        {disableCLient && (<Button color="warning" variant="outlined" onClick={() => setDIsableCLient(false)} endIcon={<CreateIcon />}>Editar</Button>)}
-                    </Stack>
-                )}
-                {!disableCLient && (
-                    <Box sx={{ display: 'flex', placeContent: 'flex-end' }}>
-                        <Stack direction="row" spacing={2}>
-                            <Button color="error" variant="outlined" onClick={() => setDIsableCLient(true)} endIcon={<CloseIcon />}>Cancelar</Button>
-                            <Button color="success" variant="outlined" onClick={saveClient} endIcon={<SaveIcon />}>Salvar</Button>
-                        </Stack>
-                    </Box>
-                )}
-                <Stack direction="row" spacing={2} mb={2} mt={2}>
-                    <FormControl variant="outlined" sx={{ m: 1, minWidth: 300 }} size="small" error={errorInput}>
-                        <InputLabel >Serviços a serem feitos *</InputLabel>
-                        <Select
-                            label="Serviços a serem feitos *"
-                            value={orderService?.services}
-                            name="services"
-                            onChange={changeValues}
-                        >
-                            {listServices.map((list, index: number) => (
-                                <MenuItem key={list.id} value={list.id}>{list.name}</MenuItem>
-                            ))}
-                        </Select>
-                        {errorInput && (
-                            <FormHelperText>Caampo obrigatório</FormHelperText>
-                        )}
-                    </FormControl>
-                    <Button color="success" variant="outlined" endIcon={<AddIcon />} onClick={addServicesToBePerformed} >Adicionar</Button>
-                </Stack>
-                {servicesToBePerformed.length > 0 && (
-                    <TableCustom
-                        data={servicesToBePerformed}
-                        titles={titles}
-                        remove={true}
-                        removeFunction={deleteServicesToBePerformed}
-                        sum={true}
-                    />
-                )}
-                <Stack spacing={2} mb={2} mt={2}>
-                    <TextField
-                        name='comments'
-                        label="Observações"
+                    <Autocomplete
                         size="small"
-                        variant="outlined"
-                        multiline
-                        rows={3}
-                        onChange={changeValues}
-                        value={orderService?.comments}
+                        disablePortal
+                        options={products}
+                        getOptionLabel={(option) => option.name}
+                        renderOption={(props, option) => {
+                            return (
+                                <li {...props} key={option.id}>
+                                    {option.name}
+                                </li>
+                            );
+                        }}
+                        onChange={(event, newValue) => changeProductSelecioned(newValue)}
+                        value={productSelecioned}
+                        renderInput={(params) => (
+                            <FormControl variant="outlined" sx={{ minWidth: 220 }} size="small" error={errorInput} >
+                                <TextField
+                                    {...params}
+                                    error={errorInput}
+                                    label="Produto *"
+                                />
+                                {(errorInput) && (
+                                    <FormHelperText>Campo obrigatório</FormHelperText>
+                                )}
+                            </FormControl>
+                        )
+                        }
                     />
+                    <FormControl variant="outlined" sx={{ m: 1, minWidth: 220 }} size="small" error={errorInput} >
+                        <TextField value={sale?.qtd} onChange={changeValues} name='qtd' label="Quantidade *" size="small" variant="outlined" error={errorInput} />
+                        {errorInput && (
+                            <FormHelperText>Campo obrigatório</FormHelperText>
+                        )}
+                    </FormControl>
+                    <FormControl>
+                        <Button color="success" variant="outlined" onClick={addProductList} endIcon={<SaveIcon />}>Adicionar</Button>
+                    </FormControl>
+
                 </Stack>
+            </ContainerCustom>
+            <ContainerCustom>
+                <TableCustom
+                    data={sale.products}
+                    titles={titles}
+                    remove={true}
+                    removeFunction={deleteProducList}
+                    edit={true}
+                    editFunction={edtProductList}
+                    sum={true}
+                />
                 <Box sx={{ display: 'flex', placeContent: 'flex-end' }}>
                     <Stack direction="row" spacing={2}>
                         <Button color="error" variant="outlined" endIcon={<CloseIcon />} onClick={goBack} >Cancelar</Button>
-                        <Button color="success" variant="outlined" onClick={addOrderService} endIcon={<SaveIcon />}>Salvar</Button>
+                        <Button color="success" variant="outlined" onClick={addSale} endIcon={<SaveIcon />}>Salvar</Button>
                     </Stack>
                 </Box>
             </ContainerCustom>
+
         </React.Fragment>
     )
 }
