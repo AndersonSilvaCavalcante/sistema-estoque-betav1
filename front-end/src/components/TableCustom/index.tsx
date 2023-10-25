@@ -24,6 +24,8 @@ interface IPopupData {
     id: number
 }
 
+const valuePrefixes = {currency: "R$"}
+
 const TableCustom = ({ titles, data, edit, remove, editFunction, removeFunction, sum }: IProps) => {
     const [popupData, setPopupData] = useState<IPopupData>({ toggle: false, id: 0 })
     const [sunPrice, setSumPrice] = useState<number>(0)
@@ -70,7 +72,7 @@ const TableCustom = ({ titles, data, edit, remove, editFunction, removeFunction,
                                 key={data.id}
                                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                             >
-                                {titles.map((title: any) => (<TableCell key={title.id} >{data[title.value]}</TableCell>))}
+                                {titles.map((title: ITitles, index: number) => (<TableCell key={index} >{title.valuePrefix ? valuePrefixes[title.valuePrefix] : null}{data[title.value]}</TableCell>))}
 
                                 <TableCell>
                                     <Stack direction="row" spacing={2}>

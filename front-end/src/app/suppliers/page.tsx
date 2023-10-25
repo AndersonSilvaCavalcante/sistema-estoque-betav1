@@ -4,124 +4,161 @@ import { NextPage } from "next"
 import React, { useEffect, useState } from "react"
 
 /**Actions */
-import { deleteSupplierById, getSuppliers, saveSupplier } from "@/actions/suppliers"
+import Supplier from "@/actions/suppliers"
 
 /**Components */
-import { Box, Button, Modal, Stack, TextField, Typography } from "@mui/material"
-
-/**Icons */
-
-import SaveIcon from '@mui/icons-material/Save';
-import CancelIcon from '@mui/icons-material/Cancel';
+import { Box, Button, TextField } from "@mui/material"
 import PageHeader from "@/components/PageHeader"
 import TableCustom from "@/components/TableCustom"
 import ContainerCustom from "@/components/Container"
+import { CustomPopup } from "@/components/Popups"
+import { toast } from "react-toastify"
+import { CustomTextInput } from "@/components/CustomInputs"
+
+/**Icons */
+import SaveIcon from "@mui/icons-material/Save"
+import AddIcon from '@mui/icons-material/Add';
+import Filter from "@/components/Filter"
+
 
 const titles: Array<ITitles> = [
-    { label: "ID", value: 'id' },
     { label: "Nome", value: 'name' },
-    { label: "Telefone", value: 'contact' },
+    { label: "Telefone", value: 'contact' }
 ]
 
-const style = {
-    position: 'absolute' as 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    width: 400,
-    bgcolor: 'background.paper',
-    border: '2px solid #000',
-    boxShadow: 24,
-    p: 4,
-    '& .MuiTextField-root': { m: 1, width: '25ch' }
-};
+export interface IFilter {
+    id: null,
+    name: string
+}
+
+interface ISaveSupplierPopupData {
+    title: string
+    type: "edit" | "create"
+}
 
 const Suppliers: NextPage = () => {
-    const [open, setOpen] = useState(false);
-    const handleOpen = () => setOpen(true);
-    const handleClose = () => setOpen(false);
+    const [openSupplierPopup, setSupplierPopup] = useState(false)
+    const handleOpen = () => setSupplierPopup(true)
+    const handleClose = () => {
+        setSupplier(initialSupplier)
+        setSupplierPopup(false)
+        setErrorInput(false)
+    }
+    const initialFIlter: IFilter = { id: null, name: '' }
+    const initialSupplier: ISupplier = { id: 0, name: "", contact: "" }
+    const [suppliers, setSuppliers] = useState<Array<ISupplier>>([])
+    const [supplier, setSupplier] = useState<ISupplier>(initialSupplier)
+    const [filter, setFilter] = useState<IFilter>(initialFIlter)
+    const [saveSupplierPopupData, setSaveSupplierPopupData] = useState<ISaveSupplierPopupData>()
+    const [errorInput, setErrorInput] = useState<boolean>(false)
 
-    const [suppliers, setSuppliers] = useState(Array<ISupplier>)
-    const [supplier, setSupplier] = useState<ISupplier>()
-    const [filter, setFilter] = useState<ISupplier>()
-
-    const returnSuppliersList = async () => {
-        setSuppliers(await getSuppliers())
+    const getSuppliersList = async (clean?: boolean) => {
+        try {
+            const { data } = await Supplier.getSuppliers(clean ? initialFIlter : filter)
+            setSuppliers(data)
+        } catch (error) {
+            toast.error("Algo deu errado")
+        }
     }
 
-    const saveNewSupplier = async (supplier: ISupplier) => {
-        await saveSupplier(supplier)
-        handleClose()
-        returnSuppliersList()
+    const showSaveNewSupplier = () => {
+        setSaveSupplierPopupData({ title: "Cadastrar Fornecedor", type: "create" })
+        handleOpen()
+    }
+
+    const showEditSupplier = async (data: ISupplier) => {
+        setSupplier(data)
+        setSaveSupplierPopupData({ title: "Editar Fornecedor", type: "create" })
+        handleOpen()
+    }
+
+    const saveSupplier = async () => {
+        setErrorInput(false)
+        try {
+            if (supplier.name == '' || supplier.contact == '') {
+                setErrorInput(true)
+            } else {
+                if (saveSupplierPopupData?.type == "create") {
+                    await Supplier.saveSupplier(supplier)
+
+                } else {
+                    await Supplier.editSupplier(supplier)
+                }
+                setSupplier(initialSupplier)
+                handleClose()
+                toast.success("Fornecedor Salvo com Sucesso!")
+                getSuppliersList()
+            }
+        } catch (error) {
+            toast.error("Algo deu errado ao salvar o Fornecedor")
+        }
     }
 
     const deleteSupplier = async (id: ISupplier["id"]) => {
-        await deleteSupplierById(id)
-        returnSuppliersList()
+        try {
+            await Supplier.deleteSupplierById(id)
+            toast.success("Fornecedor deletado com sucesso!")
+            getSuppliersList()
+        } catch (error) {
+            toast.error("Algo deu errado")
+        }
     }
 
-    const filterSupplier = async () => {
-        setSuppliers(await getSuppliers(filter))
+    const cleanFilters = () => {
+        setFilter(initialFIlter)
+        getSuppliersList(true)
     }
 
-    const cleanFilterSupplir = async () => {
-        setFilter({ name: '' })
-        returnSuppliersList()
+    const changeValues = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        setErrorInput(false)
+        const name = e.target.name
+        const value = e.target.value
+        setFilter({ ...filter, [name]: value })
     }
+
+    const changeSuplierValues = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        setErrorInput(false)
+        const name = e.target.name
+        const value = e.target.value
+        setSupplier({ ...supplier, [name]: value })
+    }
+
     useEffect(() => {
-    }, [filter])
-
-    useEffect(() => {
-        returnSuppliersList()
-    }, [])
+        getSuppliersList()
+    },[])
 
     return (
         <React.Fragment>
-            <Modal
-                open={open}
-                aria-labelledby="modal-modal-title"
-                aria-describedby="modal-modal-description"
+            <CustomPopup
+                toggle={openSupplierPopup}
+                title={saveSupplierPopupData?.title}
+                confirmButtonTitle="Salvar"
+                confirmButtonIcon={<SaveIcon />}
+                confirmAction={saveSupplier}
+                cancelFunction={handleClose}
             >
-                <Box sx={style}
-                    component="form"
-                    noValidate
-                    autoComplete="off">
-                    <Box>
-                        <Typography component="p" variant="h6">Fornecedor</Typography>
-                    </Box>
-                    <Box>
-                        <TextField value={supplier?.name} id="outlined-basic" required onChange={(e) => setSupplier({ name: e.target.value, contact: supplier?.contact })} label="Nome" variant="outlined" />
-                    </Box>
-                    <Box>
-                        <TextField id="outlined-basic" value={supplier?.contact} required onChange={(e) => setSupplier({ name: supplier?.name, contact: e.target.value })} label="Contato" variant="outlined" />
-                    </Box>
-                    <Stack direction="row" spacing={2}>
-                        <Button variant="outlined" color="error" onClick={handleClose} startIcon={<CancelIcon />} >Cancelar</Button>
-                        <Button color="success" variant="outlined" onClick={() => saveNewSupplier(supplier)} startIcon={<SaveIcon />}>Salvar</Button>
-                    </Stack>
+                <Box sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gridGap: 20
+                }}>
+                    <CustomTextInput value={supplier?.name} label={"Nome"} name={"name"} changeFunction={changeSuplierValues} error={errorInput} />
+                    <CustomTextInput value={supplier?.contact} label={"Contato"} name={"contact"} changeFunction={changeSuplierValues} error={errorInput} />
                 </Box>
-            </Modal>
+            </CustomPopup>
             <PageHeader title="Fornecedores">
-                <Button onClick={handleOpen} color="success" variant="outlined" endIcon={<SaveIcon />}>Cadastrar Fornecedor</Button>
+                <Button onClick={showSaveNewSupplier} color="success" variant="contained" endIcon={<AddIcon />}>Cadastrar Fornecedor</Button>
             </PageHeader>
-            <ContainerCustom title="Filtrar">
-                <Box mb={2} mt={2}>
-                    <TextField value={filter?.name} onChange={(e) => setFilter({ name: e.target.value })} id="outlined-basic" label="Nome" size="small" variant="outlined" />
-                </Box>
-                <Box sx={{ display: 'flex', placeContent: 'flex-end' }}>
-                    <Stack direction="row" spacing={2}>
-                        <Button onClick={() => cleanFilterSupplir()} color="error" variant="outlined" endIcon={<SaveIcon />}>Limpar</Button>
-                        <Button onClick={() => filterSupplier()} color="success" variant="outlined" endIcon={<SaveIcon />}>Filtrar</Button>
-                    </Stack>
-                </Box>
-            </ContainerCustom>
+            <Filter cleanFunction={cleanFilters} filterFucntion={() => getSuppliersList(false)}>
+                <CustomTextInput value={filter?.name} label={"Nome"} name={"name"} changeFunction={changeValues} />
+            </Filter>
             <ContainerCustom>
                 <TableCustom
                     data={suppliers}
                     titles={titles}
                     edit={true}
                     remove={true}
-                    editFunction={handleOpen}
+                    editFunction={showEditSupplier}
                     removeFunction={deleteSupplier}
                 />
             </ContainerCustom>
