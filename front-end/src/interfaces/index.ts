@@ -30,8 +30,14 @@ declare global {
     }
 
     interface ISale {
-        id: Number,
-
+        id: number,
+        products: any,
+        qtd: number,
+        clientId: number,
+        value: number,
+        clientName: string,
+        discount: number,
+        dateCreated: Date
     }
 
     //order service

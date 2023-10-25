@@ -3,9 +3,6 @@
 import { NextPage } from "next"
 import React, { useEffect, useState } from "react"
 
-/**Actions */
-import { deleteSupplierById, getSuppliers, saveSupplier } from "@/actions/suppliers"
-
 /**Components */
 import { Box, Button, Modal, Stack, TextField, Typography } from "@mui/material"
 
@@ -18,11 +15,13 @@ import PageHeader from "@/components/PageHeader"
 import TableCustom from "@/components/TableCustom"
 import ContainerCustom from "@/components/Container"
 import Link from "next/link"
+import SalesService from "@/actions/sales";
 
 const titles: Array<ITitles> = [
-    { label: "ID", value: 'id' },
-    { label: "Nome", value: 'name' },
-    { label: "Telefone", value: 'contact' },
+    { label: "N° da venda", value: 'id' },
+    { label: "Data da Venda", value: 'dateCreated' },
+    { label: "Nome do Cliente", value: 'clientName' },
+    { label: "Valor", value: 'value' }
 ]
 
 const style = {
@@ -38,31 +37,27 @@ const style = {
     '& .MuiTextField-root': { m: 1, width: '25ch' }
 };
 
-const initialFilter = {
-    id: 0
-}
 
 const Sales: NextPage = () => {
-    const [suppliers, setSuppliers] = useState(Array<ISupplier>)
-    const [filter, setFilter] = useState<ISale>(initialFilter)
+    const [salesList, setSalesList] = useState<Array<ISale>>([])
+    const [filter, setFilter] = useState<number | string>('')
 
-    const returnSuppliersList = async () => {
-        setSuppliers(await getSuppliers())
+    const returnSalesList = async (clean?: boolean) => {
+        try {
+            const { data } = await SalesService.getListSales(clean ? '' : filter)
+            setSalesList(data)
+        } catch { }
     }
 
-    const filterSales = async () => {
-        setSuppliers(await getSuppliers(filter))
-    }
-
-    const cleanSales = async () => {
-        setFilter(initialFilter)
-        returnSuppliersList()
+    const cleanSales = () => {
+        setFilter('')
+        returnSalesList(true)
     }
     useEffect(() => {
     }, [filter])
 
     useEffect(() => {
-        returnSuppliersList()
+        returnSalesList()
     }, [])
 
     return (
@@ -74,18 +69,18 @@ const Sales: NextPage = () => {
             </PageHeader>
             <ContainerCustom title="Filtrar">
                 <Box mb={2} mt={2}>
-                    <TextField value={filter?.id} onChange={(e) => setFilter({ id: parseInt(e.target.value) })} label="Codigo de venda" size="small" variant="outlined" />
+                    <TextField value={filter} onChange={(e) => setFilter(parseInt(e.target.value))} label="Codigo de venda" size="small" variant="outlined" />
                 </Box>
                 <Box sx={{ display: 'flex', placeContent: 'flex-end' }}>
                     <Stack direction="row" spacing={2}>
                         <Button onClick={() => cleanSales()} color="error" variant="outlined" endIcon={<CloseIcon />}>Limpar</Button>
-                        <Button onClick={() => filterSales()} color="success" variant="outlined" endIcon={<FilterListIcon />}>Filtrar</Button>
+                        <Button onClick={() => returnSalesList()} color="success" variant="outlined" endIcon={<FilterListIcon />}>Filtrar</Button>
                     </Stack>
                 </Box>
             </ContainerCustom>
             <ContainerCustom>
                 <TableCustom
-                    data={suppliers}
+                    data={salesList}
                     titles={titles}
                 />
             </ContainerCustom>

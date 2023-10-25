@@ -9,6 +9,8 @@
         public float Value { get; set; }
         public string ClientName { get; set; }
         public float Discount { get; set; }
+        public DateTime DateCreated { get; set; }
+
 
     }
 
