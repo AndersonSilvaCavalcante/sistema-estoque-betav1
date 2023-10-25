@@ -2,21 +2,26 @@ import { INTERNAL_HEADERS } from "next/dist/shared/lib/constants"
 
 export { }
 declare global {
+
+    //Supplier
+
     interface ISupplier {
-        id: Number
+        id: number
         name: string
         contact: string
     }
 
+    //Product
+
     interface IProduct {
-        id: Number,
+        id: number,
         name: string,
         barcode: string,
-        supplierId: Number,
-        qtdMin: Number,
-        qtdCurrent: Number,
-        costPrice: Number,
-        salePrice: Number
+        supplierId: number,
+        qtdMin: number,
+        qtdCurrent: number,
+        costPrice: number,
+        salePrice: number
     }
 
     interface ICLient {
@@ -30,7 +35,7 @@ declare global {
     }
 
     interface ISale {
-        id: Number,
+        id: number,
 
     }
 
@@ -43,16 +48,16 @@ declare global {
     }
 
     interface IServicesToBePerformed {
-        id: Number,
+        id: number,
         name: string,
         salePrice: number,
     }
-
-    //
 
     // Tabela
     interface ITitles {
         label: string,
         value: string
+        valuePrefix?: "currency"
     }
+
 }
