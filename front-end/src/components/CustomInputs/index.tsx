@@ -1,9 +1,10 @@
 import { TextField } from "@mui/material"
 
 interface IProps {
-    value?: string
+    value?: string | number
     defaultValue?: string
     required?: boolean
+    type?: string
     label: string
     name: string
     size?: "small" | "medium"
@@ -14,10 +15,11 @@ interface IProps {
     changeFunction: (e: any) => void,
 }
 
-export const CustomTextInput = ({ value, defaultValue, required, label, name, size, fullWidth, error, rows, errorMessage, changeFunction }: IProps) => {
+export const CustomTextInput = ({ value, defaultValue, required, label, name, size, fullWidth, error,type, rows, errorMessage, changeFunction }: IProps) => {
     return (
         <TextField
             id={error ? "outlined-error-helper-text" : "outlined-basic"}
+            type={type}
             error={error}
             defaultValue={defaultValue}
             value={value}
