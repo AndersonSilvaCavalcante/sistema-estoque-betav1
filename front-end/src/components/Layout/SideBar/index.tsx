@@ -1,10 +1,10 @@
 /**Dependencies */
 import React, { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 /**Components */
 import { Box, Divider, Drawer, IconButton, List, ListItem, ListItemButton, ListItemIcon, ListItemText } from "@mui/material";
 import Image from "next/image"
-import Link from "next/link";
 
 /**Icons */
 import InboxIcon from '@mui/icons-material/MoveToInbox';
@@ -46,6 +46,11 @@ interface IProps {
 
 const SideBar = ({ toggle }: IProps) => {
     const [state, setState] = React.useState<boolean>(false);
+    const router = useRouter()
+
+    const goPath = (path: string) => {
+        router.replace(path)
+    }
 
     useEffect(() => {
         setState(toggle);
@@ -73,16 +78,14 @@ const SideBar = ({ toggle }: IProps) => {
             <Divider />
             <List>
                 {menuOptions.map((option: any, index: number) => (
-                    <Link href={option.path} key={option.name}>
-                        <ListItem disablePadding>
-                            <ListItemButton>
-                                <ListItemIcon>
-                                    {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                                </ListItemIcon>
-                                <ListItemText primary={option.name} />
-                            </ListItemButton>
-                        </ListItem>
-                    </Link>
+                    <ListItem disablePadding key={option.name}>
+                        <ListItemButton onClick={() => goPath(option.path)}>
+                            <ListItemIcon>
+                                {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+                            </ListItemIcon>
+                            <ListItemText primary={option.name} />
+                        </ListItemButton>
+                    </ListItem>
                 ))}
             </List>
         </Box>
