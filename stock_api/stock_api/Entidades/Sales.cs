@@ -4,7 +4,6 @@
     {
         public int Id { get; set; }
         public List<ProductsList> Products { get; set; }
-        public int Qtd { get; set; }
         public int ClientId { get; set; }
         public float Value { get; set; }
         public string ClientName { get; set; }

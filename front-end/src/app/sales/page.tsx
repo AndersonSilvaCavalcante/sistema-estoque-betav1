@@ -4,18 +4,18 @@ import { NextPage } from "next"
 import React, { useEffect, useState } from "react"
 
 /**Components */
-import { Box, Button, Modal, Stack, TextField, Typography } from "@mui/material"
+import { Button} from "@mui/material"
+import Filter from "@/components/Filter"
 
 /**Icons */
-import SaveIcon from '@mui/icons-material/Save';
-import CloseIcon from '@mui/icons-material/Close';
-import CancelIcon from '@mui/icons-material/Cancel';
-import FilterListIcon from '@mui/icons-material/FilterList';
+
 import PageHeader from "@/components/PageHeader"
 import TableCustom from "@/components/TableCustom"
 import ContainerCustom from "@/components/Container"
-import Link from "next/link"
 import SalesService from "@/actions/sales";
+import AddIcon from '@mui/icons-material/Add';
+import { useRouter } from "next/navigation";
+import { CustomTextInput } from "@/components/CustomInputs"
 
 const titles: Array<ITitles> = [
     { label: "N° da venda", value: 'id' },
@@ -41,6 +41,8 @@ const style = {
 const Sales: NextPage = () => {
     const [salesList, setSalesList] = useState<Array<ISale>>([])
     const [filter, setFilter] = useState<number | string>('')
+    const router = useRouter()
+
 
     const returnSalesList = async (clean?: boolean) => {
         try {
@@ -62,22 +64,12 @@ const Sales: NextPage = () => {
 
     return (
         <React.Fragment>
-            <PageHeader title="Vendas Realizadas">
-                <Link href="/sales/form">
-                    <Button color="success" variant="outlined" endIcon={<SaveIcon />}>Nova Venda</Button>
-                </Link>
+            <PageHeader title="Fornecedores">
+                <Button onClick={() => router.push("/sales/form")} color="success" variant="contained" endIcon={<AddIcon />}>Cadastrar Venda</Button>
             </PageHeader>
-            <ContainerCustom title="Filtrar">
-                <Box mb={2} mt={2}>
-                    <TextField value={filter} onChange={(e) => setFilter(parseInt(e.target.value))} label="Codigo de venda" size="small" variant="outlined" />
-                </Box>
-                <Box sx={{ display: 'flex', placeContent: 'flex-end' }}>
-                    <Stack direction="row" spacing={2}>
-                        <Button onClick={() => cleanSales()} color="error" variant="outlined" endIcon={<CloseIcon />}>Limpar</Button>
-                        <Button onClick={() => returnSalesList()} color="success" variant="outlined" endIcon={<FilterListIcon />}>Filtrar</Button>
-                    </Stack>
-                </Box>
-            </ContainerCustom>
+            <Filter cleanFunction={cleanSales} filterFucntion={() => returnSalesList(false)}>
+                <CustomTextInput value={filter} label={"Codigo de venda"} name={"codigoVenda"} changeFunction={(e) => setFilter(parseInt(e.target.value))} />
+            </Filter>
             <ContainerCustom>
                 <TableCustom
                     data={salesList}

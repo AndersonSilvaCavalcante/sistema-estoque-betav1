@@ -18,7 +18,7 @@ interface IProps {
 export const CustomTextInput = ({ value, defaultValue, required, label, name, size, fullWidth, error,type, rows, errorMessage, changeFunction }: IProps) => {
     return (
         <TextField
-            id={error ? "outlined-error-helper-text" : "outlined-basic"}
+            // id={error ? "outlined-error-helper-text" : "outlined-basic"}
             type={type}
             error={error}
             defaultValue={defaultValue}
