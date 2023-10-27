@@ -2,12 +2,17 @@
 import React, { useEffect, useState } from "react";
 
 /**Components */
-import { Button, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material"
+import { Box, Button, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material"
 import { ConfirmPopup } from "@/components/Popups";
 
 /**Icons */
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
+import SearchOffIcon from '@mui/icons-material/SearchOff';
+import LottieFilesComponent from "../LottieFilesComponent";
+
+/**Animations */
+import emptyAnimation from "@/assets/animations/lottie/empty_animation.json"
 
 interface IProps {
     titles: Array<ITitles>,
@@ -61,47 +66,61 @@ const TableCustom = ({ titles, data, edit, remove, editFunction, removeFunction,
                 confirmAction={() => removeFunction(popupData.id)}
                 cancelFunction={() => handleClose()}
             />}
-            <TableContainer>
-                <Table sx={{ minWidth: 650 }} aria-label="simple table">
-                    <TableHead>
-                        <TableRow>
-                            {titles.map((title: ITitles, index: number) => (<TableCell key={index} >{title.label}</TableCell>))}
-                            {(edit || remove) && (
-                                <TableCell>Ações</TableCell>
-                            )}
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {data.map((data: any, index: number) => (
-                            <TableRow
-                                key={data.id}
-                                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                            >
-                                {titles.map((title: ITitles, index: number) => (<TableCell key={index} >{title.valuePrefix ? valuePrefixes[title.valuePrefix] : null}{data[title.value]}</TableCell>))}
+            {data.length > 0 && (
+                <TableContainer>
+                    <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                        <TableHead>
+                            <TableRow>
+                                {titles.map((title: ITitles, index: number) => (<TableCell key={index} >{title.label}</TableCell>))}
+                                {(edit || remove) && (
+                                    <TableCell>Ações</TableCell>
+                                )}
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                            {data.map((data: any, index: number) => (
+                                <TableRow
+                                    key={data.id}
+                                    sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                                >
+                                    {titles.map((title: ITitles, index: number) => (<TableCell key={index} >{title.valuePrefix ? valuePrefixes[title.valuePrefix] : null}{data[title.value]}</TableCell>))}
 
-                                <TableCell>
-                                    <Stack direction="row" spacing={2}>
-                                        {edit && editFunction && (
-                                            <Button variant="outlined" color="warning" startIcon={<EditIcon />} onClick={() => editFunction(data)} >Editar</Button>
-                                        )}
-                                        {remove && removeFunction && (
-                                            <Button onClick={() => setPopupData({ toggle: true, id: data.id })} color="error" variant="outlined" startIcon={<DeleteIcon />}>Deletar</Button>
-                                        )}
-                                    </Stack>
-                                </TableCell>
-                            </TableRow>
-                        ))}
-                        {sum && (
-                            <TableRow
-                                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                            >
-                                <TableCell>TOTAL</TableCell>
-                                <TableCell colSpan={2}>R$ {sunPrice}</TableCell>
-                            </TableRow>
-                        )}
-                    </TableBody>
-                </Table>
-            </TableContainer>
+                                    <TableCell>
+                                        <Stack direction="row" spacing={2}>
+                                            {edit && editFunction && (
+                                                <Button variant="outlined" color="warning" startIcon={<EditIcon />} onClick={() => editFunction(data)} >Editar</Button>
+                                            )}
+                                            {remove && removeFunction && (
+                                                <Button onClick={() => setPopupData({ toggle: true, id: data.id })} color="error" variant="outlined" startIcon={<DeleteIcon />}>Deletar</Button>
+                                            )}
+                                        </Stack>
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+                            {sum && (
+                                <TableRow
+                                    sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                                >
+                                    <TableCell>TOTAL</TableCell>
+                                    <TableCell colSpan={2}>R$ {sunPrice}</TableCell>
+                                </TableRow>
+                            )}
+                        </TableBody>
+                    </Table>
+                </TableContainer>
+            )}
+            {data.length == 0 && (
+                <Box mt={5} mb={5} sx={{
+                    display: 'grid',
+                    placeItems: 'center',
+                    textAlign: 'center'
+                }}>
+                    <Box>
+                        <LottieFilesComponent animation={emptyAnimation} loop={true} />
+                        <Typography variant={"h5"} component={"p"}>Não há dados</Typography>
+                    </Box>
+                </Box>
+            )}
         </React.Fragment>
     )
 }
