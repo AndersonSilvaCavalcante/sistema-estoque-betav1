@@ -16,6 +16,7 @@ import SalesService from "@/actions/sales";
 import AddIcon from '@mui/icons-material/Add';
 import { useRouter } from "next/navigation";
 import { CustomTextInput } from "@/components/CustomInputs"
+import { ButtonPlus } from "@/components/ButtonPlus"
 
 const titles: Array<ITitles> = [
     { label: "N° da venda", value: 'id' },
@@ -65,7 +66,7 @@ const Sales: NextPage = () => {
     return (
         <React.Fragment>
             <PageHeader title="Vendas">
-                <Button onClick={() => router.push("/sales/form")} color="success" variant="contained" endIcon={<AddIcon />}>Cadastrar Venda</Button>
+                <ButtonPlus onCLick={() => router.push("/sales/form")} title="Cadastrar Venda" />
             </PageHeader>
             <Filter cleanFunction={cleanSales} filterFucntion={() => returnSalesList(false)}>
                 <CustomTextInput value={filter} label={"Codigo de venda"} name={"codigoVenda"} changeFunction={(e) => setFilter(parseInt(e.target.value))} />

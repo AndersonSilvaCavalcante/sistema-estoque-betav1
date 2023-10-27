@@ -164,7 +164,6 @@ const SalesForm = () => {
         <React.Fragment>
             <PageHeader title="Cadastrar Venda">
             </PageHeader>
-
             <ContainerCustom>
                 <Stack
                     direction="row"

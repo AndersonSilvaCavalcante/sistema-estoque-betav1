@@ -19,6 +19,7 @@ import { CustomTextInput } from "@/components/CustomInputs"
 import SaveIcon from "@mui/icons-material/Save"
 import AddIcon from '@mui/icons-material/Add';
 import Filter from "@/components/Filter"
+import { ButtonPlus } from "@/components/ButtonPlus"
 
 
 const titles: Array<ITitles> = [
@@ -147,7 +148,7 @@ const Suppliers: NextPage = () => {
                 </Box>
             </CustomPopup>
             <PageHeader title="Fornecedores">
-                <Button onClick={showSaveNewSupplier} color="success" variant="contained" endIcon={<AddIcon />}>Cadastrar Fornecedor</Button>
+                <ButtonPlus onCLick={showSaveNewSupplier} title="Cadastrar Fornecedor" />
             </PageHeader>
             <Filter cleanFunction={cleanFilters} filterFucntion={() => getSuppliersList(false)}>
                 <CustomTextInput value={filter?.name} label={"Nome"} name={"name"} changeFunction={changeValues} />

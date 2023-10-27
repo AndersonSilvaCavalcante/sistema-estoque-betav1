@@ -20,6 +20,7 @@ import Link from "next/link";
 
 /**Icons */
 import AddIcon from '@mui/icons-material/Add';
+import { ButtonPlus } from "@/components/ButtonPlus";
 
 const titles: Array<ITitles> = [
     { label: "Nome", value: 'name' },
@@ -61,7 +62,7 @@ const Products: NextPage = () => {
         }
     }
 
-    const editProductPage = (data: IProduct)=>{
+    const editProductPage = (data: IProduct) => {
         router.replace(`/products/form/edit/${data.id}`)
     }
 
@@ -83,9 +84,7 @@ const Products: NextPage = () => {
     return (
         <React.Fragment>
             <PageHeader title="Produtos">
-                <Link href="/products/form/register">
-                    <Button color="success" variant="contained" endIcon={<AddIcon />}>Cadastrar Produto</Button>
-                </Link>
+                <ButtonPlus onCLick={() => router.push("/products/form/register")} title="Cadastrar Produto" />
             </PageHeader>
             <Filter cleanFunction={cleanFilters} filterFucntion={() => getProductsList(false)}>
                 <CustomTextInput value={filter?.name} label={"Nome"} name={"name"} changeFunction={changeFilterValues} />

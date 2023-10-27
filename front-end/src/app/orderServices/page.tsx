@@ -18,6 +18,8 @@ import moment from 'moment';
 
 import "../../assets/css/orderServices.scss"
 import { toast } from 'react-toastify';
+import { ButtonPlus } from '@/components/ButtonPlus';
+import { useRouter } from 'next/navigation';
 
 
 const options = [
@@ -76,6 +78,7 @@ const OrderServices: NextPage = () => {
 
     const [filter, setFIlter] = useState<IFilter>(initialFIlter)
     const [listOrderService, setListOrderService] = useState<Array<ICardsListOrderService>>([])
+    const router = useRouter()
 
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);
@@ -83,7 +86,7 @@ const OrderServices: NextPage = () => {
         setAnchorEl(event.currentTarget);
     };
     const handleOption = (option: string) => {
-        if(option === "Editar"){
+        if (option === "Editar") {
 
         }
         // setAnchorEl(null);
@@ -142,9 +145,7 @@ const OrderServices: NextPage = () => {
     return (
         <React.Fragment>
             <PageHeader title="Ordem de serviço">
-                <Link href="/orderServices/form/register">
-                    <Button color="success" variant="contained" endIcon={<SaveIcon />}>Cadastrar Ordem de Serviço</Button>
-                </Link>
+                <ButtonPlus onCLick={() => router.push("/orderServices/form/register")} title="Cadastrar Ordem de Serviço" />
             </PageHeader>
             <ContainerCustom title="Filtrar">
                 <Stack direction="row" spacing={2} mb={2} mt={2}>
