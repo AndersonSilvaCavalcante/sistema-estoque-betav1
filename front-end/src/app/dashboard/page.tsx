@@ -1,44 +1,48 @@
 //TODO ao abrir aplicativo caso tenha produtos com estoque acionar toast.info
 "use client"
-import Container from "@/components/Container"
-import CustomCard from "@/components/Layout/CustomCard"
+import ContainerCustom from "@/components/Container"
+import LottieFilesComponent from "@/components/LottieFilesComponent"
 import PageHeader from "@/components/PageHeader"
-import { Box, Grid } from "@mui/material"
+import { Box, Typography } from "@mui/material"
 import { NextPage } from "next"
-import Link from "next/link"
 import React from "react"
+
+
+/**Animations */
+import emptyAnimation from "@/assets/animations/lottie/empty_animation.json"
 
 const Dashboard: NextPage = () => {
     return (
         <React.Fragment>
             <PageHeader title="Dashboard" />
-            <Box mb={4}>
-
-            <Container title="Resumo do dia">
+            <ContainerCustom title="Resumo do dia">
                 <Box mt={4}>
-                    <Grid container spacing={2}>
-                        <Grid item xs={6} md={3}>
-                            <CustomCard />
-                        </Grid>
-                        <Grid item xs={6} md={3}>
-                            <CustomCard />
-                        </Grid>
-                        <Grid item xs={6} md={3}>
-                            <CustomCard />
-                        </Grid>
-                        <Grid item xs={6} md={3}>
-                            <CustomCard />
-                        </Grid>
-                    </Grid>
+                    <Box mt={5} mb={5} sx={{
+                        display: 'grid',
+                        placeItems: 'center',
+                        textAlign: 'center'
+                    }}>
+                        <Box>
+                            <LottieFilesComponent animation={emptyAnimation} loop={true} />
+                            <Typography variant={"h5"} component={"p"}>Não há dados suficientes para gerar relatório</Typography>
+                        </Box>
+                    </Box>
                 </Box>
-            </Container>
-            </Box>
-            <Box mb={4}>
-            <Container title="Avisos do estoque">
+            </ContainerCustom>
+            <ContainerCustom title="Avisos do estoque">
                 <Box mt={4}>
+                    <Box mt={5} mb={5} sx={{
+                        display: 'grid',
+                        placeItems: 'center',
+                        textAlign: 'center'
+                    }}>
+                        <Box>
+                            <LottieFilesComponent animation={emptyAnimation} loop={true} />
+                            <Typography variant={"h5"} component={"p"}>Não há dados suficientes para gerar relatório</Typography>
+                        </Box>
+                    </Box>
                 </Box>
-            </Container>
-            </Box>
+            </ContainerCustom>
         </React.Fragment>
     )
 }
