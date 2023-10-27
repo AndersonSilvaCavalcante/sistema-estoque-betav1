@@ -1,7 +1,7 @@
+//TODO ao abrir aplicativo caso tenha produtos com estoque acionar toast.info
 "use client"
 import Container from "@/components/Container"
 import CustomCard from "@/components/Layout/CustomCard"
-import Section from "@/components/Layout/Section"
 import PageHeader from "@/components/PageHeader"
 import { Box, Grid } from "@mui/material"
 import { NextPage } from "next"
