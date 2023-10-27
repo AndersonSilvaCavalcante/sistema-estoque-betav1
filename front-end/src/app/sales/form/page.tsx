@@ -110,7 +110,7 @@ const SalesForm = () => {
 
     const edtProductList = (product: IProduct) => {
         setProductSelecioned(products.filter(p => p.id === product.id)[0])
-        setSale({ ...sale, qtd: product.qtdChange, products: sale.products.filter(p => p.id !== product.id) })
+        setSale({ ...sale, qtd: product.qtdChange ?? 0, products: sale.products.filter(p => p.id !== product.id) })
 
     }
 

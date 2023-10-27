@@ -22,7 +22,7 @@ declare global {
         qtdCurrent: number,
         costPrice: number,
         salePrice: number,
-        qtdChange: number
+        qtdChange?: number
     }
 
     interface ICLient {
