@@ -4,11 +4,17 @@ import Image from "next/image"
 import MenuIcon from '@mui/icons-material/Menu';
 import SideBar from "../SideBar";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 
 const Header = () => {
     const [toggle, setOpen] = useState<boolean>(false);
     const handleToggle = () => setOpen(!toggle);
+    const router = useRouter()
+
+    const goPath = (path: string) => {
+        router.replace(path)
+    }
 
     return (
         <AppBar position="sticky" sx={{ backgroundColor: 'white' }}>
@@ -22,12 +28,10 @@ const Header = () => {
                         sx={{ mr: 0.5 }}
                     >
                         <MenuIcon />
-                        <SideBar toggle={toggle}/>
+                        <SideBar toggle={toggle} />
                     </IconButton>
-                    <Typography sx={{ flexGrow: 1 }}>
-                        <Link href="/dashboard" >
-                            <Image src={"/logo_supermotos_no_bg.svg"} alt={""} width={120} height={80} />
-                        </Link>
+                    <Typography sx={{ flexGrow: 1 }} onClick={() => goPath("/dashboard")}>
+                        <Image src={"/logo_supermotos_no_bg.svg"} alt={""} width={120} height={80} />
                     </Typography>
                     <Button color="inherit">Login</Button>
                 </Toolbar>
