@@ -16,28 +16,35 @@ const menuOptions =
         {
             name: "Dashboard",
             path: "/dashboard"
-        }, {
+        }, 
+        {
             name: "Vendas",
             path: "/sales"
-        }, {
-            name: "Ordens de Serviço",
-            path: "/orderServices"
-        }, {
+        }, 
+        // {
+        //     name: "Ordens de Serviço",
+        //     path: "/orderServices"
+        // }, 
+        {
             name: "Fornecedores",
             path: "/suppliers"
-        }, {
+        }, 
+        {
             name: "Produtos",
             path: "/products"
-        }, {
-            name: "Serviços",
-            path: "/services"
-        }, {
-            name: "Configurações",
-            path: "/settings"
-        }, {
-            name: "Sobre",
-            path: "/about"
-        }
+        }, 
+        // {
+        //     name: "Serviços",
+        //     path: "/services"
+        // }, 
+        // {
+        //     name: "Configurações",
+        //     path: "/settings"
+        // }, 
+        // {
+        //     name: "Sobre",
+        //     path: "/about"
+        // }
     ]
 
 interface IProps {
