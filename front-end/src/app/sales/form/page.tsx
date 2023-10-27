@@ -12,17 +12,24 @@ import { Box, Button, Stack, TextField, Select, SelectChangeEvent, FormControl, 
 import TableCustom from "@/components/TableCustom";
 import { toast } from "react-toastify";
 import Client from "@/actions/client";
-import { useRouter} from "next/navigation";
+import { useRouter } from "next/navigation";
 
 import ProductServices from "@/actions/productServices";
 import SalesService from "@/actions/sales";
+import { CustomTextInput } from "@/components/CustomInputs";
+
+interface IErroForm {
+    clientId?: boolean,
+    produtoId?: boolean,
+    quantidade?: boolean
+}
 
 const SalesForm = () => {
 
     const titles: Array<ITitles> = [
         { label: "Produto", value: 'productName' },
         { label: "Quantidade", value: 'qtdChange' },
-        { label: "Total", value: 'totalCurrentPrice' },
+        { label: "Total", value: 'totalCurrentPrice', valuePrefix: "currency" },
     ]
 
     const initialSale: ISale = {
@@ -45,11 +52,10 @@ const SalesForm = () => {
 
     const [productSelecioned, setProductSelecioned] = useState<IProduct | null>(null)
 
-    const [msgErro, setMsgErro] = useState<string>("")
 
     const [products, setProducts] = useState<Array<IProduct>>([])
 
-    const [errorInput, setErrorInput] = useState<boolean>(false)
+    const [errorInput, setErrorInput] = useState<null | IErroForm>(null)
 
     const changeValues = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | SelectChangeEvent<string> | React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const name = e.target.name
@@ -59,11 +65,10 @@ const SalesForm = () => {
     }
 
     const changeProductSelecioned = (newProduct: IProduct | null) => {
-        setMsgErro('')
         const exist = sale.products.filter(p => p.id === newProduct?.id)
 
         if (exist.length > 0) {
-            return setMsgErro("Produto já adicionado")
+            return toast.info("Produto já adicionado")
         }
 
         setProductSelecioned(newProduct)
@@ -74,8 +79,6 @@ const SalesForm = () => {
     }
 
     const addSale = async () => {
-        setErrorInput(false)
-
         try {
             await SalesService.saveSale(sale)
             toast.success("Sucesso ao realizar venda!")
@@ -107,26 +110,31 @@ const SalesForm = () => {
 
     const edtProductList = (product: IProduct) => {
         setProductSelecioned(products.filter(p => p.id === product.id)[0])
-        setSale({ ...sale, qtd: product.qtdChange, products: sale.products.filter(p => p.id !== product.id)  })
+        setSale({ ...sale, qtd: product.qtdChange, products: sale.products.filter(p => p.id !== product.id) })
 
     }
 
     const addProductList = () => {
+        setErrorInput(null)
 
-        setErrorInput(false)
-        setMsgErro('')
+        let error: IErroForm = {}
 
-        const exist = sale.products.filter(p => p.id === productSelecioned?.id)
 
-        if (exist.length > 0) {
-            setErrorInput(true)
-            return setMsgErro("Produto já adicionado")
+        if (sale.clientId === '') {
+            error = { ...error, clientId: true }
         }
 
-        if (sale.clientId === '' || sale.qtd === 0 || sale.qtd === '' || !productSelecioned) {
-            return setErrorInput(true)
+        if (sale.qtd === 0 || sale.qtd === '') {
+            error = { ...error, quantidade: true }
         }
 
+        if (!productSelecioned) {
+            error = { ...error, produtoId: true }
+        }
+
+        if (Object.keys(error).length !== 0) {
+            return setErrorInput(error)
+        }
 
         setSale({
             ...sale,
@@ -161,7 +169,9 @@ const SalesForm = () => {
                 <Stack
                     direction="row"
                     spacing={2}>
-                    <FormControl variant="outlined" sx={{ m: 1, minWidth: 220 }} size="small" error={errorInput}>
+                    {/* <CustomTextInput value={sale?.clientId} label={"Cliente *"} name={"clientId"} changeFunction={changeValues} /> */}
+
+                    <FormControl variant="outlined" sx={{ m: 1, minWidth: 220 }} size="small" error={errorInput?.clientId}>
                         <InputLabel id="demo-simple-select-standard-label">Cliente *</InputLabel>
                         <Select
                             label="Cliente *"
@@ -169,13 +179,15 @@ const SalesForm = () => {
                             name="clientId"
                             onChange={changeValues}
                             disabled={sale.products.length > 0}
+                            error={errorInput?.clientId}
+
                         >
                             {listClients.map((list, index: number) => (
                                 <MenuItem key={list.id} value={list.id}>{list.name}</MenuItem>
                             ))}
                         </Select>
-                        {(errorInput) && (
-                            <FormHelperText>Campo obrigatório</FormHelperText>
+                        {(errorInput?.clientId) && (
+                            <FormHelperText>Campo obrigatório!</FormHelperText>
                         )}
                     </FormControl>
                     <Autocomplete
@@ -193,25 +205,19 @@ const SalesForm = () => {
                         onChange={(event, newValue) => changeProductSelecioned(newValue)}
                         value={productSelecioned}
                         renderInput={(params) => (
-                            <FormControl variant="outlined" sx={{ minWidth: 220 }} size="small" error={errorInput} >
+                            <FormControl variant="outlined" sx={{ minWidth: 220 }} size="small" error={errorInput?.produtoId} >
                                 <TextField
                                     {...params}
-                                    error={errorInput}
+                                    error={errorInput?.produtoId}
                                     label="Produto *"
                                 />
-                                {(errorInput) && (
-                                    <FormHelperText>Campo obrigatório</FormHelperText>
+                                {(errorInput?.produtoId) && (
+                                    <FormHelperText>Campo obrigatório!</FormHelperText>
                                 )}
                             </FormControl>
-                        )
-                        }
-                    />
-                    <FormControl variant="outlined" sx={{ m: 1, minWidth: 220 }} size="small" error={errorInput} >
-                        <TextField value={sale?.qtd} onChange={changeValues} name='qtd' label="Quantidade *" size="small" variant="outlined" error={errorInput} />
-                        {errorInput && (
-                            <FormHelperText>Campo obrigatório</FormHelperText>
                         )}
-                    </FormControl>
+                    />
+                    <CustomTextInput value={sale?.qtd} label={"Quantidade *"} name={"qtd"} changeFunction={changeValues} error={errorInput?.quantidade} />
                     <FormControl>
                         <Button color="success" variant="outlined" onClick={addProductList} endIcon={<SaveIcon />}>Adicionar</Button>
                     </FormControl>

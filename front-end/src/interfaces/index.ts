@@ -75,6 +75,7 @@ declare global {
         label: string,
         value: string
         valuePrefix?: "currency"
+        date?: boolean
     }
 
 }

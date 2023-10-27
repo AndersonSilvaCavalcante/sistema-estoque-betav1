@@ -13,6 +13,7 @@ import LottieFilesComponent from "../LottieFilesComponent";
 
 /**Animations */
 import emptyAnimation from "@/assets/animations/lottie/empty_animation.json"
+import moment from "moment";
 
 interface IProps {
     titles: Array<ITitles>,
@@ -66,49 +67,52 @@ const TableCustom = ({ titles, data, edit, remove, editFunction, removeFunction,
                 confirmAction={() => removeFunction(popupData.id)}
                 cancelFunction={() => handleClose()}
             />}
-            {data.length > 0 && (
-                <TableContainer>
-                    <Table sx={{ minWidth: 650 }} aria-label="simple table">
-                        <TableHead>
-                            <TableRow>
-                                {titles.map((title: ITitles, index: number) => (<TableCell key={index} >{title.label}</TableCell>))}
-                                {(edit || remove) && (
-                                    <TableCell>Ações</TableCell>
-                                )}
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            {data.map((data: any, index: number) => (
-                                <TableRow
-                                    key={data.id}
-                                    sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                                >
-                                    {titles.map((title: ITitles, index: number) => (<TableCell key={index} >{title.valuePrefix ? valuePrefixes[title.valuePrefix] : null}{data[title.value]}</TableCell>))}
-
-                                    <TableCell>
-                                        <Stack direction="row" spacing={2}>
-                                            {edit && editFunction && (
-                                                <Button variant="outlined" color="warning" startIcon={<EditIcon />} onClick={() => editFunction(data)} >Editar</Button>
-                                            )}
-                                            {remove && removeFunction && (
-                                                <Button onClick={() => setPopupData({ toggle: true, id: data.id })} color="error" variant="outlined" startIcon={<DeleteIcon />}>Deletar</Button>
-                                            )}
-                                        </Stack>
-                                    </TableCell>
-                                </TableRow>
-                            ))}
-                            {sum && (
-                                <TableRow
-                                    sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                                >
-                                    <TableCell>TOTAL</TableCell>
-                                    <TableCell colSpan={2}>R$ {sunPrice}</TableCell>
-                                </TableRow>
+            <TableContainer>
+                <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                    <TableHead>
+                        <TableRow>
+                            {titles.map((title: ITitles, index: number) => (<TableCell key={index} >{title.label}</TableCell>))}
+                            {(edit || remove) && (
+                                <TableCell>Ações</TableCell>
                             )}
-                        </TableBody>
-                    </Table>
-                </TableContainer>
-            )}
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {data.map((data: any, index: number) => (
+                            <TableRow
+                                key={data.id}
+                                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                            >
+                                {titles.map((title: ITitles, index: number) => (
+                                    title.date ? (
+                                        <TableCell key={index} >{moment(data[title.value]).format("DD/MM/YYYY")}</TableCell>
+                                    ) : (
+                                        <TableCell key={index} >{title.valuePrefix ? valuePrefixes[title.valuePrefix] : null}{data[title.value]}</TableCell>
+                                    )
+                                ))}
+                                <TableCell>
+                                    <Stack direction="row" spacing={2}>
+                                        {edit && editFunction && (
+                                            <Button variant="outlined" color="warning" startIcon={<EditIcon />} onClick={() => editFunction(data)} >Editar</Button>
+                                        )}
+                                        {remove && removeFunction && (
+                                            <Button onClick={() => setPopupData({ toggle: true, id: data.id })} color="error" variant="outlined" startIcon={<DeleteIcon />}>Deletar</Button>
+                                        )}
+                                    </Stack>
+                                </TableCell>
+                            </TableRow>
+                        ))}
+                        {sum && (
+                            <TableRow
+                                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                            >
+                                <TableCell>TOTAL</TableCell>
+                                <TableCell colSpan={2}>R$ {sunPrice}</TableCell>
+                            </TableRow>
+                        )}
+                    </TableBody>
+                </Table>
+            </TableContainer>
             {data.length == 0 && (
                 <Box mt={5} mb={5} sx={{
                     display: 'grid',

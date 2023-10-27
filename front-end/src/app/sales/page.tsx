@@ -4,7 +4,7 @@ import { NextPage } from "next"
 import React, { useEffect, useState } from "react"
 
 /**Components */
-import { Button} from "@mui/material"
+import { Button } from "@mui/material"
 import Filter from "@/components/Filter"
 
 /**Icons */
@@ -19,9 +19,9 @@ import { CustomTextInput } from "@/components/CustomInputs"
 
 const titles: Array<ITitles> = [
     { label: "N° da venda", value: 'id' },
-    { label: "Data da Venda", value: 'dateCreated' },
+    { label: "Data da Venda", value: 'dateCreated', date: true },
     { label: "Nome do Cliente", value: 'clientName' },
-    { label: "Valor", value: 'value' }
+    { label: "Valor", value: 'value', valuePrefix: "currency" }
 ]
 
 const style = {
@@ -64,7 +64,7 @@ const Sales: NextPage = () => {
 
     return (
         <React.Fragment>
-            <PageHeader title="Fornecedores">
+            <PageHeader title="Vendas">
                 <Button onClick={() => router.push("/sales/form")} color="success" variant="contained" endIcon={<AddIcon />}>Cadastrar Venda</Button>
             </PageHeader>
             <Filter cleanFunction={cleanSales} filterFucntion={() => returnSalesList(false)}>
