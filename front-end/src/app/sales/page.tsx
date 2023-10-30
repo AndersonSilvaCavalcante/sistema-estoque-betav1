@@ -1,22 +1,20 @@
 "use client"
 /**Dependencies */
 import { NextPage } from "next"
+import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react"
 
 /**Components */
-import { Button } from "@mui/material"
 import Filter from "@/components/Filter"
-
-/**Icons */
-
 import PageHeader from "@/components/PageHeader"
 import TableCustom from "@/components/TableCustom"
-import ContainerCustom from "@/components/Container"
-import SalesService from "@/actions/sales";
-import AddIcon from '@mui/icons-material/Add';
-import { useRouter } from "next/navigation";
-import { CustomTextInput } from "@/components/CustomInputs"
 import { ButtonPlus } from "@/components/ButtonPlus"
+import ContainerCustom from "@/components/Container"
+import { CustomTextInput } from "@/components/CustomInputs"
+
+/**Service */
+import SalesService from "@/actions/sales";
+
 
 const titles: Array<ITitles> = [
     { label: "N° da venda", value: 'id' },
@@ -25,25 +23,10 @@ const titles: Array<ITitles> = [
     { label: "Valor", value: 'value', valuePrefix: "currency" }
 ]
 
-const style = {
-    position: 'absolute' as 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    width: 400,
-    bgcolor: 'background.paper',
-    border: '2px solid #000',
-    boxShadow: 24,
-    p: 4,
-    '& .MuiTextField-root': { m: 1, width: '25ch' }
-};
-
-
 const Sales: NextPage = () => {
     const [salesList, setSalesList] = useState<Array<ISale>>([])
     const [filter, setFilter] = useState<number | string>('')
     const router = useRouter()
-
 
     const returnSalesList = async (clean?: boolean) => {
         try {
@@ -56,6 +39,7 @@ const Sales: NextPage = () => {
         setFilter('')
         returnSalesList(true)
     }
+    
     useEffect(() => {
     }, [filter])
 

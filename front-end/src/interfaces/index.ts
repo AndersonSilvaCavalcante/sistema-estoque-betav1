@@ -22,7 +22,6 @@ declare global {
         qtdCurrent: number,
         costPrice: number,
         salePrice: number,
-        qtdChange?: number
     }
 
     interface ICLient {
@@ -46,6 +45,7 @@ declare global {
         dateCreated: Date
     }
 
+    //usado na tabela de venda de produtos 
     interface IProductSale {
         id: number
         productName: string
@@ -54,6 +54,7 @@ declare global {
         qtdChange: number | string
         totalCostPrice: number
         totalCurrentPrice: number
+        currentPrice: number
     }
 
     //order service
