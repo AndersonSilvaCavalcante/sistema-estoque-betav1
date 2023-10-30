@@ -17,10 +17,10 @@ const menuOptions =
             name: "Dashboard",
             path: "/dashboard"
         }, 
-        // {
-        //     name: "Vendas",
-        //     path: "/sales"
-        // }, 
+        {
+            name: "Vendas",
+            path: "/sales"
+        }, 
         // {
         //     name: "Ordens de Serviço",
         //     path: "/orderServices"
