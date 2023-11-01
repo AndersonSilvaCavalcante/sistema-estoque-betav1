@@ -102,7 +102,7 @@ const SalesForm = () => {
     }
 
     const goBack = () => {
-        router.back()
+        router.replace("/sales")
     }
 
     const getProductsList = async () => {
