@@ -87,7 +87,7 @@ const ProductRegisterOrUpdate = ({ params }: IProps) => {
     }
 
     const goBack = () => {
-        router.back()
+        router.replace("/products")
     }
 
     useEffect(() => {
