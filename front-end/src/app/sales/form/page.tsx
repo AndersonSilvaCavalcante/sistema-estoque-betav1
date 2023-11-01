@@ -15,9 +15,10 @@ import { CustomTextInput } from "@/components/CustomInputs";
 import { Box, Button, Stack, TextField, Select, SelectChangeEvent, FormControl, InputLabel, MenuItem, FormHelperText, Autocomplete } from "@mui/material"
 
 /**Icons */
-import AddIcon from '@mui/icons-material/Add';
 import SaveIcon from '@mui/icons-material/Save';
 import CloseIcon from '@mui/icons-material/Close';
+import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
+import LocalOfferIcon from '@mui/icons-material/LocalOffer';
 
 /**Service */
 import Client from "@/actions/client";
@@ -272,8 +273,8 @@ const SalesForm = () => {
                     <Box sx={{ display: 'flex', placeContent: 'flex-end' }}>
                         <Stack direction="row" spacing={2}>
                             <Button color="error" variant="outlined" endIcon={<CloseIcon />} onClick={goBack} >Cancelar</Button>
-                            <Button color="info" variant="contained" endIcon={<AddIcon />} onClick={() => setOpenAddDiscount(true)} >Adicionar Desconto</Button>
-                            <Button color="success" variant="contained" onClick={() => setOpenSale(true)} endIcon={<SaveIcon />}>FInalizar Venda</Button>
+                            <Button color="info" variant="contained" endIcon={<LocalOfferIcon />} onClick={() => setOpenAddDiscount(true)} >Adicionar Desconto</Button>
+                            <Button color="success" variant="contained" onClick={() => setOpenSale(true)} endIcon={<AttachMoneyIcon />}>FInalizar Venda</Button>
                         </Stack>
                     </Box>
                 </ContainerCustom>

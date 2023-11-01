@@ -8,13 +8,15 @@ import React, { useEffect, useState } from "react"
 import Filter from "@/components/Filter"
 import PageHeader from "@/components/PageHeader"
 import TableCustom from "@/components/TableCustom"
-import { ButtonPlus } from "@/components/ButtonPlus"
 import ContainerCustom from "@/components/Container"
 import { CustomTextInput } from "@/components/CustomInputs"
+import { Button } from "@mui/material";
 
 /**Service */
 import SalesService from "@/actions/sales";
 
+/**Icons */
+import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 
 const titles: Array<ITitles> = [
     { label: "N° da venda", value: 'id' },
@@ -52,10 +54,10 @@ const Sales: NextPage = () => {
     return (
         <React.Fragment>
             <PageHeader title="Vendas">
-                <ButtonPlus onCLick={() => router.push("/sales/form")} title="Cadastrar Venda" />
+                <Button color="success" variant="contained" onClick={() => router.push("/sales/form")} endIcon={<AttachMoneyIcon />}>Realizar Venda</Button>
             </PageHeader>
             <Filter cleanFunction={cleanSales} filterFucntion={() => returnSalesList(false)}>
-                <CustomTextInput value={filter} label={"Codigo de venda"} name={"codigoVenda"} changeFunction={(e) => setFilter(parseInt(e.target.value))} />
+                <CustomTextInput value={filter} label={"N° de venda"} name={"codigoVenda"} changeFunction={(e) => setFilter(parseInt(e.target.value))} />
             </Filter>
             <ContainerCustom>
                 <TableCustom
