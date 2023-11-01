@@ -111,7 +111,7 @@ const SalesForm = () => {
     }
 
     const goBack = () => {
-        router.back()
+        router.replace("/sales")
     }
 
     const closeAddDiscount = () => {
