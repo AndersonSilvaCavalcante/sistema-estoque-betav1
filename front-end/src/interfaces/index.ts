@@ -42,7 +42,8 @@ declare global {
         value: number,
         clientName: string,
         discount: number,
-        dateCreated: Date
+        dateCreated: Date,
+        valueBeforeDIscount: number
     }
 
     //usado na tabela de venda de produtos 

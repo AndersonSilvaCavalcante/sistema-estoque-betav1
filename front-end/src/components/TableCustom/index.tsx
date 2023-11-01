@@ -23,6 +23,7 @@ interface IProps {
     editFunction?: (data: any) => void,
     removeFunction?: (id: number) => void,
     sum?: boolean
+    subValue?: number
 }
 
 interface IPopupData {
@@ -32,9 +33,9 @@ interface IPopupData {
 
 const valuePrefixes = { currency: "R$" }
 
-const TableCustom = ({ titles, data, edit, remove, editFunction, removeFunction, sum }: IProps) => {
+const TableCustom = ({ titles, data, edit, remove, editFunction, removeFunction, sum, subValue = 0 }: IProps) => {
     const [popupData, setPopupData] = useState<IPopupData>({ toggle: false, id: 0 })
-    const [sunPrice, setSumPrice] = useState<number>(0)
+    const [sumPrice, setSumPrice] = useState<number>(0)
     const handleClose = () => {
         setPopupData({ toggle: false, id: 0 })
     }
@@ -48,8 +49,7 @@ const TableCustom = ({ titles, data, edit, remove, editFunction, removeFunction,
             } else {
                 sum = sum + data.totalCurrentPrice
             }
-        }
-        )
+        })
 
         setSumPrice(sum)
     }
@@ -102,12 +102,28 @@ const TableCustom = ({ titles, data, edit, remove, editFunction, removeFunction,
                                 </TableCell>
                             </TableRow>
                         ))}
+                        {subValue !== 0 && (
+                            <>
+                                <TableRow
+                                    sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                                >
+                                    <TableCell>SubTotal</TableCell>
+                                    <TableCell colSpan={2}>R$ {sumPrice}</TableCell>
+                                </TableRow>
+                                <TableRow
+                                    sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                                >
+                                    <TableCell>Desconto</TableCell>
+                                    <TableCell colSpan={2}>R$ {subValue}</TableCell>
+                                </TableRow>
+                            </>
+                        )}
                         {sum && (
                             <TableRow
                                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                             >
                                 <TableCell>TOTAL</TableCell>
-                                <TableCell colSpan={2}>R$ {sunPrice}</TableCell>
+                                <TableCell colSpan={2}>R$ {sumPrice - subValue}</TableCell>
                             </TableRow>
                         )}
                     </TableBody>

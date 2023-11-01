@@ -20,7 +20,9 @@ const titles: Array<ITitles> = [
     { label: "N° da venda", value: 'id' },
     { label: "Data da Venda", value: 'dateCreated', date: true },
     { label: "Nome do Cliente", value: 'clientName' },
-    { label: "Valor", value: 'value', valuePrefix: "currency" }
+    { label: "Total Sem Desconto", value: 'valueBeforeDIscount', valuePrefix: "currency" },
+    { label: "Desconto", value: 'discount', valuePrefix: "currency" },
+    { label: "Total", value: 'value', valuePrefix: "currency" },
 ]
 
 const Sales: NextPage = () => {
