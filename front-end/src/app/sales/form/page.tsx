@@ -207,9 +207,9 @@ const SalesForm = () => {
                     direction="row"
                     spacing={2}>
                     <FormControl variant="outlined" sx={{ m: 1, minWidth: 220 }} size="small" error={errorInput?.clientId}>
-                        <InputLabel id="demo-simple-select-standard-label">Cliente *</InputLabel>
+                        <InputLabel id="demo-simple-select-standard-label">Nome do Cliente *</InputLabel>
                         <Select
-                            label="Cliente *"
+                            label="Nome do Cliente *"
                             value={sale?.clientId?.toString()}
                             name="clientId"
                             onChange={changeValues}
@@ -244,7 +244,7 @@ const SalesForm = () => {
                                 <TextField
                                     {...params}
                                     error={errorInput?.produtoId}
-                                    label="Produto *"
+                                    label="Nome do Produto *"
                                 />
                                 {(errorInput?.produtoId) && (
                                     <FormHelperText>Campo obrigatório!</FormHelperText>
