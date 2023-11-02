@@ -1,6 +1,7 @@
 
 alter table sales
-add valueBeforeDIscount float null
+add valueBeforeDIscount float null,
+	valueCostPrice float null
 
     
 CREATE OR ALTER  PROCEDURE post_sales     
@@ -8,7 +9,8 @@ CREATE OR ALTER  PROCEDURE post_sales
  @discount float,    
  @products NVARCHAR(MAX),    
  @value float,
- @valueBeforeDIscount float
+ @valueBeforeDIscount float,
+ @valueCostPrice float
 AS       
     
  INSERT INTO sales    
@@ -16,13 +18,17 @@ AS
            ,discount    
            ,clientId    
            ,value
-		   ,valueBeforeDIscount)    
+		   ,valueBeforeDIscount
+		   ,valueCostPrice
+		   )    
      VALUES    
            (@products    
            ,@discount    
            ,@clientId    
            ,@value
-		   ,@valueBeforeDIscount)    
+		   ,@valueBeforeDIscount
+		   ,@valueCostPrice
+		   )    
     
 declare crProducts cursor    
  for SELECT     
@@ -86,8 +92,13 @@ AS
   s.value,
   s.discount,
   s.valueBeforeDIscount,
-  c.name AS clientName  
+  s.valueCostPrice,
+  s.products as productsString,
+  c.name AS clientName
  FROM sales s   
  INNER JOIN client c ON c.id = s.clientId  
  WHERE     
   (s.id = @id or @id IS NULL) 
+
+
+  select * from sales

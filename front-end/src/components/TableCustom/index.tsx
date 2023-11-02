@@ -8,8 +8,8 @@ import { ConfirmPopup } from "@/components/Popups";
 /**Icons */
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
-import SearchOffIcon from '@mui/icons-material/SearchOff';
 import LottieFilesComponent from "../LottieFilesComponent";
+import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
 
 /**Animations */
 import emptyAnimation from "@/assets/animations/lottie/empty_animation.json"
@@ -20,7 +20,9 @@ interface IProps {
     data: any,
     edit?: boolean,
     remove?: boolean,
+    view?: boolean,
     editFunction?: (data: any) => void,
+    viewFunction?: (data: any) => void,
     removeFunction?: (id: number) => void,
     sum?: boolean
     subValue?: number
@@ -33,7 +35,7 @@ interface IPopupData {
 
 const valuePrefixes = { currency: "R$" }
 
-const TableCustom = ({ titles, data, edit, remove, editFunction, removeFunction, sum, subValue = 0 }: IProps) => {
+const TableCustom = ({ titles, data, edit, remove, editFunction, removeFunction, sum, subValue = 0, view, viewFunction }: IProps) => {
     const [popupData, setPopupData] = useState<IPopupData>({ toggle: false, id: 0 })
     const [sumPrice, setSumPrice] = useState<number>(0)
     const handleClose = () => {
@@ -97,6 +99,9 @@ const TableCustom = ({ titles, data, edit, remove, editFunction, removeFunction,
                                         )}
                                         {remove && removeFunction && (
                                             <Button onClick={() => setPopupData({ toggle: true, id: data.id })} color="error" variant="outlined" startIcon={<DeleteIcon />}>Deletar</Button>
+                                        )}
+                                        {view && viewFunction && (
+                                            <Button onClick={() => viewFunction(data)} color="warning" variant="outlined" startIcon={<RemoveRedEyeIcon />}>Visualizar</Button>
                                         )}
                                     </Stack>
                                 </TableCell>

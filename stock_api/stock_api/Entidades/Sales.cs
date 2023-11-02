@@ -7,8 +7,10 @@
         public int ClientId { get; set; }
         public float Value { get; set; }
         public string ClientName { get; set; }
+        public string ProductsString { get; set; }
         public float Discount { get; set; }
         public float? ValueBeforeDIscount { get; set; }
+        public float? ValueCostPrice { get; set; }
         public DateTime DateCreated { get; set; }
 
 

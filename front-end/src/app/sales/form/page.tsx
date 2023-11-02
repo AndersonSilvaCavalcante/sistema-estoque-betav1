@@ -50,7 +50,8 @@ const SalesForm = () => {
         clientName: "",
         discount: 0,
         dateCreated: new Date(),
-        valueBeforeDIscount: 0
+        valueBeforeDIscount: 0,
+        valueCostPrice: 0
     }
 
 
@@ -94,7 +95,7 @@ const SalesForm = () => {
             await SalesService.saveSale({
                 ...sale,
                 valueBeforeDIscount: sale.value,
-                value: sale.value - sale.discount,
+                value: sale.value - sale.discount
             })
             toast.success("Sucesso ao realizar venda!")
             goBack()
@@ -171,6 +172,8 @@ const SalesForm = () => {
         }
 
         const valueTotalCurrentPrice = productSelecioned?.salePrice ? productSelecioned?.salePrice * parseInt(sale.qtd.toString()) : 0
+        const valueTotalCostPrice = productSelecioned?.costPrice ? productSelecioned?.costPrice * parseInt(sale.qtd.toString()) : 0
+
         setSale({
             ...sale,
             qtd: '',
@@ -186,7 +189,8 @@ const SalesForm = () => {
                     totalCurrentPrice: valueTotalCurrentPrice,
                     currentPrice: productSelecioned?.salePrice ?? 0
                 }],
-            value: sale.value + valueTotalCurrentPrice
+            value: sale.value + valueTotalCurrentPrice,
+            valueCostPrice:  sale.valueCostPrice + valueTotalCostPrice
         })
 
         setProductSelecioned(null)

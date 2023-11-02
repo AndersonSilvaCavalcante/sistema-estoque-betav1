@@ -20,9 +20,10 @@ const titles: Array<ITitles> = [
     { label: "N° da venda", value: 'id' },
     { label: "Data da Venda", value: 'dateCreated', date: true },
     { label: "Nome do Cliente", value: 'clientName' },
+    { label: "Custo da venda", value: 'valueCostPrice', valuePrefix: "currency" },
     { label: "Total Sem Desconto", value: 'valueBeforeDIscount', valuePrefix: "currency" },
     { label: "Desconto", value: 'discount', valuePrefix: "currency" },
-    { label: "Total", value: 'value', valuePrefix: "currency" },
+    { label: "Total Com Desconto", value: 'value', valuePrefix: "currency" }
 ]
 
 const Sales: NextPage = () => {
@@ -41,7 +42,12 @@ const Sales: NextPage = () => {
         setFilter('')
         returnSalesList(true)
     }
-    
+
+    const viewReceipt = (data: ISale) => {
+        // console.log('data', data)
+
+    }
+
     useEffect(() => {
     }, [filter])
 
@@ -61,6 +67,8 @@ const Sales: NextPage = () => {
                 <TableCustom
                     data={salesList}
                     titles={titles}
+                    view={true}
+                    viewFunction={viewReceipt}
                 />
             </ContainerCustom>
         </React.Fragment>

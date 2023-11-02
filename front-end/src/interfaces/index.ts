@@ -44,6 +44,7 @@ declare global {
         discount: number,
         dateCreated: Date,
         valueBeforeDIscount: number
+        valueCostPrice: number
     }
 
     //usado na tabela de venda de produtos 
