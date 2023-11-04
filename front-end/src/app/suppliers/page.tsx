@@ -93,6 +93,7 @@ const Suppliers: NextPage = () => {
                     await Supplier.editSupplier(supplier)
                 }
                 setSupplier(initialSupplier)
+                setSupplierConfirmPopup({ toggle: false, msg: ''})
                 handleClose()
                 toast.success("Fornecedor Salvo com Sucesso!")
                 getSuppliersList()
