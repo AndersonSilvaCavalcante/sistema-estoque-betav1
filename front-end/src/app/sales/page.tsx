@@ -16,6 +16,8 @@ import { Button } from "@mui/material";
 import SalesService from "@/actions/sales";
 
 /**Icons */
+import SaveIcon from '@mui/icons-material/Save';
+import { CustomPopup } from "@/components/Popups";
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 
 const titles: Array<ITitles> = [
@@ -28,9 +30,22 @@ const titles: Array<ITitles> = [
     { label: "Total Com Desconto", value: 'value', valuePrefix: "currency" }
 ]
 
+
+const titlesReceipt: Array<ITitles> = [
+    { label: "Produto", value: 'ProductName' },
+    { label: "Quantidade", value: 'QtdChange' },
+    { label: "Preço Unitário", value: 'CurrentPrice', valuePrefix: "currency" },
+    { label: "Total", value: 'TotalCurrentPrice', valuePrefix: "currency" }
+]
+
+
 const Sales: NextPage = () => {
     const [salesList, setSalesList] = useState<Array<ISale>>([])
     const [filter, setFilter] = useState<number | string>('')
+
+    const [openReceipt, setOpenReceipt] = useState<boolean>(false)
+    const [productSelected, setProductSelected] = useState<IProduct>()
+
     const router = useRouter()
 
     const returnSalesList = async (clean?: boolean) => {
@@ -46,8 +61,8 @@ const Sales: NextPage = () => {
     }
 
     const viewReceipt = (data: ISale) => {
-        // console.log('data', data)
-
+        setProductSelected(JSON.parse(data.productsString))
+        setOpenReceipt(true)
     }
 
     useEffect(() => {
@@ -73,6 +88,19 @@ const Sales: NextPage = () => {
                     viewFunction={viewReceipt}
                 />
             </ContainerCustom>
+            <CustomPopup
+                toggle={openReceipt}
+                title={"Visualizar Recibo"}
+                confirmButtonTitle="Salvar"
+                confirmButtonIcon={<SaveIcon />}
+                confirmAction={() => setOpenReceipt(false)}
+                cancelFunction={() => setOpenReceipt(false)}
+            >
+                <TableCustom
+                    data={productSelected}
+                    titles={titlesReceipt}
+                />
+            </CustomPopup>
         </React.Fragment>
     )
 }

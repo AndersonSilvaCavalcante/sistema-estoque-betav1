@@ -37,6 +37,7 @@ declare global {
     interface ISale {
         id: number,
         products: Array<IProductSale>,
+        productsString: string,
         qtd: number | string,
         clientId: number | string,
         value: number,

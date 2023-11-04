@@ -52,7 +52,8 @@ const SalesForm = () => {
         discount: 0,
         dateCreated: new Date(),
         valueBeforeDIscount: 0,
-        valueCostPrice: 0
+        valueCostPrice: 0,
+        productsString: ''
     }
 
 

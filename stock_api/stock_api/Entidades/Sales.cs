@@ -24,6 +24,7 @@
         public int QtdChange { get; set; }
         public float TotalCostPrice { get; set; }
         public float TotalCurrentPrice { get; set; }
+        public float CurrentPrice { get; set; }
 
         
     }
