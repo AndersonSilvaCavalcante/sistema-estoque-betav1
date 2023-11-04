@@ -126,7 +126,7 @@ AS
 	FROM supplier
 	WHERE 
 		(id = @id or @id IS NULL) AND
-		(name = @name or @name IS NULL)
+		(name LIKE '%'+RTRIM(@name)+'%' or @name IS NULL)
 GO
 
 CREATE PROCEDURE post_supplier
