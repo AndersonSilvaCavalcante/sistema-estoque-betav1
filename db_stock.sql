@@ -50,7 +50,8 @@ CREATE TABLE orderService (
 CREATE OR ALTER PROCEDURE get_products
 	@id int,
 	@name varchar(255),
-	@barcode varchar(255)
+	@barcode varchar(255),
+	@supplierId varchar(255)
 AS
 	SELECT 
 		id ,
@@ -65,7 +66,8 @@ AS
 	WHERE 
 		(id = @id or @id IS NULL) AND
 		(name = @name or @name IS NULL) AND
-		(barcode = @barcode or @barcode IS NULL)
+		(barcode = @barcode or @barcode IS NULL) AND
+		(supplierId = @supplierId or @supplierId IS NULL)
 GO
 
 CREATE PROCEDURE post_products

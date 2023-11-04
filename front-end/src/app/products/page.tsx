@@ -10,7 +10,7 @@ import ProductServices from "@/actions/productServices";
 
 /**Components */
 import PageHeader from "@/components/PageHeader";
-import { Button } from "@mui/material";
+import { Autocomplete, Button, FormControl, TextField } from "@mui/material";
 import Filter from "@/components/Filter";
 import { CustomTextInput } from "@/components/CustomInputs";
 import ContainerCustom from "@/components/Container";
@@ -20,6 +20,7 @@ import Link from "next/link";
 
 /**Icons */
 import AddIcon from '@mui/icons-material/Add';
+import Supplier from "@/actions/suppliers";
 
 const titles: Array<ITitles> = [
     { label: "Nome", value: 'name' },
@@ -34,6 +35,7 @@ export interface IFilter {
     id?: number
     name?: string,
     barcode?: string,
+    supplierId?: number
 }
 
 const Products: NextPage = () => {
@@ -41,6 +43,18 @@ const Products: NextPage = () => {
     const initialFIlter: IFilter = { name: '', barcode: '' }
     const [filter, setFilter] = useState<IFilter>(initialFIlter)
     const [products, setProducts] = useState<Array<IProduct>>([])
+    const [suppliers, setSuppliers] = useState<Array<ISupplier>>([])
+    const initialSupplier: ISupplier = { id: 0, name: "", contact: "" }
+    const [supplier, setSupplier] = useState<ISupplier>(initialSupplier)
+    
+    const getSuppliersList = async () => {
+        try {
+            const { data } = await Supplier.getSuppliers()
+            setSuppliers(data)
+        } catch (error) {
+            toast.error("Algo deu errado")
+        }
+    }
 
     const getProductsList = async (clean?: boolean) => {
         try {
@@ -61,13 +75,19 @@ const Products: NextPage = () => {
         }
     }
 
-    const editProductPage = (data: IProduct)=>{
+    const editProductPage = (data: IProduct) => {
         router.replace(`/products/form/edit/${data.id}`)
     }
 
     const cleanFilters = () => {
         setFilter(initialFIlter)
+        setSupplier(initialSupplier)
         getProductsList(true)
+    }
+
+    const changeSupplierFilter = (supplier: ISupplier | null) => {
+        supplier ? setFilter({ ...filter, supplierId: supplier.id }) : null
+        supplier ? setSupplier(supplier) : null
     }
 
     const changeFilterValues = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -77,6 +97,7 @@ const Products: NextPage = () => {
     }
 
     useEffect(() => {
+        getSuppliersList()
         getProductsList()
     }, [])
 
@@ -90,6 +111,31 @@ const Products: NextPage = () => {
             <Filter cleanFunction={cleanFilters} filterFucntion={() => getProductsList(false)}>
                 <CustomTextInput value={filter?.name} label={"Nome"} name={"name"} changeFunction={changeFilterValues} />
                 <CustomTextInput value={filter?.barcode} label={"Código de Barras"} name={"barcode"} changeFunction={changeFilterValues} />
+                <Autocomplete
+                    size="small"
+                    disablePortal
+                    options={suppliers}
+                    disableClearable
+                    getOptionLabel={(option) => option.name}
+                    renderOption={(props, option) => {
+                        return (
+                            <li {...props} key={option.id}>
+                                {option.name}
+                            </li>
+                        );
+                    }}
+                    onChange={(event, newValue) => changeSupplierFilter(newValue)}
+                    value={supplier}
+                    renderInput={(params) => (
+                        <FormControl variant="outlined" sx={{ minWidth: 220 }} size="small">
+                            <TextField
+                                {...params}
+                                name="supplierId"
+                                label="Fornecedor *"
+                            />
+                        </FormControl>
+                    )}
+                />
             </Filter>
             <ContainerCustom>
                 <TableCustom
