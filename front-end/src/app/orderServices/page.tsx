@@ -72,7 +72,7 @@ interface listOrderService {
 }
 
 const OrderServices: NextPage = () => {
-    
+
     const initialFIlter: IFilter = { plate: '', order: '', status: 'started' }
     const listStatus: Array<IStatus> = [
         { label: "Todos", value: ' ', },
@@ -85,25 +85,29 @@ const OrderServices: NextPage = () => {
     const [filter, setFIlter] = useState<IFilter>(initialFIlter)
     const [listOrderService, setListOrderService] = useState<Array<ICardsListOrderService>>([])
 
+    const [orderServiceSelected, setOrderServiceSelected] = useState<listOrderService | null>(null)
+
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const openMenu = Boolean(anchorEl);
-    
+
     const [openFinishModal, setOpenFinishModal] = useState<boolean>(false)
     const [idFinishModal, setIdFinishModal] = useState<number>(0)
-    
+
     const funcOpenFinishModal = (id: number) => {
         setIdFinishModal(id)
         setOpenFinishModal(true)
     }
 
-    const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+    const handleClick = (event: React.MouseEvent<HTMLElement>, selected: listOrderService) => {
+        setOrderServiceSelected(selected)
         setAnchorEl(event.currentTarget);
     };
+    
     const handleOption = (option: string) => {
         if (option === "Editar") {
-
+            router.push(`/orderServices/form/edit/${orderServiceSelected?.order}`)
         }
-        // setAnchorEl(null);
+        setAnchorEl(null);
     };
 
 
@@ -201,7 +205,7 @@ const OrderServices: NextPage = () => {
                                                 aria-controls={openMenu ? 'long-menu' : undefined}
                                                 aria-expanded={openMenu ? 'true' : undefined}
                                                 aria-haspopup="true"
-                                                onClick={handleClick}
+                                                onClick={(e) => handleClick(e, list)}
                                             >
                                                 <MoreVertIcon />
                                             </IconButton>

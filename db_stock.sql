@@ -107,3 +107,44 @@ AS
  INNER JOIN client c ON c.id = s.clientId  
  WHERE     
   (s.id = @id or @id IS NULL) 
+
+
+
+    
+CREATE OR ALTER PROCEDURE get_OrderService  
+ @status varchar(255),  
+ @plate varchar(255),  
+ @order int  
+AS  
+ SELECT   
+  s.id 'order' ,  
+  s.dateCreated,  
+  c.plate 'plate',  
+  s.status,  
+  s.dateClosed,
+  s.clientId,
+  s.services,
+  s.comments
+ FROM orderService s  
+ INNER JOIN client c on c.id = s.clientId  
+ WHERE   
+  (s.status = @status or @status LIKE '') AND  
+  (c.plate LIKE '%'+@plate+'%'  or @plate IS NULL) AND  
+  (s.id = @order  or @order IS NULL)   
+
+
+
+      
+CREATE OR ALTER PROCEDURE put_orderService    
+ @id int,  
+ @clientId VARCHAR(255),    
+ @services VARCHAR(255),    
+ @comments VARCHAR(255)     
+AS    
+ UPDATE     
+  orderService    
+ SET    
+  clientId =   @clientId ,   
+  services =  @services  ,  
+  comments =  @comments    
+ WHERE id = @id;    

@@ -67,7 +67,9 @@ const SalesForm = () => {
     const [listClients, setClients] = useState<Array<ICLient>>([])
 
     const [products, setProducts] = useState<Array<IProduct>>([])
+
     const [productSelecioned, setProductSelecioned] = useState<IProduct | null>(null)
+    const [clientSelecioned, setClientSelecioned] = useState<ICLient | null>(null)
 
     const [openAddDiscount, setOpenAddDiscount] = useState<boolean>(false)
 
@@ -192,7 +194,7 @@ const SalesForm = () => {
                     currentPrice: productSelecioned?.salePrice ?? 0
                 }],
             value: sale.value + valueTotalCurrentPrice,
-            valueCostPrice:  sale.valueCostPrice + valueTotalCostPrice
+            valueCostPrice: sale.valueCostPrice + valueTotalCostPrice
         })
 
         setProductSelecioned(null)
@@ -203,6 +205,14 @@ const SalesForm = () => {
         getProductsList()
     }, [])
 
+    useEffect(() => {
+        if (clientSelecioned) {
+            setSale({ ...sale, clientId: clientSelecioned.id })
+        } else {
+            setSale({ ...sale, clientId: '' })
+        }
+    }, [clientSelecioned])
+
     return (
         <React.Fragment>
             <PageHeader title="Realizar Venda">
@@ -211,25 +221,34 @@ const SalesForm = () => {
                 <Stack
                     direction="row"
                     spacing={2}>
-                    <FormControl variant="outlined" sx={{ m: 1, minWidth: 220 }} size="small" error={errorInput?.clientId}>
-                        <InputLabel id="demo-simple-select-standard-label">Nome do Cliente *</InputLabel>
-                        <Select
-                            label="Nome do Cliente *"
-                            value={sale?.clientId?.toString()}
-                            name="clientId"
-                            onChange={changeValues}
-                            disabled={sale.products.length > 0}
-                            error={errorInput?.clientId}
-
-                        >
-                            {listClients.map((list, index: number) => (
-                                <MenuItem key={list.id} value={list.id}>{list.name}</MenuItem>
-                            ))}
-                        </Select>
-                        {(errorInput?.clientId) && (
-                            <FormHelperText>Campo obrigatório!</FormHelperText>
+                    <Autocomplete
+                        size="small"
+                        disablePortal
+                        options={listClients}
+                        disabled={sale.products.length > 0}
+                        getOptionLabel={(option) => option.name}
+                        renderOption={(props, option) => {
+                            return (
+                                <li {...props} key={option.id}>
+                                    {option.name}
+                                </li>
+                            );
+                        }}
+                        onChange={(event, newValue) => setClientSelecioned(newValue)}
+                        value={clientSelecioned}
+                        renderInput={(params) => (
+                            <FormControl variant="outlined" sx={{ minWidth: 220 }} size="small" error={errorInput?.clientId} >
+                                <TextField
+                                    {...params}
+                                    error={errorInput?.clientId}
+                                    label="Nome do Cliente *"
+                                />
+                                {(errorInput?.clientId) && (
+                                    <FormHelperText>Campo obrigatório!</FormHelperText>
+                                )}
+                            </FormControl>
                         )}
-                    </FormControl>
+                    />
                     <Autocomplete
                         size="small"
                         disablePortal
@@ -263,8 +282,8 @@ const SalesForm = () => {
                     </FormControl>
                 </Stack>
             </ContainerCustom>
-            {sale.products.length > 0 && (
-                <ContainerCustom>
+            <ContainerCustom>
+                {sale.products.length > 0 && (
                     <TableCustom
                         data={sale.products}
                         titles={titles}
@@ -275,15 +294,19 @@ const SalesForm = () => {
                         sum={true}
                         subValue={sale.discount}
                     />
-                    <Box sx={{ display: 'flex', placeContent: 'flex-end' }}>
-                        <Stack direction="row" spacing={2}>
-                            <Button color="error" variant="outlined" endIcon={<CloseIcon />} onClick={goBack} >Cancelar</Button>
-                            <Button color="info" variant="contained" endIcon={<LocalOfferIcon />} onClick={() => setOpenAddDiscount(true)} >Adicionar Desconto</Button>
-                            <Button color="success" variant="contained" onClick={() => setOpenSale(true)} endIcon={<AttachMoneyIcon />}>FInalizar Venda</Button>
-                        </Stack>
-                    </Box>
-                </ContainerCustom>
-            )}
+                )}
+                <Box sx={{ display: 'flex', placeContent: 'flex-end' }}>
+                    <Stack direction="row" spacing={2}>
+                        <Button color="error" variant="outlined" endIcon={<CloseIcon />} onClick={goBack} >Cancelar</Button>
+                        {sale.products.length > 0 && (
+                            <>
+                                <Button color="info" variant="contained" endIcon={<LocalOfferIcon />} onClick={() => setOpenAddDiscount(true)} >Adicionar Desconto</Button>
+                                <Button color="success" variant="contained" onClick={() => setOpenSale(true)} endIcon={<AttachMoneyIcon />}>FInalizar Venda</Button>
+                            </>
+                        )}
+                    </Stack>
+                </Box>
+            </ContainerCustom>
             <ConfirmPopup
                 toggle={openAddSale}
                 title={"Cadastrar venda"}

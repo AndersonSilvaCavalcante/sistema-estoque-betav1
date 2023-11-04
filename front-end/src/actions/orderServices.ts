@@ -5,12 +5,12 @@ class OrderService {
     static getListOrderService(filter: IFilter) {
         const { status, plate, order } = filter
         let addFilter = `?status=${status}`
-        
-        if(plate){
+
+        if (plate) {
             addFilter = addFilter + `&plate=${plate}`
         }
 
-        if(order){
+        if (order) {
             addFilter = addFilter + `&order=${order}`
         }
 
@@ -19,6 +19,10 @@ class OrderService {
 
     static saveOrderService(payload: IOrderService) {
         return api.post('SaveOrderService', payload)
+    }
+
+    static editOrderService(id: string, payload: IOrderService) {
+        return api.put(`EditOrderService?id=${id}`, payload)
     }
 
     static closeOrderService(id: number) {
