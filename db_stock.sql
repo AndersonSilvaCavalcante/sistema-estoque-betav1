@@ -67,7 +67,7 @@ AS
 	ON (p.supplierId = sp.id)
 	WHERE 
 		(p.id = @id or @id IS NULL) AND
-		(p.name = @name or @name IS NULL) AND
+		(p.name LIKE '%'+RTRIM(@name)+'%' or @name IS NULL) AND
 		(barcode = @barcode or @barcode IS NULL) AND
 		(supplierId = @supplierId or @supplierId IS NULL)
 GO
