@@ -3,6 +3,10 @@ alter table sales
 add valueBeforeDIscount float null,
 	valueCostPrice float null
 
+	
+
+  alter table recordStock
+  add currentPrice float default('')
     
 CREATE OR ALTER  PROCEDURE post_sales     
  @clientId int,    
@@ -38,6 +42,7 @@ declare crProducts cursor
   newQtd int N'$.NewQtd',    
   qtdChange int N'$.QtdChange',    
   totalCostPrice float N'$.TotalCostPrice',    
+  currentPrice float N'$.CurrentPrice',    
   totalCurrentPrice float N'$.TotalCurrentPrice'    
   ) AS jsonVariable    
     
@@ -47,10 +52,11 @@ declare crProducts cursor
  declare @productId INTEGER    
  declare @newQtd INTEGER    
  declare @qtdChange INTEGER    
- declare @totalCostPrice INTEGER    
- declare @totalCurrentPrice INTEGER    
+ declare @totalCostPrice float    
+ declare @totalCurrentPrice float    
+ declare @currentPrice float    
     
- fetch NEXT FROM crProducts into @productId, @newQtd, @qtdChange, @totalCostPrice, @totalCurrentPrice    
+ fetch NEXT FROM crProducts into @productId, @newQtd, @qtdChange, @totalCostPrice, @currentPrice, @totalCurrentPrice    
     
  WHILE @@FETCH_STATUS = 0    
  BEGIN    
@@ -67,17 +73,19 @@ declare crProducts cursor
            ,newQtd    
            ,qtdChange    
            ,totalCostPrice    
-           ,totalCurrentPrice)    
+           ,totalCurrentPrice
+		   ,currentPrice)    
      VALUES    
            (@productId    
            ,'sale'    
            ,@newQtd    
            ,@qtdChange    
            ,@totalCostPrice    
-           ,@totalCurrentPrice)    
+           ,@totalCurrentPrice
+		   ,@currentPrice)    
     
     
- FETCH NEXT FROM crProducts into  @productId, @newQtd, @qtdChange, @totalCostPrice, @totalCurrentPrice    
+ FETCH NEXT FROM crProducts into @productId, @newQtd, @qtdChange, @totalCostPrice, @currentPrice, @totalCurrentPrice  
  END    
  CLOSE crProducts    
  DEALLOCATE crProducts    
@@ -99,6 +107,3 @@ AS
  INNER JOIN client c ON c.id = s.clientId  
  WHERE     
   (s.id = @id or @id IS NULL) 
-
-
-  select * from sales
