@@ -54,18 +54,20 @@ CREATE OR ALTER PROCEDURE get_products
 	@supplierId varchar(255)
 AS
 	SELECT 
-		id ,
-		name,
-		barcode,
-		supplierId ,
-		qtdMin,
-		qtdCurrent,
-		costPrice,
-		salePrice
-	FROM products
+		p.id ,
+		p.name,
+		p.barcode,
+		p.supplierId,
+		sp.name 'supplierName',
+		p.qtdMin,
+		p.qtdCurrent,
+		p.costPrice,
+		p.salePrice
+	FROM products p JOIN supplier AS sp
+	ON (p.supplierId = sp.id)
 	WHERE 
-		(id = @id or @id IS NULL) AND
-		(name = @name or @name IS NULL) AND
+		(p.id = @id or @id IS NULL) AND
+		(p.name = @name or @name IS NULL) AND
 		(barcode = @barcode or @barcode IS NULL) AND
 		(supplierId = @supplierId or @supplierId IS NULL)
 GO

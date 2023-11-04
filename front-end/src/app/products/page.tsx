@@ -24,7 +24,7 @@ import Supplier from "@/actions/suppliers";
 
 const titles: Array<ITitles> = [
     { label: "Nome", value: 'name' },
-    { label: "Fornecedor", value: 'supplierId' },
+    { label: "Fornecedor", value: 'supplierName' },
     { label: "Estoque Mínimo", value: 'qtdMin' },
     { label: "Estoque Atual", value: 'qtdCurrent' },
     { label: "Preço de Custo", value: 'costPrice', valuePrefix: "currency" },
