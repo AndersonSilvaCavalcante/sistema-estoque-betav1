@@ -300,8 +300,8 @@ const SalesForm = () => {
                         <Button color="error" variant="outlined" endIcon={<CloseIcon />} onClick={goBack} >Cancelar</Button>
                         {sale.products.length > 0 && (
                             <>
-                                <Button color="info" variant="contained" endIcon={<LocalOfferIcon />} onClick={() => setOpenAddDiscount(true)} >Adicionar Desconto</Button>
-                                <Button color="success" variant="contained" onClick={() => setOpenSale(true)} endIcon={<AttachMoneyIcon />}>FInalizar Venda</Button>
+                                <Button color="info" variant="contained" onClick={() => setOpenAddDiscount(true)} >Adicionar Desconto</Button>
+                                <Button color="success" variant="contained" onClick={() => setOpenSale(true)}>FInalizar Venda</Button>
                             </>
                         )}
                     </Stack>
