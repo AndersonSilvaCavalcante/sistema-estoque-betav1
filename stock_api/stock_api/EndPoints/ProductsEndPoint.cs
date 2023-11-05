@@ -11,6 +11,7 @@ namespace stock_api.EndPoints
                 List<ParametroValor> pv = new List<ParametroValor>();
                 pv.Add(new ParametroValor("@id", id));
                 pv.Add(new ParametroValor("@barcode", barcode));
+                pv.Add(new ParametroValor("@supplierId", supplierId));
                 pv.Add(new ParametroValor("@name", name));
                 pv.Add(new ParametroValor("@supplierId", supplierId));
                 return Persistencia.ExecutarSql<Products>(@"get_products", pv, tipoconsulta: TipoConsulta.STORED_PROCEDURE).ToList();

@@ -8,6 +8,7 @@ class ProductServices {
             filter.name !== '' ? filterBody = 'name=' + filter.name : null
             filter.barcode ? filterBody = `&barcode=` + filter.barcode : null
             filter.id ? filterBody = `&id=` + filter.id : null
+            filter.supplierId ? filterBody = `&supplierId=` + filter.supplierId : null
         }
         return api.get(`ListProducts?${filterBody}`)
     }
