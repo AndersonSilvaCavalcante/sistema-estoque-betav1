@@ -68,8 +68,8 @@ AS
 	WHERE 
 		(p.id = @id or @id IS NULL) AND
 		(p.name LIKE '%'+RTRIM(@name)+'%' or @name IS NULL) AND
-		(barcode = @barcode or @barcode IS NULL) AND
-		(supplierId = @supplierId or @supplierId IS NULL)
+		(supplierId = @supplierId or @supplierId IS NULL) AND
+		(barcode = @barcode or @barcode IS NULL)
 GO
 
 CREATE PROCEDURE post_products
@@ -125,8 +125,8 @@ AS
 		contact
 	FROM supplier
 	WHERE 
-		(id = @id or @id IS NULL) AND
-		(name LIKE '%'+RTRIM(@name)+'%' or @name IS NULL)
+		(name LIKE '%'+RTRIM(@name)+'%' or @name IS NULL) AND
+		(id = @id or @id IS NULL)
 GO
 
 CREATE PROCEDURE post_supplier
@@ -289,7 +289,7 @@ AS
 	FROM client
 	WHERE 
 		(id = @id or @id IS NULL) AND
-		(name = @name or @name IS NULL) AND
+		(name LIKE '%'+RTRIM(@name)+'%' or @name IS NULL) AND
 		(plate = @plate or @plate IS NULL)
 GO
 
