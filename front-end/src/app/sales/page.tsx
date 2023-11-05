@@ -19,6 +19,7 @@ import SalesService from "@/actions/sales";
 import SaveIcon from '@mui/icons-material/Save';
 import { CustomPopup } from "@/components/Popups";
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
+import { ButtonPlus } from "@/components/ButtonPlus";
 
 const titles: Array<ITitles> = [
     { label: "N° da venda", value: 'id' },
@@ -75,7 +76,7 @@ const Sales: NextPage = () => {
     return (
         <React.Fragment>
             <PageHeader title="Vendas">
-                <Button color="success" variant="contained" onClick={() => router.push("/sales/form")} endIcon={<AttachMoneyIcon />}>Realizar Venda</Button>
+                <ButtonPlus onCLick={() => router.push("/sales/form")} title="Realizar Venda" />
             </PageHeader>
             <Filter cleanFunction={cleanSales} filterFucntion={() => returnSalesList(false)}>
                 <CustomTextInput value={filter} label={"N° de venda"} name={"codigoVenda"} changeFunction={(e) => setFilter(parseInt(e.target.value))} />
