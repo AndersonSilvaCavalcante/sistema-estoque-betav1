@@ -21,7 +21,7 @@ declare global {
         qtdMin: number,
         qtdCurrent: number,
         costPrice: number,
-        salePrice: number
+        salePrice: number,
     }
 
     interface ICLient {
@@ -36,7 +36,28 @@ declare global {
 
     interface ISale {
         id: number,
+        products: Array<IProductSale>,
+        productsString: string,
+        qtd: number | string,
+        clientId: number | string,
+        value: number,
+        clientName: string,
+        discount: number,
+        dateCreated: Date,
+        valueBeforeDIscount: number
+        valueCostPrice: number
+    }
 
+    //usado na tabela de venda de produtos 
+    interface IProductSale {
+        id: number
+        productName: string
+        productId: number
+        newQtd: number
+        qtdChange: number | string
+        totalCostPrice: number
+        totalCurrentPrice: number
+        currentPrice: number
     }
 
     //order service
@@ -58,6 +79,7 @@ declare global {
         label: string,
         value: string
         valuePrefix?: "currency"
+        date?: boolean
     }
 
 }

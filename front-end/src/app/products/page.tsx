@@ -7,20 +7,17 @@ import { useRouter } from "next/navigation";
 
 /**Actions */
 import ProductServices from "@/actions/productServices";
+import Supplier from "@/actions/suppliers";
 
 /**Components */
 import PageHeader from "@/components/PageHeader";
-import { Autocomplete, Button, FormControl, TextField } from "@mui/material";
+import { Autocomplete, FormControl, TextField } from "@mui/material";
 import Filter from "@/components/Filter";
 import { CustomTextInput } from "@/components/CustomInputs";
 import ContainerCustom from "@/components/Container";
 import TableCustom from "@/components/TableCustom";
 import { toast } from "react-toastify";
-import Link from "next/link";
-
-/**Icons */
-import AddIcon from '@mui/icons-material/Add';
-import Supplier from "@/actions/suppliers";
+import { ButtonPlus } from "@/components/ButtonPlus";
 
 const titles: Array<ITitles> = [
     { label: "Nome", value: 'name' },
@@ -104,9 +101,7 @@ const Products: NextPage = () => {
     return (
         <React.Fragment>
             <PageHeader title="Produtos">
-                <Link href="/products/form/register">
-                    <Button color="success" variant="contained" endIcon={<AddIcon />}>Cadastrar Produto</Button>
-                </Link>
+                <ButtonPlus onCLick={() => router.push("/products/form/register")} title="Cadastrar Produto" />
             </PageHeader>
             <Filter cleanFunction={cleanFilters} filterFucntion={() => getProductsList(false)}>
                 <CustomTextInput value={filter?.name} label={"Nome"} name={"name"} changeFunction={changeFilterValues} />

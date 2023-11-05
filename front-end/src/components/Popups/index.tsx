@@ -47,7 +47,7 @@ export const ConfirmPopup = ({ toggle, title, message, confirmAction, cancelFunc
 
 export const CustomPopup = ({ toggle, title, message, children, confirmButtonTitle, confirmButtonIcon, confirmAction, cancelFunction }: IProps) => {
     return (
-        <Dialog open={toggle} onClose={() => cancelFunction()}>
+        <Dialog open={toggle} onClose={() => cancelFunction()} maxWidth={"lg"}>
             <DialogTitle>{title}</DialogTitle>
             <DialogContent sx={{
                 display: "flex",

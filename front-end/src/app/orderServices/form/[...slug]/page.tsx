@@ -1,23 +1,28 @@
 'use client'
 
-
-import PageHeader from "@/components/PageHeader"
-import { NextPage } from "next"
+/**Dependencies */
+import { toast } from "react-toastify";
 import React, { useState, useEffect } from 'react'
+import { useRouter, usePathname } from "next/navigation";
+
+/**Components */
+import AddIcon from '@mui/icons-material/Add';
+import PageHeader from "@/components/PageHeader"
 import ContainerCustom from "@/components/Container";
+import { Box, Button, Stack, TextField, Select, SelectChangeEvent, FormControl, InputLabel, MenuItem, FormHelperText, Autocomplete } from "@mui/material"
+
+/**Icons */
 import SaveIcon from '@mui/icons-material/Save';
 import CloseIcon from '@mui/icons-material/Close';
-import AddIcon from '@mui/icons-material/Add';
 import CreateIcon from '@mui/icons-material/Create';
 
-import { Box, Button, Stack, TextField, Select, SelectChangeEvent, FormControl, InputLabel, MenuItem, FormHelperText } from "@mui/material"
-
+/**Service */
+import Client from "@/actions/client";
 import Services from "@/actions/services";
 import TableCustom from "@/components/TableCustom";
 import OrderService from "@/actions/orderServices";
-import { toast } from "react-toastify";
-import Client from "@/actions/client";
-import { useRouter, useSearchParams, usePathname } from "next/navigation";
+import { ConfirmPopup } from "@/components/Popups";
+
 
 
 interface IlistServices {
@@ -72,6 +77,12 @@ const OrderServicesRegister = ({ params }: IProps) => {
 
     const [errorInput, setErrorInput] = useState<boolean>(false)
 
+    const [openConfirm, setOpenConfirm] = useState<boolean>(false)
+
+    const [clientSelecioned, setClientSelecioned] = useState<ICLient | null>(null)
+
+    const [typeScreen, setTypeScreen] = useState<string>("Cadastrar")
+
     const changeValues = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | SelectChangeEvent<string> | React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const name = e.target.name
         const value = e.target.value
@@ -108,7 +119,7 @@ const OrderServicesRegister = ({ params }: IProps) => {
         setServicesToBePerformed(listServices.filter(list => list.id !== id))
     }
 
-    const addOrderService = async () => {
+    const addOrEditOrderService = async () => {
 
         setErrorInput(false)
 
@@ -118,13 +129,18 @@ const OrderServicesRegister = ({ params }: IProps) => {
 
         try {
             const payload: IOrderService = { ...orderService, services: JSON.stringify(servicesToBePerformed) }
-            await OrderService.saveOrderService(payload)
+            if (typeScreen === "Editar") {
+                await OrderService.editOrderService(slug[1], payload)
+
+            } else {
+                await OrderService.saveOrderService(payload)
+            }
             setOrderService(initialOrderService)
             setServicesToBePerformed([])
-            toast.success("Sucesso ao criar ordem de serviço!")
+            toast.success(`Sucesso ao ${typeScreen} Ordem de Serviço!`)
             goBack()
         } catch {
-            toast.error("Erro ao criar ordem de serviço!")
+            toast.error(`Erro ao  ${typeScreen}  Ordem de Serviço!`)
         }
     }
 
@@ -146,18 +162,45 @@ const OrderServicesRegister = ({ params }: IProps) => {
         }
     }
 
+    const getOrderById = async (id: string) => {
+        try {
+            const { data } = await OrderService.getListOrderService({ order: id, plate: '', status: '' })
+            setOrderService({ ...data[0], services: '' })
+
+            const clientInfo = listClients.filter(client => client.id === data[0].clientId)[0]
+
+            setClientSelecioned(clientInfo)
+            setClientsInfo(clientInfo)
+            setServicesToBePerformed(JSON.parse(data[0].services))
+        } catch { }
+    }
+
     const goBack = () => {
-        router.back()
+        setClientSelecioned(null)
+        router.replace("/orderServices")
     }
 
     useEffect(() => {
-        console.log('slug', slug)
-    }, [slug])
+        if (clientSelecioned) {
+            setOrderService({ ...orderService, clientId: clientSelecioned.id })
+        } else {
+            setOrderService({ ...orderService, clientId: null })
+        }
+    }, [clientSelecioned])
 
     useEffect(() => {
         getListOrderService()
         getListClients()
     }, [])
+
+    useEffect(() => {
+        if (listClients) {
+            if (slug[0] === 'edit') {
+                setTypeScreen("Editar")
+                getOrderById(slug[1])
+            }
+        }
+    }, [slug, listClients])
 
     useEffect(() => {
         if (orderService.clientId) {
@@ -174,29 +217,41 @@ const OrderServicesRegister = ({ params }: IProps) => {
             </PageHeader>
             <ContainerCustom>
                 <Stack direction="row" spacing={2} mb={2} mt={2}>
-                    <FormControl variant="outlined" sx={{ m: 1, minWidth: 120 }} size="small" error={errorInput}>
-                        <InputLabel id="demo-simple-select-standard-label">Cliente *</InputLabel>
-                        <Select
-                            label="Cliente *"
-                            value={orderService?.clientId?.toString()}
-                            name="clientId"
-                            onChange={changeValues}
-                        >
-                            {listClients.map((list, index: number) => (
-                                <MenuItem key={list.id} value={list.id}>{list.name}</MenuItem>
-                            ))}
-                        </Select>
-                        {errorInput && (
-                            <FormHelperText>Caampo obrigatório</FormHelperText>
+                    <Autocomplete
+                        size="small"
+                        disablePortal
+                        options={listClients}
+                        disabled={typeScreen === 'edit'}
+                        getOptionLabel={(option) => option.name}
+                        renderOption={(props, option) => {
+                            return (
+                                <li {...props} key={option.id}>
+                                    {option.name}
+                                </li>
+                            );
+                        }}
+                        onChange={(event, newValue) => setClientSelecioned(newValue)}
+                        value={clientSelecioned || null}
+                        renderInput={(params) => (
+                            <FormControl variant="outlined" sx={{ minWidth: 220 }} size="small" >
+                                <TextField
+                                    {...params}
+                                    // error={errorInput?.clientId}
+                                    label="Nome do Cliente *"
+                                />
+                                {/* {(errorInput?.clientId) && (
+                                    <FormHelperText>Campo obrigatório!</FormHelperText>
+                                )} */}
+                            </FormControl>
                         )}
-                    </FormControl>
+                    />
                 </Stack>
-                {viewClient && (
+                {viewClient && infoClients && (
                     <Stack direction="row" spacing={2} mb={2} mt={2}>
-                        <TextField value={infoClients?.plate} onChange={changeValuesClients} name='plate' label="Placa" size="small" variant="outlined" disabled={disableCLient} />
-                        <TextField value={infoClients?.model} onChange={changeValuesClients} name='model' label="Modelo" size="small" variant="outlined" disabled={disableCLient} />
-                        <TextField value={infoClients?.name} onChange={changeValuesClients} name='name' label="Nome" size="small" variant="outlined" disabled={disableCLient} />
-                        <TextField value={infoClients?.phone} onChange={changeValuesClients} name='phone' label="Telefone" size="small" variant="outlined" disabled={disableCLient} />
+                        <TextField value={infoClients.plate} onChange={changeValuesClients} name='plate' label="Placa" size="small" variant="outlined" disabled={disableCLient} />
+                        <TextField value={infoClients.model} onChange={changeValuesClients} name='model' label="Modelo" size="small" variant="outlined" disabled={disableCLient} />
+                        <TextField value={infoClients.name} onChange={changeValuesClients} name='name' label="Nome" size="small" variant="outlined" disabled={disableCLient} />
+                        <TextField value={infoClients.phone} onChange={changeValuesClients} name='phone' label="Telefone" size="small" variant="outlined" disabled={disableCLient} />
                         {disableCLient && (<Button color="warning" variant="outlined" onClick={() => setDIsableCLient(false)} endIcon={<CreateIcon />}>Editar</Button>)}
                     </Stack>
                 )}
@@ -222,7 +277,7 @@ const OrderServicesRegister = ({ params }: IProps) => {
                             ))}
                         </Select>
                         {errorInput && (
-                            <FormHelperText>Caampo obrigatório</FormHelperText>
+                            <FormHelperText>Campo obrigatório</FormHelperText>
                         )}
                     </FormControl>
                     <Button color="success" variant="outlined" endIcon={<AddIcon />} onClick={addServicesToBePerformed} >Adicionar</Button>
@@ -251,10 +306,19 @@ const OrderServicesRegister = ({ params }: IProps) => {
                 <Box sx={{ display: 'flex', placeContent: 'flex-end' }}>
                     <Stack direction="row" spacing={2}>
                         <Button color="error" variant="outlined" endIcon={<CloseIcon />} onClick={goBack} >Cancelar</Button>
-                        <Button color="success" variant="outlined" onClick={addOrderService} endIcon={<SaveIcon />}>Salvar</Button>
+                        <Button color="success" variant="outlined" onClick={() => setOpenConfirm(true)} endIcon={<SaveIcon />}>Salvar</Button>
                     </Stack>
                 </Box>
             </ContainerCustom>
+
+            <ConfirmPopup
+                toggle={openConfirm}
+                title={`${typeScreen} Ordem de Serviço`}
+                message={"Deseja confirma ordem de serviço?"}
+                confirmAction={addOrEditOrderService}
+                cancelFunction={() => setOpenConfirm(false)}
+            />
+
         </React.Fragment>
     )
 }

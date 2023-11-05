@@ -1,23 +1,29 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
-import styled from "styled-components";
-
-import CircleIcon from '@mui/icons-material/Circle';
-import OrderService from "@/actions/orderServices";
-import ContainerCustom from "@/components/Container";
-import FilterListIcon from '@mui/icons-material/FilterList';
-import SaveIcon from '@mui/icons-material/Save';
-import CloseIcon from '@mui/icons-material/Close';
-import MoreVertIcon from '@mui/icons-material/MoreVert';
-import { Box, Button, Stack, TextField, Select, MenuItem, FormControl, InputLabel, SelectChangeEvent, IconButton, Menu } from "@mui/material"
-import { NextPage } from 'next';
-import PageHeader from '@/components/PageHeader';
-import Link from 'next/link';
+/**Dependencies */
 import moment from 'moment';
-
-import "../../assets/css/orderServices.scss"
+import { NextPage } from 'next';
 import { toast } from 'react-toastify';
+import styled from "styled-components";
+import { useRouter } from 'next/navigation';
+import React, { useState, useEffect } from 'react'
+
+/**Components */
+import PageHeader from '@/components/PageHeader';
+import CloseIcon from '@mui/icons-material/Close';
+import { ConfirmPopup } from '@/components/Popups';
+import CircleIcon from '@mui/icons-material/Circle';
+import { ButtonPlus } from '@/components/ButtonPlus';
+import ContainerCustom from "@/components/Container";
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import FilterListIcon from '@mui/icons-material/FilterList';
+import { Box, Button, Stack, TextField, Select, MenuItem, FormControl, InputLabel, SelectChangeEvent, IconButton, Menu } from "@mui/material"
+
+/**Service */
+import OrderService from "@/actions/orderServices";
+
+/**scss */
+import "../../assets/css/orderServices.scss"
 
 
 const options = [
@@ -74,19 +80,34 @@ const OrderServices: NextPage = () => {
         { label: "Fechadas", value: 'closed' }
     ]
 
+    const router = useRouter()
+
     const [filter, setFIlter] = useState<IFilter>(initialFIlter)
     const [listOrderService, setListOrderService] = useState<Array<ICardsListOrderService>>([])
 
+    const [orderServiceSelected, setOrderServiceSelected] = useState<listOrderService | null>(null)
+
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-    const open = Boolean(anchorEl);
-    const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+    const openMenu = Boolean(anchorEl);
+
+    const [openFinishModal, setOpenFinishModal] = useState<boolean>(false)
+    const [idFinishModal, setIdFinishModal] = useState<number>(0)
+
+    const funcOpenFinishModal = (id: number) => {
+        setIdFinishModal(id)
+        setOpenFinishModal(true)
+    }
+
+    const handleClick = (event: React.MouseEvent<HTMLElement>, selected: listOrderService) => {
+        setOrderServiceSelected(selected)
         setAnchorEl(event.currentTarget);
     };
+    
     const handleOption = (option: string) => {
-        if(option === "Editar"){
-
+        if (option === "Editar") {
+            router.push(`/orderServices/form/edit/${orderServiceSelected?.order}`)
         }
-        // setAnchorEl(null);
+        setAnchorEl(null);
     };
 
 
@@ -142,9 +163,7 @@ const OrderServices: NextPage = () => {
     return (
         <React.Fragment>
             <PageHeader title="Ordem de serviço">
-                <Link href="/orderServices/form/register">
-                    <Button color="success" variant="contained" endIcon={<SaveIcon />}>Cadastrar Ordem de Serviço</Button>
-                </Link>
+                <ButtonPlus onCLick={() => router.push("/orderServices/form/register")} title="Cadastrar Ordem de Serviço" />
             </PageHeader>
             <ContainerCustom title="Filtrar">
                 <Stack direction="row" spacing={2} mb={2} mt={2}>
@@ -179,14 +198,14 @@ const OrderServices: NextPage = () => {
                                 <Card key={index} className='cardOrderService' >
                                     <div className='d-flex'>
                                         <label>nº {list.order}</label>
-                                        <div>
+                                        <div className='d-flex'>
                                             <IconButton
                                                 aria-label="more"
                                                 id="long-button"
-                                                aria-controls={open ? 'long-menu' : undefined}
-                                                aria-expanded={open ? 'true' : undefined}
+                                                aria-controls={openMenu ? 'long-menu' : undefined}
+                                                aria-expanded={openMenu ? 'true' : undefined}
                                                 aria-haspopup="true"
-                                                onClick={handleClick}
+                                                onClick={(e) => handleClick(e, list)}
                                             >
                                                 <MoreVertIcon />
                                             </IconButton>
@@ -196,7 +215,7 @@ const OrderServices: NextPage = () => {
                                                     'aria-labelledby': 'long-button',
                                                 }}
                                                 anchorEl={anchorEl}
-                                                open={open}
+                                                open={openMenu}
                                                 onClose={() => setAnchorEl(null)}
                                                 PaperProps={{
                                                     style: {
@@ -223,7 +242,7 @@ const OrderServices: NextPage = () => {
                                     <div className='d-flex'>
                                         <label>Criada em: {moment(list.dateCreated).format("DD/MM/YYYY")}</label>
                                         {list.status === "started" && (
-                                            <Button color="error" onClick={() => closeOrderService(list.order)} >FInalizar</Button>
+                                            <Button color="error" onClick={() => funcOpenFinishModal(list.order)} >FInalizar</Button>
                                         )}
                                     </div>
                                 </Card>
@@ -232,6 +251,15 @@ const OrderServices: NextPage = () => {
                     </ContainerCustom>
                 )
             ))}
+
+            <ConfirmPopup
+                toggle={openFinishModal}
+                title={"Finalizar ordem de serviço"}
+                message={"Deseja finalizar ordem de serviço?"}
+                confirmAction={() => closeOrderService(idFinishModal)}
+                cancelFunction={() => setOpenFinishModal(false)}
+            />
+
         </React.Fragment>
     )
 }
