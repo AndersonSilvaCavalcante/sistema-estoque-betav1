@@ -31,6 +31,9 @@ const menuOptions =
         }, {
             name: "Serviços",
             path: "/services"
+        },{
+            name: "Clientes",
+            path: "/clients"
         }, {
             name: "Configurações",
             path: "/settings"

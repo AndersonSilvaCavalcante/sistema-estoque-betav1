@@ -312,7 +312,7 @@ AS
 	WHERE id = @id;
 GO
 
-CREATE PROCEDURE get_Client
+CREATE OR ALTER PROCEDURE get_Client
 	@id int,
 	@name VARCHAR(255),
 	@plate VARCHAR(255)
