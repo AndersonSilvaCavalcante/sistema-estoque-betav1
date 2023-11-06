@@ -9,28 +9,26 @@ import { useRouter } from 'next/navigation';
 import React, { useState, useEffect } from 'react'
 
 /**Components */
+import Filter from '@/components/Filter';
 import PageHeader from '@/components/PageHeader';
-import CloseIcon from '@mui/icons-material/Close';
 import { ConfirmPopup } from '@/components/Popups';
 import CircleIcon from '@mui/icons-material/Circle';
 import { ButtonPlus } from '@/components/ButtonPlus';
 import ContainerCustom from "@/components/Container";
 import MoreVertIcon from '@mui/icons-material/MoreVert';
-import FilterListIcon from '@mui/icons-material/FilterList';
-import { Box, Button, Stack, TextField, Select, MenuItem, FormControl, InputLabel, SelectChangeEvent, IconButton, Menu } from "@mui/material"
+import { CustomTextInput } from '@/components/CustomInputs';
+import LottieFilesComponent from '@/components/LottieFilesComponent';
+import { Box, Button, TextField, Select, MenuItem, FormControl, InputLabel, SelectChangeEvent, IconButton, Menu, Autocomplete, Typography } from "@mui/material"
 
 /**Service */
+import Client from '@/actions/client';
 import OrderService from "@/actions/orderServices";
 
 /**scss */
 import "../../assets/css/orderServices.scss"
 
-
-const options = [
-    'Editar',
-    'Visualizar'
-];
-
+/**Animations */
+import emptyAnimation from "@/assets/animations/lottie/empty_animation.json"
 
 const Card = styled.div`
   padding: 15px;
@@ -51,7 +49,8 @@ const ContainerOrderService = styled.div`
 export interface IFilter {
     plate: string,
     order: number | string,
-    status: string
+    status: string,
+    clientId: number | string
 }
 
 interface ICardsListOrderService {
@@ -68,12 +67,25 @@ interface listOrderService {
     order: number,
     status: string,
     plate: string,
+    clientName: string,
     dateCreated: Date
+    dateClosed: Date
 }
+
+interface IOPtion {
+    title: string
+    value: string
+}
+
+const optionsInitial: Array<IOPtion> = [
+    { title: 'Editar', value: 'edit' },
+    { title: 'Visualizar', value: 'view' }
+];
+
 
 const OrderServices: NextPage = () => {
 
-    const initialFIlter: IFilter = { plate: '', order: '', status: 'started' }
+    const initialFIlter: IFilter = { plate: '', order: '', status: 'started', clientId: '' }
     const listStatus: Array<IStatus> = [
         { label: "Todos", value: ' ', },
         { label: "Abertas", value: 'started' },
@@ -87,11 +99,17 @@ const OrderServices: NextPage = () => {
 
     const [orderServiceSelected, setOrderServiceSelected] = useState<listOrderService | null>(null)
 
+    const [options, setOptions] = useState<Array<IOPtion>>(optionsInitial)
+
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const openMenu = Boolean(anchorEl);
 
     const [openFinishModal, setOpenFinishModal] = useState<boolean>(false)
     const [idFinishModal, setIdFinishModal] = useState<number>(0)
+
+    const [listClients, setClients] = useState<Array<ICLient>>([])
+    const [clientSelecioned, setClientSelecioned] = useState<ICLient | null>(null)
+
 
     const funcOpenFinishModal = (id: number) => {
         setIdFinishModal(id)
@@ -100,14 +118,18 @@ const OrderServices: NextPage = () => {
 
     const handleClick = (event: React.MouseEvent<HTMLElement>, selected: listOrderService) => {
         setOrderServiceSelected(selected)
+
+        if (selected.status == 'started') {
+            setOptions(optionsInitial)
+        } else {
+            setOptions([{ title: 'Visualizar', value: 'view' }])
+        }
+
         setAnchorEl(event.currentTarget);
     };
-    
+
     const handleOption = (option: string) => {
-        if (option === "Editar") {
-            router.push(`/orderServices/form/edit/${orderServiceSelected?.order}`)
-        }
-        setAnchorEl(null);
+        router.push(`/orderServices/form/${option}/${orderServiceSelected?.order}`)
     };
 
 
@@ -144,6 +166,7 @@ const OrderServices: NextPage = () => {
 
 
     const cleanFilters = () => {
+        setClientSelecioned(null)
         setFIlter(initialFIlter)
         getListOrderService(true)
     }
@@ -155,9 +178,24 @@ const OrderServices: NextPage = () => {
         setFIlter({ ...filter, [name]: value })
     }
 
+    const getListClients = async () => {
+        try {
+            const { data } = await Client.getListClients()
+            setClients(data)
+        } catch { }
+    }
+
+    useEffect(() => {
+        if (clientSelecioned) {
+            setFIlter({ ...filter, clientId: clientSelecioned.id })
+        } else {
+            setFIlter({ ...filter, clientId: '' })
+        }
+    }, [clientSelecioned])
 
     useEffect(() => {
         getListOrderService()
+        getListClients()
     }, [])
 
     return (
@@ -165,31 +203,46 @@ const OrderServices: NextPage = () => {
             <PageHeader title="Ordem de serviço">
                 <ButtonPlus onCLick={() => router.push("/orderServices/form/register")} title="Cadastrar Ordem de Serviço" />
             </PageHeader>
-            <ContainerCustom title="Filtrar">
-                <Stack direction="row" spacing={2} mb={2} mt={2}>
-                    <TextField value={filter?.plate} onChange={changeValues} name='plate' label="Placa" size="small" variant="outlined" />
-                    <TextField value={filter?.order} onChange={changeValues} name='order' type='number' label="N° da ordem" size="small" variant="outlined" />
-                    <FormControl variant="outlined" sx={{ m: 1, minWidth: 120 }} size="small">
-                        <InputLabel id="demo-simple-select-standard-label">Status</InputLabel>
-                        <Select
-                            label="Status"
-                            value={filter?.status}
-                            name="status"
-                            onChange={changeValues}
-                        >
-                            {listStatus.map((list, index: number) => (
-                                <MenuItem key={index} value={list.value}>{list.label}</MenuItem>
-                            ))}
-                        </Select>
-                    </FormControl>
-                </Stack>
-                <Box sx={{ display: 'flex', placeContent: 'flex-end' }}>
-                    <Stack direction="row" spacing={2}>
-                        <Button color="error" variant="outlined" endIcon={<CloseIcon />} onClick={cleanFilters} >Limpar</Button>
-                        <Button color="success" variant="outlined" endIcon={<FilterListIcon />} onClick={() => getListOrderService(false)} >Filtrar</Button>
-                    </Stack>
-                </Box>
-            </ContainerCustom>
+            <Filter cleanFunction={cleanFilters} filterFucntion={() => getListOrderService(false)}>
+                <CustomTextInput value={filter?.plate} name='plate' label="Placa" changeFunction={changeValues} />
+                <CustomTextInput value={filter?.order} name='order' label="N° da ordem" changeFunction={changeValues} />
+                <FormControl variant="outlined" sx={{ minWidth: 120 }} size="small">
+                    <InputLabel id="demo-simple-select-standard-label">Status</InputLabel>
+                    <Select
+                        label="Status"
+                        value={filter?.status}
+                        name="status"
+                        onChange={changeValues}
+                    >
+                        {listStatus.map((list, index: number) => (
+                            <MenuItem key={index} value={list.value}>{list.label}</MenuItem>
+                        ))}
+                    </Select>
+                </FormControl>
+                <Autocomplete
+                    size="small"
+                    disablePortal
+                    options={listClients}
+                    getOptionLabel={(option) => option.name}
+                    renderOption={(props, option) => {
+                        return (
+                            <li {...props} key={option.id}>
+                                {option.name}
+                            </li>
+                        );
+                    }}
+                    onChange={(event, newValue) => setClientSelecioned(newValue)}
+                    value={clientSelecioned}
+                    renderInput={(params) => (
+                        <FormControl variant="outlined" sx={{ minWidth: 275 }} size="small"  >
+                            <TextField
+                                {...params}
+                                label="Nome do Cliente *"
+                            />
+                        </FormControl>
+                    )}
+                />
+            </Filter>
             {listOrderService.map((card, index: number) => (
                 card.list.length > 0 && (
                     <ContainerCustom title={card.type} key={index}>
@@ -209,27 +262,7 @@ const OrderServices: NextPage = () => {
                                             >
                                                 <MoreVertIcon />
                                             </IconButton>
-                                            <Menu
-                                                id="long-menu"
-                                                MenuListProps={{
-                                                    'aria-labelledby': 'long-button',
-                                                }}
-                                                anchorEl={anchorEl}
-                                                open={openMenu}
-                                                onClose={() => setAnchorEl(null)}
-                                                PaperProps={{
-                                                    style: {
-                                                        maxHeight: 48 * 4.5,
-                                                        width: '20ch',
-                                                    },
-                                                }}
-                                            >
-                                                {options.map((option) => (
-                                                    <MenuItem key={option} onClick={() => handleOption(option)}>
-                                                        {option}
-                                                    </MenuItem>
-                                                ))}
-                                            </Menu>
+
                                             {list.status === 'started' ? (
                                                 <CircleIcon color='success' />
                                             ) : (
@@ -238,19 +271,59 @@ const OrderServices: NextPage = () => {
                                         </div>
 
                                     </div>
-                                    <p>{list.plate}</p>
+                                    <p>{list.clientName} | {list.plate}</p>
                                     <div className='d-flex'>
-                                        <label>Criada em: {moment(list.dateCreated).format("DD/MM/YYYY")}</label>
+                                        <label>Criada em: {moment(list.dateCreated).format("DD/MM/YYYY HH:mm:ss")}</label>
                                         {list.status === "started" && (
                                             <Button color="error" onClick={() => funcOpenFinishModal(list.order)} >FInalizar</Button>
+                                        )}
+                                        {list.status === "closed" && (
+                                            <label>Finalizada em: {moment(list.dateClosed).format("DD/MM/YYYY HH:mm:ss")}</label>
                                         )}
                                     </div>
                                 </Card>
                             ))}
+                            <Menu
+                                id="long-menu"
+                                MenuListProps={{
+                                    'aria-labelledby': 'long-button',
+                                }}
+                                anchorEl={anchorEl}
+                                open={openMenu}
+                                onClose={() => setAnchorEl(null)}
+                                PaperProps={{
+                                    style: {
+                                        maxHeight: 48 * 4.5,
+                                        width: '20ch',
+                                    },
+                                }}
+                            >
+                                {options.map((option) => (
+                                    <MenuItem key={option.value} onClick={() => handleOption(option.value)}>
+                                        {option.title}
+                                    </MenuItem>
+                                ))}
+                            </Menu>
                         </ContainerOrderService>
                     </ContainerCustom>
                 )
             ))}
+
+
+            {listOrderService.length == 0 && (
+                <ContainerCustom>
+                    <Box mt={5} mb={5} sx={{
+                        display: 'grid',
+                        placeItems: 'center',
+                        textAlign: 'center'
+                    }}>
+                        <Box>
+                            <LottieFilesComponent animation={emptyAnimation} loop={true} />
+                            <Typography variant={"h5"} component={"p"}>Não há dados</Typography>
+                        </Box>
+                    </Box>
+                </ContainerCustom>
+            )}
 
             <ConfirmPopup
                 toggle={openFinishModal}

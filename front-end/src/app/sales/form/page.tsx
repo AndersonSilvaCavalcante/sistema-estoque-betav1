@@ -12,13 +12,11 @@ import { ConfirmPopup, CustomPopup } from "@/components/Popups";
 import ContainerCustom from "@/components/Container";
 import { ButtonPlus } from "@/components/ButtonPlus";
 import { CustomTextInput } from "@/components/CustomInputs";
-import { Box, Button, Stack, TextField, Select, SelectChangeEvent, FormControl, InputLabel, MenuItem, FormHelperText, Autocomplete } from "@mui/material"
+import { Box, Button, Stack, TextField, SelectChangeEvent, FormControl, FormHelperText, Autocomplete } from "@mui/material"
 
 /**Icons */
 import SaveIcon from '@mui/icons-material/Save';
 import CloseIcon from '@mui/icons-material/Close';
-import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
-import LocalOfferIcon from '@mui/icons-material/LocalOffer';
 
 /**Service */
 import Client from "@/actions/client";
@@ -72,6 +70,7 @@ const SalesForm = () => {
     const [clientSelecioned, setClientSelecioned] = useState<ICLient | null>(null)
 
     const [openAddDiscount, setOpenAddDiscount] = useState<boolean>(false)
+    
 
     const changeValues = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | SelectChangeEvent<string> | React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const name = e.target.name

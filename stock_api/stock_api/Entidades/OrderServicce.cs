@@ -11,6 +11,7 @@
         public int ClientId { get; set; }
         public string Services { get; set; }
         public string Comments { get; set; }
+        public string ClientName { get; set; }
 
     }
 }

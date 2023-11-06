@@ -88,7 +88,6 @@ const ProductRegisterOrUpdate = ({ params }: IProps) => {
             router.replace("/products")
         } catch (error) {
             toast.error("Algo deu errado ao salvar o Produto")
-            console.error(error)
         }
     }
 

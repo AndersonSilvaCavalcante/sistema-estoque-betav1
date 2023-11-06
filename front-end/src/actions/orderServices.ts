@@ -3,7 +3,7 @@ import api from "./api"
 
 class OrderService {
     static getListOrderService(filter: IFilter) {
-        const { status, plate, order } = filter
+        const { status, plate, order, clientId } = filter
         let addFilter = `?status=${status}`
 
         if (plate) {
@@ -13,6 +13,11 @@ class OrderService {
         if (order) {
             addFilter = addFilter + `&order=${order}`
         }
+
+        if (clientId) {
+            addFilter = addFilter + `&clientId=${clientId}`
+        }
+
 
         return api.get(`ListOrderService${addFilter}`)
     }
