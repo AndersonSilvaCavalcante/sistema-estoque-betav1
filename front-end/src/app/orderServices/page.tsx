@@ -9,26 +9,26 @@ import { useRouter } from 'next/navigation';
 import React, { useState, useEffect } from 'react'
 
 /**Components */
+import Filter from '@/components/Filter';
 import PageHeader from '@/components/PageHeader';
-import CloseIcon from '@mui/icons-material/Close';
 import { ConfirmPopup } from '@/components/Popups';
 import CircleIcon from '@mui/icons-material/Circle';
 import { ButtonPlus } from '@/components/ButtonPlus';
 import ContainerCustom from "@/components/Container";
 import MoreVertIcon from '@mui/icons-material/MoreVert';
-import FilterListIcon from '@mui/icons-material/FilterList';
-import { Box, Button, Stack, TextField, Select, MenuItem, FormControl, InputLabel, SelectChangeEvent, IconButton, Menu } from "@mui/material"
+import { CustomTextInput } from '@/components/CustomInputs';
+import LottieFilesComponent from '@/components/LottieFilesComponent';
+import { Box, Button, TextField, Select, MenuItem, FormControl, InputLabel, SelectChangeEvent, IconButton, Menu, Autocomplete, Typography } from "@mui/material"
 
 /**Service */
+import Client from '@/actions/client';
 import OrderService from "@/actions/orderServices";
 
 /**scss */
 import "../../assets/css/orderServices.scss"
-import Filter from '@/components/Filter';
-import { CustomTextInput } from '@/components/CustomInputs';
 
-
-
+/**Animations */
+import emptyAnimation from "@/assets/animations/lottie/empty_animation.json"
 
 const Card = styled.div`
   padding: 15px;
@@ -49,7 +49,8 @@ const ContainerOrderService = styled.div`
 export interface IFilter {
     plate: string,
     order: number | string,
-    status: string
+    status: string,
+    clientId: number | string
 }
 
 interface ICardsListOrderService {
@@ -66,7 +67,9 @@ interface listOrderService {
     order: number,
     status: string,
     plate: string,
+    clientName: string,
     dateCreated: Date
+    dateClosed: Date
 }
 
 interface IOPtion {
@@ -82,7 +85,7 @@ const optionsInitial: Array<IOPtion> = [
 
 const OrderServices: NextPage = () => {
 
-    const initialFIlter: IFilter = { plate: '', order: '', status: 'started' }
+    const initialFIlter: IFilter = { plate: '', order: '', status: 'started', clientId: '' }
     const listStatus: Array<IStatus> = [
         { label: "Todos", value: ' ', },
         { label: "Abertas", value: 'started' },
@@ -103,6 +106,10 @@ const OrderServices: NextPage = () => {
 
     const [openFinishModal, setOpenFinishModal] = useState<boolean>(false)
     const [idFinishModal, setIdFinishModal] = useState<number>(0)
+
+    const [listClients, setClients] = useState<Array<ICLient>>([])
+    const [clientSelecioned, setClientSelecioned] = useState<ICLient | null>(null)
+
 
     const funcOpenFinishModal = (id: number) => {
         setIdFinishModal(id)
@@ -159,6 +166,7 @@ const OrderServices: NextPage = () => {
 
 
     const cleanFilters = () => {
+        setClientSelecioned(null)
         setFIlter(initialFIlter)
         getListOrderService(true)
     }
@@ -170,9 +178,24 @@ const OrderServices: NextPage = () => {
         setFIlter({ ...filter, [name]: value })
     }
 
+    const getListClients = async () => {
+        try {
+            const { data } = await Client.getListClients()
+            setClients(data)
+        } catch { }
+    }
+
+    useEffect(() => {
+        if (clientSelecioned) {
+            setFIlter({ ...filter, clientId: clientSelecioned.id })
+        } else {
+            setFIlter({ ...filter, clientId: '' })
+        }
+    }, [clientSelecioned])
 
     useEffect(() => {
         getListOrderService()
+        getListClients()
     }, [])
 
     return (
@@ -196,6 +219,29 @@ const OrderServices: NextPage = () => {
                         ))}
                     </Select>
                 </FormControl>
+                <Autocomplete
+                    size="small"
+                    disablePortal
+                    options={listClients}
+                    getOptionLabel={(option) => option.name}
+                    renderOption={(props, option) => {
+                        return (
+                            <li {...props} key={option.id}>
+                                {option.name}
+                            </li>
+                        );
+                    }}
+                    onChange={(event, newValue) => setClientSelecioned(newValue)}
+                    value={clientSelecioned}
+                    renderInput={(params) => (
+                        <FormControl variant="outlined" sx={{ minWidth: 275 }} size="small"  >
+                            <TextField
+                                {...params}
+                                label="Nome do Cliente *"
+                            />
+                        </FormControl>
+                    )}
+                />
             </Filter>
             {listOrderService.map((card, index: number) => (
                 card.list.length > 0 && (
@@ -225,11 +271,14 @@ const OrderServices: NextPage = () => {
                                         </div>
 
                                     </div>
-                                    <p>{list.plate}</p>
+                                    <p>{list.clientName} | {list.plate}</p>
                                     <div className='d-flex'>
-                                        <label>Criada em: {moment(list.dateCreated).format("DD/MM/YYYY")}</label>
+                                        <label>Criada em: {moment(list.dateCreated).format("DD/MM/YYYY HH:mm:ss")}</label>
                                         {list.status === "started" && (
                                             <Button color="error" onClick={() => funcOpenFinishModal(list.order)} >FInalizar</Button>
+                                        )}
+                                        {list.status === "closed" && (
+                                            <label>Finalizada em: {moment(list.dateClosed).format("DD/MM/YYYY HH:mm:ss")}</label>
                                         )}
                                     </div>
                                 </Card>
@@ -259,6 +308,22 @@ const OrderServices: NextPage = () => {
                     </ContainerCustom>
                 )
             ))}
+
+
+            {listOrderService.length == 0 && (
+                <ContainerCustom>
+                    <Box mt={5} mb={5} sx={{
+                        display: 'grid',
+                        placeItems: 'center',
+                        textAlign: 'center'
+                    }}>
+                        <Box>
+                            <LottieFilesComponent animation={emptyAnimation} loop={true} />
+                            <Typography variant={"h5"} component={"p"}>Não há dados</Typography>
+                        </Box>
+                    </Box>
+                </ContainerCustom>
+            )}
 
             <ConfirmPopup
                 toggle={openFinishModal}

@@ -62,7 +62,6 @@ const ClientsRegisterOrUpdate = ({ params }: IProps) => {
             router.replace("/clients")
         } catch (error) {
             toast.error("Algo deu errado ao salvar o Cliente")
-            console.error(error)
         }
     }
 

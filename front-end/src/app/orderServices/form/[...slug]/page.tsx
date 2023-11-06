@@ -165,7 +165,7 @@ const OrderServicesRegister = ({ params }: IProps) => {
 
     const getOrderById = async (id: string) => {
         try {
-            const { data } = await OrderService.getListOrderService({ order: id, plate: '', status: '' })
+            const { data } = await OrderService.getListOrderService({ order: id, plate: '', status: '', clientId: '' })
             setOrderService({ ...data[0], services: '' })
 
             const clientInfo = listClients.filter(client => client.id === data[0].clientId)[0]

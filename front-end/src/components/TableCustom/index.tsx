@@ -87,7 +87,7 @@ const TableCustom = ({ titles, data, edit, remove, editFunction, removeFunction,
                             >
                                 {titles.map((title: ITitles, index: number) => (
                                     title.date ? (
-                                        <TableCell key={index} >{moment(data[title.value]).format("DD/MM/YYYY")}</TableCell>
+                                        <TableCell key={index} >{moment(data[title.value]).format("DD/MM/YYYY HH:mm:ss")}</TableCell>
                                     ) : (
                                         <TableCell key={index} >{title.valuePrefix ? valuePrefixes[title.valuePrefix] : null}{data[title.value]}</TableCell>
                                     )

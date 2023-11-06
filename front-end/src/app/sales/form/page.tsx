@@ -72,6 +72,7 @@ const SalesForm = () => {
     const [clientSelecioned, setClientSelecioned] = useState<ICLient | null>(null)
 
     const [openAddDiscount, setOpenAddDiscount] = useState<boolean>(false)
+    
 
     const changeValues = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | SelectChangeEvent<string> | React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const name = e.target.name

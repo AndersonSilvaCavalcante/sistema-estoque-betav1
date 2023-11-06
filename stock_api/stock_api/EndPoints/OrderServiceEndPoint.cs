@@ -7,11 +7,12 @@ namespace stock_api.EndPoints
     {
         public static void MapOrderServiceEndPoint(this WebApplication app)
         {
-            app.MapGet("ListOrderService", async ( string? status, string? plate, int? order) => {
+            app.MapGet("ListOrderService", async ( string? status, string? plate, int? order, int? clientId) => {
                 List<ParametroValor> pv = new List<ParametroValor>();
                 pv.Add(new ParametroValor("@status", status));
                 pv.Add(new ParametroValor("@plate", plate));
                 pv.Add(new ParametroValor("@order", order));
+                pv.Add(new ParametroValor("@clientId", clientId));
                 return Persistencia.ExecutarSql<OrderService>(@"get_OrderService", pv, tipoconsulta: TipoConsulta.STORED_PROCEDURE).ToList();
             }).WithTags("orderService");
 
