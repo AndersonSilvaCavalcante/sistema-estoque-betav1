@@ -38,6 +38,11 @@ interface IProps {
     }
 }
 
+interface IErroForm {
+    clientId?: boolean,
+    services?: boolean,
+}
+
 const OrderServicesRegister = ({ params }: IProps) => {
 
     const { slug } = params;
@@ -63,7 +68,6 @@ const OrderServicesRegister = ({ params }: IProps) => {
     }
 
     const router = useRouter()
-    const searchParams = usePathname()
 
     const [orderService, setOrderService] = useState<IOrderService>(initialOrderService)
 
@@ -76,13 +80,13 @@ const OrderServicesRegister = ({ params }: IProps) => {
     const [viewClient, setViewCLient] = useState<boolean>(false)
     const [disableCLient, setDIsableCLient] = useState<boolean>(true)
 
-    const [errorInput, setErrorInput] = useState<boolean>(false)
-
     const [openConfirm, setOpenConfirm] = useState<boolean>(false)
 
     const [clientSelecioned, setClientSelecioned] = useState<ICLient | null>(null)
 
     const [typeScreen, setTypeScreen] = useState<string>("Cadastrar")
+
+    const [errorInput, setErrorInput] = useState<null | IErroForm>(null)
 
     const changeValues = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | SelectChangeEvent<string> | React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const name = e.target.name
@@ -114,18 +118,29 @@ const OrderServicesRegister = ({ params }: IProps) => {
             id: index
         }))
         setServicesToBePerformed(dados)
+        setErrorInput({...errorInput, services: false})
     }
 
     const deleteServicesToBePerformed = (id: number) => {
-        setServicesToBePerformed(listServices.filter(list => list.id !== id))
+        setServicesToBePerformed(servicesToBePerformed.filter(list => list.id !== id))
     }
 
     const addOrEditOrderService = async () => {
 
-        setErrorInput(false)
+        setErrorInput(null)
 
-        if (!orderService.clientId || servicesToBePerformed.length === 0) {
-            return setErrorInput(true)
+        let error: IErroForm = {}
+
+        if (!orderService.clientId) {
+            error = { ...error, clientId: true }
+        }
+
+        if (servicesToBePerformed.length === 0) {
+            error = { ...error, services: true }
+        }
+
+        if (Object.keys(error).length !== 0) {
+            return setErrorInput(error)
         }
 
         try {
@@ -239,15 +254,15 @@ const OrderServicesRegister = ({ params }: IProps) => {
                         onChange={(event, newValue) => setClientSelecioned(newValue)}
                         value={clientSelecioned || null}
                         renderInput={(params) => (
-                            <FormControl variant="outlined" sx={{ minWidth: 220 }} size="small" >
+                            <FormControl variant="outlined" sx={{ minWidth: 220 }} size="small" error={errorInput?.clientId} >
                                 <TextField
                                     {...params}
-                                    // error={errorInput?.clientId}
+                                    error={errorInput?.clientId}
                                     label="Nome do Cliente *"
                                 />
-                                {/* {(errorInput?.clientId) && (
+                                {(errorInput?.clientId) && (
                                     <FormHelperText>Campo obrigatório!</FormHelperText>
-                                )} */}
+                                )}
                             </FormControl>
                         )}
                     />
@@ -270,8 +285,8 @@ const OrderServicesRegister = ({ params }: IProps) => {
                     </Box>
                 )}
                 {typeScreen !== 'Visualizar' && (
-                    <Stack direction="row" spacing={2} mb={2} mt={2}>
-                        <FormControl variant="outlined" sx={{ m: 1, minWidth: 300 }} size="small" error={errorInput}>
+                    <Stack direction="row" spacing={2} mb={2} mt={2} sx={{alignItems: "baseline"}}>
+                        <FormControl variant="outlined" sx={{ m: 1, minWidth: 300 }} size="small" error={errorInput?.services}>
                             <InputLabel >Serviços a serem feitos *</InputLabel>
                             <Select
                                 label="Serviços a serem feitos *"
@@ -283,11 +298,11 @@ const OrderServicesRegister = ({ params }: IProps) => {
                                     <MenuItem key={list.id} value={list.id}>{list.name}</MenuItem>
                                 ))}
                             </Select>
-                            {errorInput && (
+                            {errorInput?.services && (
                                 <FormHelperText>Campo obrigatório</FormHelperText>
                             )}
                         </FormControl>
-                        <Button color="success" variant="outlined" endIcon={<AddIcon />} onClick={addServicesToBePerformed} >Adicionar</Button>
+                        <Button color="success" variant="outlined" endIcon={<AddIcon />} onClick={addServicesToBePerformed} disabled={orderService?.services == ''} >Adicionar</Button>
                     </Stack>
                 )}
                 {servicesToBePerformed.length > 0 && (
