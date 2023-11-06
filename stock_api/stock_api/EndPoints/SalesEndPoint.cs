@@ -20,6 +20,8 @@ namespace stock_api.EndPoints
                 pv.Add(new ParametroValor("@discount", sales.Discount));
                 pv.Add(new ParametroValor("@products", JsonSerializer.Serialize(sales.Products)));
                 pv.Add(new ParametroValor("@value", sales.Value));
+                pv.Add(new ParametroValor("@valueBeforeDIscount", sales.ValueBeforeDIscount));
+                pv.Add(new ParametroValor("@valueCostPrice", sales.ValueCostPrice));
             Persistencia.ExecutarSqlSemRetorno(@"post_sales", pv, tipoconsulta: TipoConsulta.STORED_PROCEDURE);
             }).WithTags("sales");
         }

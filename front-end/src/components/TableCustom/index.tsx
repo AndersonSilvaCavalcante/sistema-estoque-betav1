@@ -8,8 +8,8 @@ import { ConfirmPopup } from "@/components/Popups";
 /**Icons */
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
-import SearchOffIcon from '@mui/icons-material/SearchOff';
 import LottieFilesComponent from "../LottieFilesComponent";
+import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
 
 /**Animations */
 import emptyAnimation from "@/assets/animations/lottie/empty_animation.json"
@@ -20,9 +20,12 @@ interface IProps {
     data: any,
     edit?: boolean,
     remove?: boolean,
+    view?: boolean,
     editFunction?: (data: any) => void,
+    viewFunction?: (data: any) => void,
     removeFunction?: (id: number) => void,
     sum?: boolean
+    subValue?: number
 }
 
 interface IPopupData {
@@ -32,9 +35,9 @@ interface IPopupData {
 
 const valuePrefixes = { currency: "R$" }
 
-const TableCustom = ({ titles, data, edit, remove, editFunction, removeFunction, sum }: IProps) => {
+const TableCustom = ({ titles, data, edit, remove, editFunction, removeFunction, sum, subValue = 0, view, viewFunction }: IProps) => {
     const [popupData, setPopupData] = useState<IPopupData>({ toggle: false, id: 0 })
-    const [sunPrice, setSumPrice] = useState<number>(0)
+    const [sumPrice, setSumPrice] = useState<number>(0)
     const handleClose = () => {
         setPopupData({ toggle: false, id: 0 })
     }
@@ -48,8 +51,7 @@ const TableCustom = ({ titles, data, edit, remove, editFunction, removeFunction,
             } else {
                 sum = sum + data.totalCurrentPrice
             }
-        }
-        )
+        })
 
         setSumPrice(sum)
     }
@@ -98,16 +100,35 @@ const TableCustom = ({ titles, data, edit, remove, editFunction, removeFunction,
                                         {remove && removeFunction && (
                                             <Button onClick={() => setPopupData({ toggle: true, id: data.id })} color="error" variant="outlined" startIcon={<DeleteIcon />}>Deletar</Button>
                                         )}
+                                        {view && viewFunction && (
+                                            <Button onClick={() => viewFunction(data)} color="warning" variant="outlined" startIcon={<RemoveRedEyeIcon />}>Visualizar</Button>
+                                        )}
                                     </Stack>
                                 </TableCell>
                             </TableRow>
                         ))}
+                        {subValue !== 0 && (
+                            <>
+                                <TableRow
+                                    sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                                >
+                                    <TableCell>SubTotal</TableCell>
+                                    <TableCell colSpan={2}>R$ {sumPrice}</TableCell>
+                                </TableRow>
+                                <TableRow
+                                    sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                                >
+                                    <TableCell>Desconto</TableCell>
+                                    <TableCell colSpan={2}>R$ {subValue}</TableCell>
+                                </TableRow>
+                            </>
+                        )}
                         {sum && (
                             <TableRow
                                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                             >
                                 <TableCell>TOTAL</TableCell>
-                                <TableCell colSpan={2}>R$ {sunPrice}</TableCell>
+                                <TableCell colSpan={2}>R$ {sumPrice - subValue}</TableCell>
                             </TableRow>
                         )}
                     </TableBody>

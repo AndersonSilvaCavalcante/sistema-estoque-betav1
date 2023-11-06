@@ -18,6 +18,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import SaveIcon from '@mui/icons-material/Save';
 import { toast } from "react-toastify"
 import Supplier from "@/actions/suppliers"
+import { ConfirmPopup } from "@/components/Popups"
 
 interface IProps {
     params: {
@@ -41,6 +42,10 @@ const ProductRegisterOrUpdate = ({ params }: IProps) => {
         salePrice: 0
     }
     const [product, setProduct] = useState<IProduct>(initialProduct)
+    const [popupConfirmToggle, setPopupConfirmToggle] = useState<boolean>(false)
+    const handleClose = () => {
+        setPopupConfirmToggle(false)
+    }
 
     const getSuppliersList = async () => {
         try {
@@ -78,6 +83,7 @@ const ProductRegisterOrUpdate = ({ params }: IProps) => {
             slug[0] == "register" ? await ProductServices.saveProduct(product) : null
             slug[0] == "edit" ? await ProductServices.editProduct(product) : null
             setProduct(initialProduct)
+            handleClose
             toast.success("Produto Salvo com sucesso!")
             router.replace("/products")
         } catch (error) {
@@ -87,7 +93,7 @@ const ProductRegisterOrUpdate = ({ params }: IProps) => {
     }
 
     const goBack = () => {
-        router.back()
+        router.replace("/products")
     }
 
     useEffect(() => {
@@ -137,10 +143,17 @@ const ProductRegisterOrUpdate = ({ params }: IProps) => {
                 <Box sx={{ display: 'flex', placeContent: 'flex-end' }}>
                     <Stack direction="row" spacing={2}>
                         <Button color="error" onClick={goBack} variant="outlined" endIcon={<CloseIcon />}>Cancelar</Button>
-                        <Button color="success" onClick={saveProduct} variant="contained" endIcon={<SaveIcon />}>Salvar</Button>
+                        <Button color="success" onClick={() => setPopupConfirmToggle(true)} variant="contained" endIcon={<SaveIcon />}>Salvar</Button>
                     </Stack>
                 </Box>
             </ContainerCustom>
+            <ConfirmPopup
+                toggle={popupConfirmToggle}
+                title={`${action} Produto`}
+                message={"Confirma esta ação?"}
+                confirmAction={saveProduct}
+                cancelFunction={handleClose}
+            />
         </React.Fragment>
     )
 }

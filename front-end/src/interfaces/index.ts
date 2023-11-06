@@ -37,12 +37,15 @@ declare global {
     interface ISale {
         id: number,
         products: Array<IProductSale>,
+        productsString: string,
         qtd: number | string,
         clientId: number | string,
         value: number,
         clientName: string,
         discount: number,
-        dateCreated: Date
+        dateCreated: Date,
+        valueBeforeDIscount: number
+        valueCostPrice: number
     }
 
     //usado na tabela de venda de produtos 

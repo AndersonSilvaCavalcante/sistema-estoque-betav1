@@ -4,11 +4,13 @@
     {
         public int Order { get; set; }
         public DateTime DateCreated { get; set; }
+        public DateTime DateUpdated { get; set; }
+        public DateTime DateClosed { get; set; }
         public string Plate { get; set; }
         public string Status { get; set; }
-        public DateTime DateClosed { get; set; }
         public int ClientId { get; set; }
         public string Services { get; set; }
         public string Comments { get; set; }
+
     }
 }

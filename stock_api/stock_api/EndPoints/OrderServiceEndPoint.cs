@@ -23,7 +23,7 @@ namespace stock_api.EndPoints
                 Persistencia.ExecutarSqlSemRetorno(@"post_OrderService", pv, tipoconsulta: TipoConsulta.STORED_PROCEDURE);
             }).WithTags("orderService");
 
-            app.MapPost("EditOrderService", async ([FromBody] OrderService orderService, int id) => {
+            app.MapPut("EditOrderService", async ([FromBody] OrderService orderService, int id) => {
                 List<ParametroValor> pv = new List<ParametroValor>();
                 pv.Add(new ParametroValor("@clientId", orderService.ClientId));
                 pv.Add(new ParametroValor("@services", orderService.Services));

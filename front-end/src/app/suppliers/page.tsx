@@ -7,13 +7,13 @@ import React, { useEffect, useState } from "react"
 import Supplier from "@/actions/suppliers"
 
 /**Components */
-import { Box, Button, TextField } from "@mui/material"
+import { Box, Button } from "@mui/material"
 import PageHeader from "@/components/PageHeader"
 import TableCustom from "@/components/TableCustom"
 import ContainerCustom from "@/components/Container"
-import { CustomPopup } from "@/components/Popups"
+import { ConfirmPopup, CustomPopup } from "@/components/Popups"
 import { toast } from "react-toastify"
-import { CustomTextInput } from "@/components/CustomInputs"
+import { CustomTelInput, CustomTextInput } from "@/components/CustomInputs"
 
 /**Icons */
 import SaveIcon from "@mui/icons-material/Save"
@@ -35,6 +35,12 @@ export interface IFilter {
 interface ISaveSupplierPopupData {
     title: string
     type: "edit" | "create"
+    confirmPopupToggle?: boolean
+}
+
+interface ISupplierConfirmPopup {
+    toggle: boolean
+    msg?: string
 }
 
 const Suppliers: NextPage = () => {
@@ -45,12 +51,14 @@ const Suppliers: NextPage = () => {
         setSupplierPopup(false)
         setErrorInput(false)
     }
+
     const initialFIlter: IFilter = { id: null, name: '' }
     const initialSupplier: ISupplier = { id: 0, name: "", contact: "" }
     const [suppliers, setSuppliers] = useState<Array<ISupplier>>([])
     const [supplier, setSupplier] = useState<ISupplier>(initialSupplier)
     const [filter, setFilter] = useState<IFilter>(initialFIlter)
     const [saveSupplierPopupData, setSaveSupplierPopupData] = useState<ISaveSupplierPopupData>()
+    const [supplierConfirmPopup, setSupplierConfirmPopup] = useState<ISupplierConfirmPopup>({ toggle: false, msg: '' })
     const [errorInput, setErrorInput] = useState<boolean>(false)
 
     const getSuppliersList = async (clean?: boolean) => {
@@ -86,6 +94,7 @@ const Suppliers: NextPage = () => {
                     await Supplier.editSupplier(supplier)
                 }
                 setSupplier(initialSupplier)
+                setSupplierConfirmPopup({ toggle: false, msg: '' })
                 handleClose()
                 toast.success("Fornecedor Salvo com Sucesso!")
                 getSuppliersList()
@@ -126,27 +135,10 @@ const Suppliers: NextPage = () => {
 
     useEffect(() => {
         getSuppliersList()
-    },[])
+    }, [])
 
     return (
         <React.Fragment>
-            <CustomPopup
-                toggle={openSupplierPopup}
-                title={saveSupplierPopupData?.title}
-                confirmButtonTitle="Salvar"
-                confirmButtonIcon={<SaveIcon />}
-                confirmAction={saveSupplier}
-                cancelFunction={handleClose}
-            >
-                <Box sx={{
-                    display: "flex",
-                    flexDirection: "column",
-                    gridGap: 20
-                }}>
-                    <CustomTextInput value={supplier?.name} label={"Nome"} name={"name"} changeFunction={changeSuplierValues} error={errorInput} />
-                    <CustomTextInput value={supplier?.contact} label={"Contato"} name={"contact"} changeFunction={changeSuplierValues} error={errorInput} />
-                </Box>
-            </CustomPopup>
             <PageHeader title="Fornecedores">
                 <ButtonPlus onCLick={showSaveNewSupplier} title="Cadastrar Fornecedor" />
             </PageHeader>
@@ -163,6 +155,30 @@ const Suppliers: NextPage = () => {
                     removeFunction={deleteSupplier}
                 />
             </ContainerCustom>
+            <ConfirmPopup
+                toggle={supplierConfirmPopup.toggle}
+                title={supplierConfirmPopup.msg}
+                message={"Confirma esta ação?"}
+                confirmAction={saveSupplier}
+                cancelFunction={() => setSupplierConfirmPopup({ toggle: false, msg: saveSupplierPopupData?.title })}
+            />
+            <CustomPopup
+                toggle={openSupplierPopup}
+                title={saveSupplierPopupData?.title}
+                confirmButtonTitle="Salvar"
+                confirmButtonIcon={<SaveIcon />}
+                confirmAction={() => setSupplierConfirmPopup({ toggle: true, msg: saveSupplierPopupData?.title })}
+                cancelFunction={handleClose}
+            >
+                <Box sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gridGap: 20
+                }}>
+                    <CustomTextInput value={supplier?.name} label={"Nome"} name={"name"} changeFunction={changeSuplierValues} error={errorInput} />
+                    <CustomTelInput label={"Contato"} value={supplier?.contact} name={"contact"} changeFunction={(newValue) => setSupplier({ ...supplier, contact: newValue })} error={errorInput} />
+                </Box>
+            </CustomPopup>
         </React.Fragment>
     )
 }
