@@ -11,5 +11,7 @@
         public int QtdCurrent { get; set; }
         public float CostPrice { get; set; }
         public float SalePrice { get; set; }
+        public DateTime DateCreated { get; set; }
+        public DateTime DateUpdated { get; set; }
     }
 }

@@ -114,6 +114,8 @@ CREATE TABLE services(
 	name VARCHAR(255) NOT NULL,
 	costPrice float NOT NULL,
 	salePrice float NOT NULL
+	dateCreated datetime default(GETDATE())
+	dateUpdated datetime default(GETDATE())
 )
 
 CREATE TABLE client(
@@ -123,6 +125,7 @@ CREATE TABLE client(
 	plate VARCHAR(255) NOT NULL,
 	model VARCHAR(255) NOT NULL,
 	dateCreated datetime default(GETDATE())
+	dateUpdated datetime default(GETDATE())
 )
 
 CREATE TABLE orderService (
@@ -131,7 +134,8 @@ CREATE TABLE orderService (
 	services VARCHAR(255) NOT NULL,
 	comments VARCHAR(255),
 	status VARCHAR(255) NOT NULL DEFAULT('started'),
-	dateCreated date default(GETDATE()),
+	dateCreated datetime default(GETDATE()),
+	dateUpdated datetime default(GETDATE())
 	dateClosed date,
 	FOREIGN KEY (clientId) REFERENCES client(id)
 )
@@ -209,6 +213,7 @@ CREATE OR ALTER PROCEDURE get_supplier
 	@name varchar(255)
 AS
 	SELECT 
+		dateCreated,
 		id ,
 		name,
 		contact

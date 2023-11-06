@@ -12,6 +12,7 @@
         public float? ValueBeforeDIscount { get; set; }
         public float? ValueCostPrice { get; set; }
         public DateTime DateCreated { get; set; }
+        public DateTime DateUpdated { get; set; }
 
 
     }
