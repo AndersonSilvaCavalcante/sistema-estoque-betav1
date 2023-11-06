@@ -15,6 +15,7 @@ import { Box, Button, Stack, TextField, Select, SelectChangeEvent, FormControl, 
 import SaveIcon from '@mui/icons-material/Save';
 import CloseIcon from '@mui/icons-material/Close';
 import CreateIcon from '@mui/icons-material/Create';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 /**Service */
 import Client from "@/actions/client";
@@ -198,6 +199,11 @@ const OrderServicesRegister = ({ params }: IProps) => {
             if (slug[0] === 'edit') {
                 setTypeScreen("Editar")
                 getOrderById(slug[1])
+            } else if (slug[0] === 'view') {
+                setTypeScreen("Visualizar")
+                getOrderById(slug[1])
+            } else {
+                setTypeScreen("Cadastrar")
             }
         }
     }, [slug, listClients])
@@ -213,7 +219,7 @@ const OrderServicesRegister = ({ params }: IProps) => {
 
     return (
         <React.Fragment>
-            <PageHeader title="Cadastrar Ordem de Serviço">
+            <PageHeader title={`${typeScreen} Ordem de Serviço`}>
             </PageHeader>
             <ContainerCustom>
                 <Stack direction="row" spacing={2} mb={2} mt={2}>
@@ -221,7 +227,7 @@ const OrderServicesRegister = ({ params }: IProps) => {
                         size="small"
                         disablePortal
                         options={listClients}
-                        disabled={typeScreen === 'edit'}
+                        disabled={typeScreen !== 'Cadastrar'}
                         getOptionLabel={(option) => option.name}
                         renderOption={(props, option) => {
                             return (
@@ -252,7 +258,7 @@ const OrderServicesRegister = ({ params }: IProps) => {
                         <TextField value={infoClients.model} onChange={changeValuesClients} name='model' label="Modelo" size="small" variant="outlined" disabled={disableCLient} />
                         <TextField value={infoClients.name} onChange={changeValuesClients} name='name' label="Nome" size="small" variant="outlined" disabled={disableCLient} />
                         <TextField value={infoClients.phone} onChange={changeValuesClients} name='phone' label="Telefone" size="small" variant="outlined" disabled={disableCLient} />
-                        {disableCLient && (<Button color="warning" variant="outlined" onClick={() => setDIsableCLient(false)} endIcon={<CreateIcon />}>Editar</Button>)}
+                        {disableCLient && typeScreen !== 'Visualizar' && (<Button color="warning" variant="outlined" onClick={() => setDIsableCLient(false)} endIcon={<CreateIcon />}>Editar</Button>)}
                     </Stack>
                 )}
                 {!disableCLient && (
@@ -263,30 +269,32 @@ const OrderServicesRegister = ({ params }: IProps) => {
                         </Stack>
                     </Box>
                 )}
-                <Stack direction="row" spacing={2} mb={2} mt={2}>
-                    <FormControl variant="outlined" sx={{ m: 1, minWidth: 300 }} size="small" error={errorInput}>
-                        <InputLabel >Serviços a serem feitos *</InputLabel>
-                        <Select
-                            label="Serviços a serem feitos *"
-                            value={orderService?.services}
-                            name="services"
-                            onChange={changeValues}
-                        >
-                            {listServices.map((list, index: number) => (
-                                <MenuItem key={list.id} value={list.id}>{list.name}</MenuItem>
-                            ))}
-                        </Select>
-                        {errorInput && (
-                            <FormHelperText>Campo obrigatório</FormHelperText>
-                        )}
-                    </FormControl>
-                    <Button color="success" variant="outlined" endIcon={<AddIcon />} onClick={addServicesToBePerformed} >Adicionar</Button>
-                </Stack>
+                {typeScreen !== 'Visualizar' && (
+                    <Stack direction="row" spacing={2} mb={2} mt={2}>
+                        <FormControl variant="outlined" sx={{ m: 1, minWidth: 300 }} size="small" error={errorInput}>
+                            <InputLabel >Serviços a serem feitos *</InputLabel>
+                            <Select
+                                label="Serviços a serem feitos *"
+                                value={orderService?.services}
+                                name="services"
+                                onChange={changeValues}
+                            >
+                                {listServices.map((list, index: number) => (
+                                    <MenuItem key={list.id} value={list.id}>{list.name}</MenuItem>
+                                ))}
+                            </Select>
+                            {errorInput && (
+                                <FormHelperText>Campo obrigatório</FormHelperText>
+                            )}
+                        </FormControl>
+                        <Button color="success" variant="outlined" endIcon={<AddIcon />} onClick={addServicesToBePerformed} >Adicionar</Button>
+                    </Stack>
+                )}
                 {servicesToBePerformed.length > 0 && (
                     <TableCustom
                         data={servicesToBePerformed}
                         titles={titles}
-                        remove={true}
+                        remove={typeScreen !== 'Visualizar'}
                         removeFunction={deleteServicesToBePerformed}
                         sum={true}
                     />
@@ -301,12 +309,15 @@ const OrderServicesRegister = ({ params }: IProps) => {
                         rows={3}
                         onChange={changeValues}
                         value={orderService?.comments}
+                        disabled={typeScreen === 'Visualizar'}
                     />
                 </Stack>
                 <Box sx={{ display: 'flex', placeContent: 'flex-end' }}>
                     <Stack direction="row" spacing={2}>
-                        <Button color="error" variant="outlined" endIcon={<CloseIcon />} onClick={goBack} >Cancelar</Button>
-                        <Button color="success" variant="outlined" onClick={() => setOpenConfirm(true)} endIcon={<SaveIcon />}>Salvar</Button>
+                        <Button color="error" variant="outlined" endIcon={typeScreen !== 'Visualizar' ? <CloseIcon /> : <ArrowBackIcon />} onClick={goBack}> {typeScreen !== 'Visualizar' ? "Cancelar" : "Voltar"}</Button>
+                        {typeScreen !== 'Visualizar' && (
+                            <Button color="success" variant="outlined" onClick={() => setOpenConfirm(true)} endIcon={<SaveIcon />}>Salvar</Button>
+                        )}
                     </Stack>
                 </Box>
             </ContainerCustom>

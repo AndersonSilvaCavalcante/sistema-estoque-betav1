@@ -24,12 +24,10 @@ import OrderService from "@/actions/orderServices";
 
 /**scss */
 import "../../assets/css/orderServices.scss"
+import Filter from '@/components/Filter';
+import { CustomTextInput } from '@/components/CustomInputs';
 
 
-const options = [
-    'Editar',
-    'Visualizar'
-];
 
 
 const Card = styled.div`
@@ -71,6 +69,17 @@ interface listOrderService {
     dateCreated: Date
 }
 
+interface IOPtion {
+    title: string
+    value: string
+}
+
+const optionsInitial: Array<IOPtion> = [
+    { title: 'Editar', value: 'edit' },
+    { title: 'Visualizar', value: 'view' }
+];
+
+
 const OrderServices: NextPage = () => {
 
     const initialFIlter: IFilter = { plate: '', order: '', status: 'started' }
@@ -87,6 +96,8 @@ const OrderServices: NextPage = () => {
 
     const [orderServiceSelected, setOrderServiceSelected] = useState<listOrderService | null>(null)
 
+    const [options, setOptions] = useState<Array<IOPtion>>(optionsInitial)
+
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const openMenu = Boolean(anchorEl);
 
@@ -100,14 +111,18 @@ const OrderServices: NextPage = () => {
 
     const handleClick = (event: React.MouseEvent<HTMLElement>, selected: listOrderService) => {
         setOrderServiceSelected(selected)
+
+        if (selected.status == 'started') {
+            setOptions(optionsInitial)
+        } else {
+            setOptions([{ title: 'Visualizar', value: 'view' }])
+        }
+
         setAnchorEl(event.currentTarget);
     };
-    
+
     const handleOption = (option: string) => {
-        if (option === "Editar") {
-            router.push(`/orderServices/form/edit/${orderServiceSelected?.order}`)
-        }
-        setAnchorEl(null);
+        router.push(`/orderServices/form/${option}/${orderServiceSelected?.order}`)
     };
 
 
@@ -165,31 +180,23 @@ const OrderServices: NextPage = () => {
             <PageHeader title="Ordem de serviço">
                 <ButtonPlus onCLick={() => router.push("/orderServices/form/register")} title="Cadastrar Ordem de Serviço" />
             </PageHeader>
-            <ContainerCustom title="Filtrar">
-                <Stack direction="row" spacing={2} mb={2} mt={2}>
-                    <TextField value={filter?.plate} onChange={changeValues} name='plate' label="Placa" size="small" variant="outlined" />
-                    <TextField value={filter?.order} onChange={changeValues} name='order' type='number' label="N° da ordem" size="small" variant="outlined" />
-                    <FormControl variant="outlined" sx={{ m: 1, minWidth: 120 }} size="small">
-                        <InputLabel id="demo-simple-select-standard-label">Status</InputLabel>
-                        <Select
-                            label="Status"
-                            value={filter?.status}
-                            name="status"
-                            onChange={changeValues}
-                        >
-                            {listStatus.map((list, index: number) => (
-                                <MenuItem key={index} value={list.value}>{list.label}</MenuItem>
-                            ))}
-                        </Select>
-                    </FormControl>
-                </Stack>
-                <Box sx={{ display: 'flex', placeContent: 'flex-end' }}>
-                    <Stack direction="row" spacing={2}>
-                        <Button color="error" variant="outlined" endIcon={<CloseIcon />} onClick={cleanFilters} >Limpar</Button>
-                        <Button color="success" variant="outlined" endIcon={<FilterListIcon />} onClick={() => getListOrderService(false)} >Filtrar</Button>
-                    </Stack>
-                </Box>
-            </ContainerCustom>
+            <Filter cleanFunction={cleanFilters} filterFucntion={() => getListOrderService(false)}>
+                <CustomTextInput value={filter?.plate} name='plate' label="Placa" changeFunction={changeValues} />
+                <CustomTextInput value={filter?.order} name='order' label="N° da ordem" changeFunction={changeValues} />
+                <FormControl variant="outlined" sx={{ minWidth: 120 }} size="small">
+                    <InputLabel id="demo-simple-select-standard-label">Status</InputLabel>
+                    <Select
+                        label="Status"
+                        value={filter?.status}
+                        name="status"
+                        onChange={changeValues}
+                    >
+                        {listStatus.map((list, index: number) => (
+                            <MenuItem key={index} value={list.value}>{list.label}</MenuItem>
+                        ))}
+                    </Select>
+                </FormControl>
+            </Filter>
             {listOrderService.map((card, index: number) => (
                 card.list.length > 0 && (
                     <ContainerCustom title={card.type} key={index}>
@@ -209,27 +216,7 @@ const OrderServices: NextPage = () => {
                                             >
                                                 <MoreVertIcon />
                                             </IconButton>
-                                            <Menu
-                                                id="long-menu"
-                                                MenuListProps={{
-                                                    'aria-labelledby': 'long-button',
-                                                }}
-                                                anchorEl={anchorEl}
-                                                open={openMenu}
-                                                onClose={() => setAnchorEl(null)}
-                                                PaperProps={{
-                                                    style: {
-                                                        maxHeight: 48 * 4.5,
-                                                        width: '20ch',
-                                                    },
-                                                }}
-                                            >
-                                                {options.map((option) => (
-                                                    <MenuItem key={option} onClick={() => handleOption(option)}>
-                                                        {option}
-                                                    </MenuItem>
-                                                ))}
-                                            </Menu>
+
                                             {list.status === 'started' ? (
                                                 <CircleIcon color='success' />
                                             ) : (
@@ -247,6 +234,27 @@ const OrderServices: NextPage = () => {
                                     </div>
                                 </Card>
                             ))}
+                            <Menu
+                                id="long-menu"
+                                MenuListProps={{
+                                    'aria-labelledby': 'long-button',
+                                }}
+                                anchorEl={anchorEl}
+                                open={openMenu}
+                                onClose={() => setAnchorEl(null)}
+                                PaperProps={{
+                                    style: {
+                                        maxHeight: 48 * 4.5,
+                                        width: '20ch',
+                                    },
+                                }}
+                            >
+                                {options.map((option) => (
+                                    <MenuItem key={option.value} onClick={() => handleOption(option.value)}>
+                                        {option.title}
+                                    </MenuItem>
+                                ))}
+                            </Menu>
                         </ContainerOrderService>
                     </ContainerCustom>
                 )
