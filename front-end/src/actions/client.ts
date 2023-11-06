@@ -6,9 +6,13 @@ class Client {
         let filterBody = null
         if (filter) {
             filter.name !== '' ? filterBody = 'name=' + filter.name : null
-            //filter.id ? filterBody = `&id=` + filter.id : null
+            filter.id ? filterBody = `&id=` + filter.id : null
         }
         return api.get(`ListClient?${filterBody}`)
+    }
+
+    static saveClient(client: ICLient) {
+        return api.post("/SaveClient", client)
     }
 
     static editClient(client: ICLient) {

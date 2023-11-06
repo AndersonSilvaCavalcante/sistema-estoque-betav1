@@ -122,7 +122,7 @@ CREATE TABLE client(
 	phone VARCHAR(255) NOT NULL,
 	plate VARCHAR(255) NOT NULL,
 	model VARCHAR(255) NOT NULL,
-	dateCreated date default(GETDATE())
+	dateCreated datetime default(GETDATE())
 )
 
 CREATE TABLE orderService (
@@ -312,6 +312,9 @@ AS
 	WHERE id = @id;
 GO
 
+ALTER TABLE [dbo].[client]
+ADD [dateCreated] datetime DEFAULT getdate();
+
 CREATE OR ALTER PROCEDURE get_Client
 	@id int,
 	@name VARCHAR(255),
@@ -320,6 +323,7 @@ AS
 	SELECT 
 		id,
 		name,
+		dateCreated,
 		phone,
 		plate,
 		model

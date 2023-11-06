@@ -7,6 +7,7 @@ import Filter from "@/components/Filter";
 import PageHeader from "@/components/PageHeader";
 import TableCustom from "@/components/TableCustom";
 import { NextPage } from "next";
+import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 
 const titles: Array<ITitles> = [
@@ -18,10 +19,12 @@ const titles: Array<ITitles> = [
 ]
 
 export interface IFilter {
-    name: string
+    id?: number
+    name?: string
 }
 
 const Clients: NextPage = () => {
+    const router = useRouter()
     const [clients, setClients] = useState<Array<ICLient>>([])
     const initialFIlter: IFilter = { name: '' }
     const [filter, setFilter] = useState<IFilter>(initialFIlter)
@@ -35,6 +38,9 @@ const Clients: NextPage = () => {
         }
     }
 
+    const editClientPage = (data: IProduct) => {
+        router.replace(`/clients/form/edit/${data.id}`)
+    }
     const cleanFilters = () => {
         setFilter(initialFIlter)
         getClientsList(true)
@@ -54,7 +60,7 @@ const Clients: NextPage = () => {
     return (
         <React.Fragment>
             <PageHeader title="Clientes">
-                {/* <ButtonPlus onCLick={showSaveNewSupplier} title="Cadastrar Cliente" /> */}
+                <ButtonPlus onCLick={() => router.push("/clients/form/register")} title="Cadastrar Cliente" />
             </PageHeader>
             <Filter cleanFunction={cleanFilters} filterFucntion={() => getClientsList(false)}>
                 <CustomTextInput value={filter?.name} label={"Nome"} name={"name"} changeFunction={changeValues} />
@@ -63,36 +69,12 @@ const Clients: NextPage = () => {
                 <TableCustom
                     data={clients}
                     titles={titles}
-                    edit={false}
+                    edit={true}
                     remove={false}
-                // editFunction={showEditSupplier}
+                    editFunction={editClientPage}
                 // removeFunction={deleteSupplier}
                 />
             </ContainerCustom>
-            {/* <ConfirmPopup
-                toggle={supplierConfirmPopup.toggle}
-                title={supplierConfirmPopup.msg}
-                message={"Confirma esta ação?"}
-                confirmAction={saveSupplier}
-                cancelFunction={() => setSupplierConfirmPopup({ toggle: false, msg: saveSupplierPopupData?.title })}
-            />
-            <CustomPopup
-                toggle={openSupplierPopup}
-                title={saveSupplierPopupData?.title}
-                confirmButtonTitle="Salvar"
-                confirmButtonIcon={<SaveIcon />}
-                confirmAction={() => setSupplierConfirmPopup({ toggle: true, msg: saveSupplierPopupData?.title })}
-                cancelFunction={handleClose}
-            >
-                <Box sx={{
-                    display: "flex",
-                    flexDirection: "column",
-                    gridGap: 20
-                }}>
-                    <CustomTextInput value={supplier?.name} label={"Nome"} name={"name"} changeFunction={changeSuplierValues} error={errorInput} />
-                    <CustomTelInput label={"Contato"} value={supplier?.contact} name={"contact"} changeFunction={(newValue) => setSupplier({ ...supplier, contact: newValue })} error={errorInput} />
-                </Box>
-            </CustomPopup> */}
         </React.Fragment>
     )
 }
