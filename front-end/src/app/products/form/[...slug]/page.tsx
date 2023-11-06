@@ -26,6 +26,16 @@ interface IProps {
     }
 }
 
+interface IErroForm {
+    name: boolean,
+    barcode: boolean,
+    supplierId: false,
+    qtdMin: false,
+    qtdCurrent: false,
+    costPrice: false,
+    salePrice: false
+}
+
 const ProductRegisterOrUpdate = ({ params }: IProps) => {
     const router = useRouter()
     const { slug } = params;
@@ -41,6 +51,8 @@ const ProductRegisterOrUpdate = ({ params }: IProps) => {
         costPrice: 0,
         salePrice: 0
     }
+    const [errorInput, setErrorInput] = useState<null | IErroForm>(null)
+
     const [product, setProduct] = useState<IProduct>(initialProduct)
     const [popupConfirmToggle, setPopupConfirmToggle] = useState<boolean>(false)
     const handleClose = () => {
@@ -79,6 +91,20 @@ const ProductRegisterOrUpdate = ({ params }: IProps) => {
     }
 
     const saveProduct = async () => {
+        setErrorInput(null)
+
+        let error: any = {}
+        const productAny: any = product
+        Object.keys(product).map(key => {
+            if(key !== 'id' && (productAny[key] === '' || productAny[key] === 0)){
+                error = { ...error, [key]: true }
+            }
+        })
+
+        if (Object.keys(error).length !== 0) {
+            return setErrorInput(error)
+        }
+
         try {
             slug[0] == "register" ? await ProductServices.saveProduct(product) : null
             slug[0] == "edit" ? await ProductServices.editProduct(product) : null
@@ -113,9 +139,9 @@ const ProductRegisterOrUpdate = ({ params }: IProps) => {
             <PageHeader title={`${action} Produto`} />
             <ContainerCustom title="Dados do Produto">
                 <Stack direction="row" spacing={2} mb={2} mt={2}>
-                    <CustomTextInput value={product?.name} label={"Nome"} name={"name"} required={true} changeFunction={changeValues} />
-                    <CustomTextInput value={product?.barcode} label={"Código de Barras"} name={"barcode"} required={true} changeFunction={changeValues} />
-                    <FormControl variant="outlined" sx={{ m: 1, minWidth: 250 }} size="small">
+                    <CustomTextInput value={product?.name} label={"Nome"} name={"name"} required={true} changeFunction={changeValues} error={errorInput?.name} />
+                    <CustomTextInput value={product?.barcode} label={"Código de Barras"} name={"barcode"} required={true} changeFunction={changeValues} error={errorInput?.barcode}/>
+                    <FormControl variant="outlined" sx={{ m: 1, minWidth: 250 }} size="small" error={errorInput?.supplierId}>
                         <InputLabel >Fornecedor *</InputLabel>
                         <Select
                             label="Fornecedor *"
@@ -128,16 +154,16 @@ const ProductRegisterOrUpdate = ({ params }: IProps) => {
                                 <MenuItem key={list.id} value={list.id}>{list.name}</MenuItem>
                             ))}
                         </Select>
-                        {/* {errorInput && (
+                        {errorInput?.supplierId && (
                             <FormHelperText>Caampo obrigatório</FormHelperText>
-                        )} */}
+                        )}
                     </FormControl>
                 </Stack>
                 <Stack direction="row" spacing={2} mb={2} mt={2}>
-                    <CustomTextInput value={product?.qtdMin} label={"Estoque Mínimo"} required={true} type={"number"} name={"qtdMin"} changeFunction={changeValues} />
-                    <CustomTextInput value={product?.qtdCurrent} label={"Estoque"} required={true} type={"number"} name={"qtdCurrent"} changeFunction={changeValues} />
-                    <CustomTextInput value={product?.costPrice} label={"Preço de Custo"} required={true} type={"number"} name={"costPrice"} changeFunction={changeValues} />
-                    <CustomTextInput value={product?.salePrice} label={"Preço de Venda"} required={true} type={"number"} name={"salePrice"} changeFunction={changeValues} />
+                    <CustomTextInput value={product?.qtdMin} label={"Estoque Mínimo"} required={true} type={"number"} name={"qtdMin"} changeFunction={changeValues} error={errorInput?.qtdMin} />
+                    <CustomTextInput value={product?.qtdCurrent} label={"Estoque"} required={true} type={"number"} name={"qtdCurrent"} changeFunction={changeValues} error={errorInput?.qtdCurrent}  />
+                    <CustomTextInput value={product?.costPrice} label={"Preço de Custo"} required={true} type={"number"} name={"costPrice"} changeFunction={changeValues} error={errorInput?.costPrice} />
+                    <CustomTextInput value={product?.salePrice} label={"Preço de Venda"} required={true} type={"number"} name={"salePrice"} changeFunction={changeValues} error={errorInput?.salePrice} />
                 </Stack>
                 <Box sx={{ display: 'flex', placeContent: 'flex-end' }}>
                     <Stack direction="row" spacing={2}>
