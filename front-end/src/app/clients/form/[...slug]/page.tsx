@@ -25,6 +25,13 @@ interface IProps {
     }
 }
 
+interface IErroForm {
+    name?: boolean
+    plate?: boolean
+    model?: boolean
+    phone?: boolean
+}
+
 const ClientsRegisterOrUpdate = ({ params }: IProps) => {
     const router = useRouter()
     const { slug } = params;
@@ -39,6 +46,9 @@ const ClientsRegisterOrUpdate = ({ params }: IProps) => {
     }
     const [client, setClient] = useState<ICLient>(initialClient)
     const [popupConfirmToggle, setPopupConfirmToggle] = useState<boolean>(false)
+    
+    const [errorInput, setErrorInput] = useState<null | IErroForm>(null)
+
     const handleClose = () => {
         setPopupConfirmToggle(false)
     }
@@ -53,6 +63,31 @@ const ClientsRegisterOrUpdate = ({ params }: IProps) => {
     }
 
     const saveClient = async () => {
+        setErrorInput(null)
+
+        let error: IErroForm = {}
+
+
+        if (client.name === '') {
+            error = { ...error, name: true }
+        }
+
+        if (client.plate === '') {
+            error = { ...error, plate: true }
+        }
+
+        if (client.model === '') {
+            error = { ...error, model: true }
+        }
+
+        if (client.phone === '') {
+            error = { ...error, phone: true }
+        }
+
+        if (Object.keys(error).length !== 0) {
+            return setErrorInput(error)
+        }
+
         try {
             slug[0] == "register" ? await Client.saveClient(client) : null
             slug[0] == "edit" ? await Client.editClient(client) : null
@@ -91,10 +126,10 @@ const ClientsRegisterOrUpdate = ({ params }: IProps) => {
             <PageHeader title={`${action} Cliente`} />
             <ContainerCustom title="Dados do Cliente">
                 <Stack direction="row" spacing={2} mb={2} mt={2}>
-                    <CustomTextInput value={client?.name} changeFunction={changeValues} name='name' label="Nome" />
-                    <CustomTelInput value={client?.phone} changeFunction={changeValues} name='phone' label="Telefone" />
-                    <CustomTextInput value={client?.model} changeFunction={changeValues} name='model' label="Modelo" />
-                    <CustomTextInput value={client?.plate} name='plate' label="Placa" changeFunction={changeValues} />
+                    <CustomTextInput value={client?.name} changeFunction={changeValues} name='name' label="Nome" error={errorInput?.name} />
+                    <CustomTelInput value={client?.phone} changeFunction={changeValues} name='phone' label="Telefone"  error={errorInput?.phone}/>
+                    <CustomTextInput value={client?.model} changeFunction={changeValues} name='model' label="Modelo"  error={errorInput?.model}/>
+                    <CustomTextInput value={client?.plate} name='plate' label="Placa" changeFunction={changeValues}   error={errorInput?.plate}/>
                 </Stack>
                 <Box sx={{ display: 'flex', placeContent: 'flex-end' }}>
                     <Stack direction="row" spacing={2}>
