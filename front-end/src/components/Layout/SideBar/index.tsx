@@ -32,19 +32,22 @@ const menuOptions =
         {
             name: "Produtos",
             path: "/products"
-        }, {
-            name: "Serviços",
-            path: "/services"
-        },{
+        }, 
+        // {
+        //     name: "Serviços",
+        //     path: "/services"
+        // },
+        {
             name: "Clientes",
             path: "/clients"
-        }, {
-            name: "Configurações",
-            path: "/settings"
-        }, {
-            name: "Sobre",
-            path: "/about"
-        }
+         }, 
+        //{
+        //     name: "Configurações",
+        //     path: "/settings"
+        // }, {
+        //     name: "Sobre",
+        //     path: "/about"
+        // }
     ]
 
 interface IProps {
