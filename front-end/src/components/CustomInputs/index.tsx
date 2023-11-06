@@ -49,7 +49,7 @@ export const CustomTelInput = ({ value, required, label, name, size, fullWidth, 
             flagSize="small"
             label={label}
             name={name}
-            onChange={(newValue) => changeFunction(newValue)}
+            onChange={(newValue) => changeFunction({ target: { name: name, value: newValue } })}
             size={size ?? "small"}
             helperText={error ? errorMessage ? errorMessage : "Campo obrigatório!" : null}
         />
