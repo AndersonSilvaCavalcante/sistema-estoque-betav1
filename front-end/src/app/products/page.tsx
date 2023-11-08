@@ -39,7 +39,7 @@ const Products: NextPage = () => {
     const router = useRouter()
     const initialFIlter: IFilter = { name: '', barcode: '' }
     const [filter, setFilter] = useState<IFilter>(initialFIlter)
-    const [products, setProducts] = useState<Array<IProduct>>([])
+    const [products, setProducts] = useState<Array<IProduct> | null>(null)
     const [suppliers, setSuppliers] = useState<Array<ISupplier>>([])
     const initialSupplier: ISupplier = { id: 0, name: "", contact: "" }
     const [supplier, setSupplier] = useState<ISupplier>(initialSupplier)

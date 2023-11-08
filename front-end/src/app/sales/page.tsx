@@ -41,7 +41,7 @@ const titlesReceipt: Array<ITitles> = [
 
 
 const Sales: NextPage = () => {
-    const [salesList, setSalesList] = useState<Array<ISale>>([])
+    const [salesList, setSalesList] = useState<Array<ISale> | null>(null)
     const [filter, setFilter] = useState<number | string>('')
 
     const [openReceipt, setOpenReceipt] = useState<boolean>(false)

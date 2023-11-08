@@ -25,7 +25,7 @@ export interface IFilter {
 
 const Clients: NextPage = () => {
     const router = useRouter()
-    const [clients, setClients] = useState<Array<ICLient>>([])
+    const [clients, setClients] = useState<Array<ICLient> | null>(null)
     const initialFIlter: IFilter = { name: '' }
     const [filter, setFilter] = useState<IFilter>(initialFIlter)
 

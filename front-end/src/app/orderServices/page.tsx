@@ -18,7 +18,7 @@ import ContainerCustom from "@/components/Container";
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { CustomTextInput } from '@/components/CustomInputs';
 import LottieFilesComponent from '@/components/LottieFilesComponent';
-import { Box, Button, TextField, Select, MenuItem, FormControl, InputLabel, SelectChangeEvent, IconButton, Menu, Autocomplete, Typography } from "@mui/material"
+import { Box, Button, TextField, Select, MenuItem, FormControl, InputLabel, SelectChangeEvent, IconButton, Menu, Autocomplete, Typography, Skeleton, Stack } from "@mui/material"
 
 /**Service */
 import Client from '@/actions/client';
@@ -95,7 +95,7 @@ const OrderServices: NextPage = () => {
     const router = useRouter()
 
     const [filter, setFIlter] = useState<IFilter>(initialFIlter)
-    const [listOrderService, setListOrderService] = useState<Array<ICardsListOrderService>>([])
+    const [listOrderService, setListOrderService] = useState<Array<ICardsListOrderService> | null>(null)
 
     const [orderServiceSelected, setOrderServiceSelected] = useState<listOrderService | null>(null)
 
@@ -243,7 +243,7 @@ const OrderServices: NextPage = () => {
                     )}
                 />
             </Filter>
-            {listOrderService.map((card, index: number) => (
+            {listOrderService && listOrderService.map((card, index: number) => (
                 card.list.length > 0 && (
                     <ContainerCustom title={card.type} key={index}>
                         <ContainerOrderService>
@@ -309,8 +309,30 @@ const OrderServices: NextPage = () => {
                 )
             ))}
 
+            {!listOrderService && (
+                <ContainerCustom>
+                    <ContainerOrderService>
+                        {Array.from(new Array(3)).map((e, index: number) => (
+                            <Card key={index}>
+                                <Stack direction="row" spacing={1} className='justify-space-between text-align-webkit-right' padding={2}>
+                                    <div className='w-50'>
+                                        {Array.from(new Array(3)).map((e, index: number) => (
+                                            <Skeleton key={index} animation="wave" />
+                                        ))}
 
-            {listOrderService.length == 0 && (
+                                    </div>
+                                    <div className='w-40'>
+                                        <Skeleton animation="wave" variant="circular" width={30} height={30} />
+                                        <Skeleton animation="wave" />
+                                    </div>
+                                </Stack>
+                            </Card>
+                        ))}
+                    </ContainerOrderService>
+                </ContainerCustom>
+            )}
+
+            {listOrderService && listOrderService.length == 0 && (
                 <ContainerCustom>
                     <Box mt={5} mb={5} sx={{
                         display: 'grid',

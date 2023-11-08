@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 
 /**Components */
-import { Box, Button, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material"
+import { Box, Button, Skeleton, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material"
 import { ConfirmPopup } from "@/components/Popups";
 
 /**Icons */
@@ -57,7 +57,9 @@ const TableCustom = ({ titles, data, edit, remove, editFunction, removeFunction,
     }
 
     useEffect(() => {
-        sumValues()
+        if (data) {
+            sumValues()
+        }
     }, [data])
 
     return (
@@ -80,7 +82,7 @@ const TableCustom = ({ titles, data, edit, remove, editFunction, removeFunction,
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {data.map((data: any, index: number) => (
+                        {data && data.map((data: any, index: number) => (
                             <TableRow
                                 key={data.id}
                                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
@@ -134,7 +136,7 @@ const TableCustom = ({ titles, data, edit, remove, editFunction, removeFunction,
                     </TableBody>
                 </Table>
             </TableContainer>
-            {data.length == 0 && (
+            {data && data.length == 0 && (
                 <Box mt={5} mb={5} sx={{
                     display: 'grid',
                     placeItems: 'center',
@@ -146,6 +148,12 @@ const TableCustom = ({ titles, data, edit, remove, editFunction, removeFunction,
                     </Box>
                 </Box>
             )}
+            <div className="grid-Skeleton ">
+                {!data && Array.from(new Array(9)).map(e => (
+                    <Skeleton animation="wave" />
+                ))}
+            </div>
+
         </React.Fragment>
     )
 }

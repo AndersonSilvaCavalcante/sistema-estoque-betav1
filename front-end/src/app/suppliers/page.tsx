@@ -54,7 +54,7 @@ const Suppliers: NextPage = () => {
 
     const initialFIlter: IFilter = { id: null, name: '' }
     const initialSupplier: ISupplier = { id: 0, name: "", contact: "" }
-    const [suppliers, setSuppliers] = useState<Array<ISupplier>>([])
+    const [suppliers, setSuppliers] = useState<Array<ISupplier> | null>(null)
     const [supplier, setSupplier] = useState<ISupplier>(initialSupplier)
     const [filter, setFilter] = useState<IFilter>(initialFIlter)
     const [saveSupplierPopupData, setSaveSupplierPopupData] = useState<ISaveSupplierPopupData>()
