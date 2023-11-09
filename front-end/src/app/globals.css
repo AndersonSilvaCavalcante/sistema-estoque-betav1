@@ -35,13 +35,6 @@ body {
   grid-template-columns: repeat(auto-fit, minmax(30%, 1fr));
 }
 
-.grid-container {
-  display: grid;
-  margin: 0 auto;
-  gap: 1rem;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-}
-
 .justify-space-between {
   justify-content: space-between;
 }
@@ -60,6 +53,12 @@ body {
 
 .w-40 {
   width: 40%;
+}
+
+.d-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 10px;
 }
 
 body {

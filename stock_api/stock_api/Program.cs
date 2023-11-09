@@ -22,6 +22,7 @@ app.MapServicesEndPoint();
 app.MapOrderServiceEndPoint();
 app.MapClientsEndPoint();
 app.MapSalesEndPoint();
+app.MapDashboardEndPoint();
 
 app.UseSwagger();
 app.UseSwaggerUI();

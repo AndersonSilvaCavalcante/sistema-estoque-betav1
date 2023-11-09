@@ -398,3 +398,35 @@ DECLARE @nErrorNum INT;
 	DROP TABLE #error
 END CATCH;
 GO	
+
+
+
+--09/11
+CREATE OR ALTER PROCEDURE get_dashboard
+AS
+	create table #dash(qtdSales INT,revenue INT,profit INT,qtdOrderService INT)
+
+	INSERT INTO #dash
+	select 
+		count(s.value) AS 'qtdSales',
+		SUM(s.value) AS 'revenue',
+		SUM(s.value) - SUM(s.valueCostPrice) AS 'profit',
+		(select 
+		count(*) AS 'qtdOrderService'
+		from 
+			orderService AS os
+		where 
+			year(os.dateClosed) = year(getDate()) and 
+			month(os.dateClosed) = month(getDate()) and 
+			day(os.dateClosed) = day(getDate())
+		) AS 'qtdOrderService'
+	from 
+		sales AS s
+	where 
+		year(s.dateCreated) = year(getDate()) and 
+		month(s.dateCreated) = month(getDate()) and 
+		day(s.dateCreated) = day(getDate())
+
+	select * from #dash
+	drop table #dash
+GO

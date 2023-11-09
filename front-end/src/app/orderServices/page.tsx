@@ -29,22 +29,7 @@ import "../../assets/css/orderServices.scss"
 
 /**Animations */
 import emptyAnimation from "@/assets/animations/lottie/empty_animation.json"
-
-const Card = styled.div`
-  padding: 15px;
-  border-radius: 10px;
-  border: 1px solid silver;
-  margin-top: 10px;
-  font-size: 14px;
-  font-weight: 300;
-`;
-
-
-const ContainerOrderService = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 10px;
-`;
+import CardCustom from '@/components/Card';
 
 export interface IFilter {
     plate: string,
@@ -246,9 +231,9 @@ const OrderServices: NextPage = () => {
             {listOrderService && listOrderService.map((card, index: number) => (
                 card.list.length > 0 && (
                     <ContainerCustom title={card.type} key={index}>
-                        <ContainerOrderService>
+                        <div className='d-grid'>
                             {card.list.map((list, index: number) => (
-                                <Card key={index} className='cardOrderService' >
+                                <CardCustom key={index} className='cardOrderService' >
                                     <div className='d-flex'>
                                         <label>nº {list.order}</label>
                                         <div className='d-flex'>
@@ -281,7 +266,7 @@ const OrderServices: NextPage = () => {
                                             <label>Finalizada em: {moment(list.dateClosed).format("DD/MM/YYYY HH:mm:ss")}</label>
                                         )}
                                     </div>
-                                </Card>
+                                </CardCustom>
                             ))}
                             <Menu
                                 id="long-menu"
@@ -304,16 +289,16 @@ const OrderServices: NextPage = () => {
                                     </MenuItem>
                                 ))}
                             </Menu>
-                        </ContainerOrderService>
+                        </div>
                     </ContainerCustom>
                 )
             ))}
 
             {!listOrderService && (
                 <ContainerCustom>
-                    <ContainerOrderService>
+                    <div className='d-grid'>
                         {Array.from(new Array(3)).map((e, index: number) => (
-                            <Card key={index}>
+                            <CardCustom key={index}>
                                 <Stack direction="row" spacing={1} className='justify-space-between text-align-webkit-right' padding={2}>
                                     <div className='w-50'>
                                         {Array.from(new Array(3)).map((e, index: number) => (
@@ -326,9 +311,9 @@ const OrderServices: NextPage = () => {
                                         <Skeleton animation="wave" />
                                     </div>
                                 </Stack>
-                            </Card>
+                            </CardCustom>
                         ))}
-                    </ContainerOrderService>
+                    </div>
                 </ContainerCustom>
             )}
 
