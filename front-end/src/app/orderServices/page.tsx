@@ -127,10 +127,14 @@ const OrderServices: NextPage = () => {
             const started = list.filter(list => list.status === "started")
             const closed = list.filter(list => list.status === "closed")
 
-            const payload: Array<ICardsListOrderService> = [
+            let payload: Array<ICardsListOrderService> = [
                 { type: "Abertas", list: started },
                 { type: "Fechadas", list: closed }
             ]
+
+            if (started.length === 0 && closed.length === 0) {
+                payload = []
+            }
 
             setListOrderService(payload)
         } catch {
