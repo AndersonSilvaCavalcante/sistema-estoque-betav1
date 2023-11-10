@@ -149,8 +149,8 @@ const TableCustom = ({ titles, data, edit, remove, editFunction, removeFunction,
                 </Box>
             )}
             <div className="grid-Skeleton ">
-                {!data && Array.from(new Array(9)).map(e => (
-                    <Skeleton animation="wave" />
+                {!data && Array.from(new Array(9)).map((index) => (
+                    <Skeleton key={index} animation="wave" />
                 ))}
             </div>
 
