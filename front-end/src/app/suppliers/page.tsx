@@ -7,7 +7,7 @@ import React, { useEffect, useState } from "react"
 import Supplier from "@/actions/suppliers"
 
 /**Components */
-import { Box, Button } from "@mui/material"
+import { Box } from "@mui/material"
 import PageHeader from "@/components/PageHeader"
 import TableCustom from "@/components/TableCustom"
 import ContainerCustom from "@/components/Container"
@@ -17,7 +17,6 @@ import { CustomTelInput, CustomTextInput } from "@/components/CustomInputs"
 
 /**Icons */
 import SaveIcon from "@mui/icons-material/Save"
-import AddIcon from '@mui/icons-material/Add';
 import Filter from "@/components/Filter"
 import { ButtonPlus } from "@/components/ButtonPlus"
 
@@ -43,13 +42,18 @@ interface ISupplierConfirmPopup {
     msg?: string
 }
 
+interface IErroForm {
+    name: boolean,
+    contact: boolean
+}
+
 const Suppliers: NextPage = () => {
     const [openSupplierPopup, setSupplierPopup] = useState(false)
     const handleOpen = () => setSupplierPopup(true)
     const handleClose = () => {
         setSupplier(initialSupplier)
         setSupplierPopup(false)
-        setErrorInput(false)
+        setErrorInput(null)
     }
 
     const initialFIlter: IFilter = { id: null, name: '' }
@@ -59,7 +63,7 @@ const Suppliers: NextPage = () => {
     const [filter, setFilter] = useState<IFilter>(initialFIlter)
     const [saveSupplierPopupData, setSaveSupplierPopupData] = useState<ISaveSupplierPopupData>()
     const [supplierConfirmPopup, setSupplierConfirmPopup] = useState<ISupplierConfirmPopup>({ toggle: false, msg: '' })
-    const [errorInput, setErrorInput] = useState<boolean>(false)
+    const [errorInput, setErrorInput] = useState<null | IErroForm>(null)
 
     const getSuppliersList = async (clean?: boolean) => {
         try {
@@ -82,23 +86,32 @@ const Suppliers: NextPage = () => {
     }
 
     const saveSupplier = async () => {
-        setErrorInput(false)
-        try {
-            if (supplier.name == '' || supplier.contact == '') {
-                setErrorInput(true)
-            } else {
-                if (saveSupplierPopupData?.type == "create") {
-                    await Supplier.saveSupplier(supplier)
+        setErrorInput(null)
 
-                } else {
-                    await Supplier.editSupplier(supplier)
-                }
-                setSupplier(initialSupplier)
-                setSupplierConfirmPopup({ toggle: false, msg: '' })
-                handleClose()
-                toast.success("Fornecedor Salvo com Sucesso!")
-                getSuppliersList()
+        let error: any = {}
+        const supplierAny: any = supplier
+        Object.keys(supplier).map(key => {
+            if (key !== 'id' && (supplierAny[key] === '' || supplierAny[key] === 0 || (key === 'contact' && supplier?.contact.length < 17))) {
+                error = { ...error, [key]: true }
             }
+        })
+
+        if (Object.keys(error).length !== 0) {
+            return setErrorInput(error)
+        }
+
+        try {
+            if (saveSupplierPopupData?.type == "create") {
+                await Supplier.saveSupplier(supplier)
+
+            } else {
+                await Supplier.editSupplier(supplier)
+            }
+            setSupplier(initialSupplier)
+            setSupplierConfirmPopup({ toggle: false, msg: '' })
+            handleClose()
+            toast.success("Fornecedor Salvo com Sucesso!")
+            getSuppliersList()
         } catch (error) {
             toast.error("Algo deu errado ao salvar o Fornecedor")
         }
@@ -120,14 +133,12 @@ const Suppliers: NextPage = () => {
     }
 
     const changeValues = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        setErrorInput(false)
         const name = e.target.name
         const value = e.target.value
         setFilter({ ...filter, [name]: value })
     }
 
     const changeSuplierValues = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        setErrorInput(false)
         const name = e.target.name
         const value = e.target.value
         setSupplier({ ...supplier, [name]: value })
@@ -175,8 +186,8 @@ const Suppliers: NextPage = () => {
                     flexDirection: "column",
                     gridGap: 20
                 }}>
-                    <CustomTextInput value={supplier?.name} label={"Nome"} name={"name"} changeFunction={changeSuplierValues} error={errorInput} />
-                    <CustomTelInput label={"Contato"} value={supplier?.contact} name={"contact"} changeFunction={(newValue) => setSupplier({ ...supplier, contact: newValue })} error={errorInput} />
+                    <CustomTextInput value={supplier?.name} label={"Nome"} name={"name"} changeFunction={changeSuplierValues} error={errorInput?.name} />
+                    <CustomTelInput label={"Contato"} value={supplier?.contact} name={"contact"} changeFunction={changeSuplierValues} error={errorInput?.contact} errorMessage={supplier?.contact.length < 17 ? "Número inválido" : undefined} />
                 </Box>
             </CustomPopup>
         </React.Fragment>
