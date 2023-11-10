@@ -81,7 +81,7 @@ const Suppliers: NextPage = () => {
 
     const showEditSupplier = async (data: ISupplier) => {
         setSupplier(data)
-        setSaveSupplierPopupData({ title: "Editar Fornecedor", type: "create" })
+        setSaveSupplierPopupData({ title: "Editar Fornecedor", type: "edit" })
         handleOpen()
     }
 
