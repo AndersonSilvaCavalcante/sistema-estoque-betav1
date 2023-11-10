@@ -1,11 +1,12 @@
-import { TextField } from "@mui/material"
+import { InputAdornment, TextField } from "@mui/material"
 import { MuiTelInput } from "mui-tel-input"
 
 interface IProps {
     value?: string | number
     defaultValue?: string
     required?: boolean
-    type?: string
+    type?: string 
+    adorment?: "currency"
     label: string
     name: string
     size?: "small" | "medium"
@@ -15,8 +16,9 @@ interface IProps {
     rows?: number
     changeFunction: (e: any) => void,
 }
+const adorments = {currency:"R$"}
 
-export const CustomTextInput = ({ value, defaultValue, required, label, name, size, fullWidth, error, type, rows, errorMessage, changeFunction }: IProps) => {
+export const CustomTextInput = ({ value, defaultValue, required, label, name, size, fullWidth, error, type, rows, errorMessage, adorment, changeFunction }: IProps) => {
     return (
         <TextField
             type={type}
@@ -31,6 +33,9 @@ export const CustomTextInput = ({ value, defaultValue, required, label, name, si
             size={size ?? "small"}
             variant="outlined"
             rows={rows}
+            InputProps={{
+                startAdornment: adorment ? <InputAdornment position="start">{adorments[adorment]}</InputAdornment> : null
+              }}
             helperText={error ? errorMessage ? errorMessage : "Campo obrigatório!" : null}
         />
     )
