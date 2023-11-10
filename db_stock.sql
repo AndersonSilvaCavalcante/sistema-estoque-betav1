@@ -404,9 +404,6 @@ GO
 --09/11
 CREATE OR ALTER PROCEDURE get_dashboard
 AS
-	create table #dash(qtdSales INT,revenue INT,profit INT,qtdOrderService INT)
-
-	INSERT INTO #dash
 	select 
 		count(s.value) AS 'qtdSales',
 		SUM(s.value) AS 'revenue',
@@ -426,7 +423,17 @@ AS
 		year(s.dateCreated) = year(getDate()) and 
 		month(s.dateCreated) = month(getDate()) and 
 		day(s.dateCreated) = day(getDate())
+GO
 
-	select * from #dash
-	drop table #dash
+CREATE OR ALTER PROCEDURE get_noticeProducts
+AS
+
+	select 
+		id,
+		name,
+		qtdMin,
+		qtdCurrent
+	from products 
+	where qtdCurrent <= qtdMin
+
 GO
