@@ -6,14 +6,16 @@ import { Box, Button, Skeleton, Stack, Table, TableBody, TableCell, TableContain
 import { ConfirmPopup } from "@/components/Popups";
 
 /**Icons */
-import DeleteIcon from '@mui/icons-material/Delete';
+import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
 import LottieFilesComponent from "../LottieFilesComponent";
 import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
 
 /**Animations */
 import emptyAnimation from "@/assets/animations/lottie/empty_animation.json"
 import moment from "moment";
+import { useRouter } from "next/navigation";
 
 interface IProps {
     titles: Array<ITitles>,
@@ -25,7 +27,8 @@ interface IProps {
     viewFunction?: (data: any) => void,
     removeFunction?: (id: number) => void,
     sum?: boolean
-    subValue?: number
+    subValue?: number,
+    addStock?: boolean
 }
 
 interface IPopupData {
@@ -35,12 +38,13 @@ interface IPopupData {
 
 const valuePrefixes = { currency: "R$" }
 
-const TableCustom = ({ titles, data, edit, remove, editFunction, removeFunction, sum, subValue = 0, view, viewFunction }: IProps) => {
+const TableCustom = ({ titles, data, edit, remove, editFunction, removeFunction, sum, subValue = 0, view, viewFunction, addStock }: IProps) => {
     const [popupData, setPopupData] = useState<IPopupData>({ toggle: false, id: 0 })
     const [sumPrice, setSumPrice] = useState<number>(0)
     const handleClose = () => {
         setPopupData({ toggle: false, id: 0 })
     }
+    const router = useRouter()
 
     const sumValues = () => {
         let sum = 0
@@ -105,6 +109,9 @@ const TableCustom = ({ titles, data, edit, remove, editFunction, removeFunction,
                                         {view && viewFunction && (
                                             <Button onClick={() => viewFunction(data)} color="warning" variant="outlined" startIcon={<RemoveRedEyeIcon />}>Visualizar</Button>
                                         )}
+                                        {addStock && (
+                                            <Button onClick={() => router.replace(`/products/form/edit/${data.id}`)} color="success" variant="outlined" startIcon={<AddIcon />}>Adicionar estoque</Button>
+                                        )}
                                     </Stack>
                                 </TableCell>
                             </TableRow>
@@ -149,8 +156,8 @@ const TableCustom = ({ titles, data, edit, remove, editFunction, removeFunction,
                 </Box>
             )}
             <div className="grid-Skeleton ">
-                {!data && Array.from(new Array(9)).map(e => (
-                    <Skeleton animation="wave" />
+                {!data && Array.from(new Array(9)).map((e, index: number) => (
+                    <Skeleton animation="wave" key={index} />
                 ))}
             </div>
 

@@ -1,15 +1,13 @@
 //TODO ao abrir aplicativo caso tenha produtos com estoque acionar toast.info
 "use client"
 import ContainerCustom from "@/components/Container"
-import LottieFilesComponent from "@/components/LottieFilesComponent"
 import PageHeader from "@/components/PageHeader"
-import { Box, Card, Skeleton, Typography } from "@mui/material"
+import { Skeleton } from "@mui/material"
 import { NextPage } from "next"
 import React, { useEffect, useState } from "react"
 
 
 /**Animations */
-import emptyAnimation from "@/assets/animations/lottie/empty_animation.json"
 import CardCustom from "@/components/Card"
 import DashboardService from "@/actions/dashboard"
 import TableCustom from "@/components/TableCustom"
@@ -89,15 +87,15 @@ const Dashboard: NextPage = () => {
             <PageHeader title="Dashboard" />
             <ContainerCustom title="Resumo do dia">
                 <div className="d-grid">
-                    {resumeDay && resumeDay.map(resume => (
-                        <CardCustom>
+                    {resumeDay && resumeDay.map((resume, index: number) => (
+                        <CardCustom key={index}>
                             <p>{resume.title}</p>
                             <p>{resume.value}</p>
                         </CardCustom>
                     ))}
 
-                    {!resumeDay && Array.from(new Array(4)).map(e => (
-                        <CardCustom>
+                    {!resumeDay && Array.from(new Array(4)).map((e, index: number) => (
+                        <CardCustom key={index}>
                             <Skeleton animation="wave" />
                             <Skeleton animation="wave" />
                         </CardCustom>
@@ -108,6 +106,7 @@ const Dashboard: NextPage = () => {
                 <TableCustom
                     data={products}
                     titles={titles}
+                    addStock={true}
                 />
             </ContainerCustom>
             <ContainerCustom title="Relatórido de entrada e saída">
