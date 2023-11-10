@@ -6,6 +6,10 @@ class DashboardService {
         return api.get(`ListDashboard`)
     }
 
+    static getNoticeProducts() {
+        return api.get(`ListNoticeProducts`)
+    }
+
 }
 
 export default DashboardService

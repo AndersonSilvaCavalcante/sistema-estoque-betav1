@@ -12,6 +12,11 @@ namespace stock_api.EndPoints
                 List<ParametroValor> pv = new List<ParametroValor>();
                 return Persistencia.ExecutarSql<Dashboard>(@"get_dashboard", pv, tipoconsulta: TipoConsulta.STORED_PROCEDURE).ToList();
             }).WithTags("dashboard");
+
+            app.MapGet("ListNoticeProducts", async () => {
+                List<ParametroValor> pv = new List<ParametroValor>();
+                return Persistencia.ExecutarSql<Products>(@"get_noticeProducts", pv, tipoconsulta: TipoConsulta.STORED_PROCEDURE).ToList();
+            }).WithTags("dashboard");
         }
     }
 }
