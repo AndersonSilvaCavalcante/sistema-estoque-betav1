@@ -7,7 +7,10 @@
         public string Barcode { get; set; }
         public int SupplierId { get; set; }
         public string? SupplierName { get; }
+        public string Type { get; set; }
         public int QtdMin { get; set; }
+        public int OldQtd { get; set; }
+        public int QtdChange { get; set; }
         public int QtdCurrent { get; set; }
         public float CostPrice { get; set; }
         public float SalePrice { get; set; }

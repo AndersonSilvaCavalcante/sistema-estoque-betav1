@@ -437,3 +437,198 @@ AS
 	where qtdCurrent <= qtdMin
 
 GO
+
+
+--10/11
+
+alter table recordStock add oldQtd int
+
+  
+CREATE OR ALTER PROCEDURE put_products  
+ @id int,  
+ @name VARCHAR(255),  
+ @barcode VARCHAR(255),  
+ @supplierId INT,  
+ @qtdMin  INT,  
+ @qtdCurrent  INT,  
+ @costPrice float,  
+ @salePrice float,
+ @type  VARCHAR(255), -- retirada ou reposição
+ @oldQtd  INT,
+ @qtdChange  INT
+AS  
+ UPDATE   
+  products  
+ SET  
+  name =  @name,  
+  barcode = @barcode,  
+  supplierId = @supplierId,  
+  qtdMin = @qtdMin,  
+  qtdCurrent = @qtdCurrent,  
+  costPrice = @costPrice,  
+  salePrice = @salePrice  
+ WHERE id = @id;
+ 
+  INSERT INTO recordStock(      
+            productId      
+           ,type
+		   ,oldQtd
+           ,newQtd      
+           ,qtdChange      
+           ,totalCostPrice      
+           ,totalCurrentPrice  
+		   ,currentPrice)      
+     VALUES      
+           (@id      
+           ,@type -- venda, retirada ou reposição,
+		   ,@oldQtd
+           ,@qtdCurrent      
+           ,@qtdChange      
+           ,@costPrice      
+           ,@salePrice  
+		   ,@salePrice)  
+
+
+
+  
+CREATE OR ALTER PROCEDURE post_products  
+ @name VARCHAR(255),  
+ @barcode VARCHAR(255),  
+ @supplierId INT,  
+ @qtdMin  INT,  
+ @qtdCurrent  INT,  
+ @costPrice float,  
+ @salePrice float,
+ @type  VARCHAR(255), -- retirada ou reposição
+ @oldQtd  INT,
+ @qtdChange  INT
+AS  
+ INSERT INTO products 
+ (name, barcode, supplierId, qtdMin, qtdCurrent, costPrice, salePrice) 
+ VALUES(@name, @barcode, @supplierId, @qtdMin, @qtdCurrent, @costPrice, @salePrice);
+ 
+
+  INSERT INTO recordStock(      
+            productId      
+           ,type
+		   ,oldQtd
+           ,newQtd      
+           ,qtdChange      
+           ,totalCostPrice      
+           ,totalCurrentPrice  
+		   ,currentPrice)      
+     VALUES      
+           ((SELECT @@IDENTITY)      
+           ,@type -- venda, retirada ou reposição,
+		   ,@oldQtd
+           ,@qtdCurrent      
+           ,@qtdChange      
+           ,@costPrice      
+           ,@salePrice  
+		   ,@salePrice) 
+
+
+
+CREATE OR ALTER PROCEDURE get_recordStock
+AS
+	select 
+		rs.id,
+		p.name,
+		rs.type,
+		rs.qtdChange,
+		rs.newQtd,
+		rs.dateCreated,
+		rs.oldQtd
+	from 
+		recordStock AS rs
+	inner join products AS p on p.id = rs.productId
+	order by rs.dateCreated desc
+
+
+
+CREATE  OR ALTER  PROCEDURE post_sales       
+ @clientId int,      
+ @discount float,      
+ @products NVARCHAR(MAX),      
+ @value float,  
+ @valueBeforeDIscount float,  
+ @valueCostPrice float  
+AS         
+      
+ INSERT INTO sales      
+           (products      
+           ,discount      
+           ,clientId      
+           ,value  
+		   ,valueBeforeDIscount  
+		   ,valueCostPrice  
+     )      
+     VALUES      
+           (@products      
+           ,@discount      
+           ,@clientId      
+           ,@value  
+		   ,@valueBeforeDIscount  
+		   ,@valueCostPrice  
+     )      
+      
+declare crProducts cursor      
+ for SELECT       
+  jsonVariable.*      
+  FROM OPENJSON(@products, N'$') WITH (      
+  productId int N'$.ProductId',      
+  newQtd int N'$.NewQtd',      
+  qtdChange int N'$.QtdChange',      
+  totalCostPrice float N'$.TotalCostPrice',      
+  currentPrice float N'$.CurrentPrice',      
+  totalCurrentPrice float N'$.TotalCurrentPrice',      
+  oldQtd float N'$.OldQtd'      
+  ) AS jsonVariable      
+      
+      
+ open crProducts      
+      
+ declare @productId INTEGER      
+ declare @newQtd INTEGER      
+ declare @qtdChange INTEGER      
+ declare @totalCostPrice float      
+ declare @totalCurrentPrice float      
+ declare @currentPrice float
+ declare @oldQtd INTEGER
+      
+ fetch NEXT FROM crProducts into @productId, @newQtd, @qtdChange, @totalCostPrice, @currentPrice, @totalCurrentPrice, @oldQtd      
+      
+ WHILE @@FETCH_STATUS = 0      
+ BEGIN      
+      
+ print @productId      
+      
+ UPDATE products      
+ SET qtdCurrent = @newQtd      
+ WHERE id = @productId;       
+      
+ INSERT INTO recordStock(      
+            productId      
+           ,type
+		   ,oldQtd
+           ,newQtd      
+           ,qtdChange      
+           ,totalCostPrice      
+           ,totalCurrentPrice  
+		   ,currentPrice)      
+     VALUES      
+           (@productId      
+           ,'venda'
+		   ,@oldQtd
+           ,@newQtd      
+           ,@qtdChange      
+           ,@totalCostPrice      
+           ,@totalCurrentPrice  
+     ,@currentPrice)      
+      
+      
+ FETCH NEXT FROM crProducts into @productId, @newQtd, @qtdChange, @totalCostPrice, @currentPrice, @totalCurrentPrice, @oldQtd    
+ END      
+ CLOSE crProducts      
+ DEALLOCATE crProducts    
+

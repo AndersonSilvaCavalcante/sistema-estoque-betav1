@@ -49,7 +49,10 @@ const ProductRegisterOrUpdate = ({ params }: IProps) => {
         qtdMin: 0,
         qtdCurrent: 0,
         costPrice: 0,
-        salePrice: 0
+        salePrice: 0,
+        type: '',
+        oldQtd: 0,
+        qtdChange: 0
     }
     const [errorInput, setErrorInput] = useState<null | IErroForm>(null)
 
@@ -72,19 +75,41 @@ const ProductRegisterOrUpdate = ({ params }: IProps) => {
     const changeValues = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | SelectChangeEvent<string> | React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const name = e.target.name
         let value: any = e.target.value
+
         if (value !== "" && (name == "costPrice" || name == "salePrice")) {
             value = parseFloat(value)
         }
+
         if (value !== "" && (name == "qtdMin" || name == "qtdCurrent")) {
             value = parseInt(value)
         }
-        setProduct({ ...product, [name]: value })
+
+        if (name === 'qtdCurrent') {
+            let qtdChange = product.oldQtd - value
+            let type = 'reposição'
+
+            if (qtdChange < 0) {
+                qtdChange = qtdChange * -1
+            }
+
+            if (slug[0] === 'register') {
+                qtdChange = 0
+            } else {
+                if (value < product.oldQtd) {
+                    type = 'retirada'
+                }
+            }
+
+            setProduct({ ...product, qtdChange: qtdChange, type: type, [name]: value })
+        } else {
+            setProduct({ ...product, [name]: value })
+        }
     }
 
     const getProductById = async (id: IProduct["id"]) => {
         try {
             const { data } = await ProductServices.getProducts({ id: id })
-            setProduct(data[0])
+            setProduct({ ...data[0], oldQtd: data[0].qtdCurrent })
         } catch (error) {
             toast.error("Algo deu errado ao exibir o Produto")
         }
@@ -96,7 +121,7 @@ const ProductRegisterOrUpdate = ({ params }: IProps) => {
         let error: any = {}
         const productAny: any = product
         Object.keys(product).map(key => {
-            if(key !== 'id' && (productAny[key] === '' || productAny[key] === 0)){
+            if (key !== 'id' && key !== 'qtdChange' && key !== 'oldQtd' && (productAny[key] === '' || productAny[key] === 0)) {
                 error = { ...error, [key]: true }
             }
         })
@@ -140,7 +165,7 @@ const ProductRegisterOrUpdate = ({ params }: IProps) => {
             <ContainerCustom title="Dados do Produto">
                 <Stack direction="row" spacing={2} mb={2} mt={2}>
                     <CustomTextInput value={product?.name} label={"Nome"} name={"name"} required={true} changeFunction={changeValues} error={errorInput?.name} />
-                    <CustomTextInput value={product?.barcode} label={"Código de Barras"} name={"barcode"} required={true} changeFunction={changeValues} error={errorInput?.barcode}/>
+                    <CustomTextInput value={product?.barcode} label={"Código de Barras"} name={"barcode"} required={true} changeFunction={changeValues} error={errorInput?.barcode} />
                     <FormControl variant="outlined" sx={{ m: 1, minWidth: 250 }} size="small" error={errorInput?.supplierId}>
                         <InputLabel >Fornecedor *</InputLabel>
                         <Select
@@ -155,13 +180,13 @@ const ProductRegisterOrUpdate = ({ params }: IProps) => {
                             ))}
                         </Select>
                         {errorInput?.supplierId && (
-                            <FormHelperText>Caampo obrigatório</FormHelperText>
+                            <FormHelperText>Campo obrigatório</FormHelperText>
                         )}
                     </FormControl>
                 </Stack>
                 <Stack direction="row" spacing={2} mb={2} mt={2}>
                     <CustomTextInput value={product?.qtdMin} label={"Estoque Mínimo"} required={true} type={"number"} name={"qtdMin"} changeFunction={changeValues} error={errorInput?.qtdMin} />
-                    <CustomTextInput value={product?.qtdCurrent} label={"Estoque"} required={true} type={"number"} name={"qtdCurrent"} changeFunction={changeValues} error={errorInput?.qtdCurrent}  />
+                    <CustomTextInput value={product?.qtdCurrent} label={"Estoque"} required={true} type={"number"} name={"qtdCurrent"} changeFunction={changeValues} error={errorInput?.qtdCurrent} />
                     <CustomTextInput value={product?.costPrice} label={"Preço de Custo"} required={true} type={"number"} name={"costPrice"} changeFunction={changeValues} error={errorInput?.costPrice} />
                     <CustomTextInput value={product?.salePrice} label={"Preço de Venda"} required={true} type={"number"} name={"salePrice"} changeFunction={changeValues} error={errorInput?.salePrice} />
                 </Stack>

@@ -19,6 +19,16 @@ interface IResumeDay {
     value: number
 }
 
+interface IRecordStock {
+    id: number,
+    name: string,
+    type: string,
+    qtdChange: number,
+    newQtd: number,
+    dateCreated: Date
+}
+
+
 
 const titles: Array<ITitles> = [
     { label: "Nome", value: 'name' },
@@ -26,11 +36,21 @@ const titles: Array<ITitles> = [
     { label: "Estoque Atual", value: 'qtdCurrent' },
 ]
 
+const titlesRecordStock: Array<ITitles> = [
+    { label: "Nome", value: 'name' },
+    { label: "Tipo", value: 'type' },
+    { label: "Quantidade Antiga", value: 'oldQtd' },
+    { label: "Quantidade Alterada", value: 'qtdChange' },
+    { label: "Nova Quantidade", value: 'newQtd' },
+    { label: "Data", value: 'dateCreated', date: true },
+]
+
 
 const Dashboard: NextPage = () => {
 
     const [resumeDay, setResumeDay] = useState<Array<IResumeDay> | null>(null)
     const [products, setProducts] = useState<Array<IProduct> | null>(null)
+    const [recordStock, setRecordStock] = useState<Array<IRecordStock> | null>(null)
 
     const getResumeDay = async () => {
         try {
@@ -38,8 +58,8 @@ const Dashboard: NextPage = () => {
             setResumeDay([
                 { title: "Vendas", value: data[0].qtdSales },
                 { title: "Serviços Concluídos", value: data[0].qtdOrderService },
-                { title: "Receita", value: data[0].revenue },
-                { title: "Lucro", value: data[0].profit }
+                { title: "Receita", value: 'R$' + data[0].revenue },
+                { title: "Lucro", value: 'R$' + data[0].profit }
             ])
         } catch { }
     }
@@ -51,9 +71,17 @@ const Dashboard: NextPage = () => {
         } catch { }
     }
 
+    const getRecordStock = async () => {
+        try {
+            const { data } = await DashboardService.getRecordStock()
+            setRecordStock(data)
+        } catch { }
+    }
+
     useEffect(() => {
         getResumeDay()
         getNoticeProducts()
+        getRecordStock()
     }, [])
 
     return (
@@ -64,7 +92,7 @@ const Dashboard: NextPage = () => {
                     {resumeDay && resumeDay.map(resume => (
                         <CardCustom>
                             <p>{resume.title}</p>
-                            <p>R$ {resume.value}</p>
+                            <p>{resume.value}</p>
                         </CardCustom>
                     ))}
 
@@ -81,18 +109,12 @@ const Dashboard: NextPage = () => {
                     data={products}
                     titles={titles}
                 />
-                {/* <Box mt={4}>
-                    <Box mt={5} mb={5} sx={{
-                        display: 'grid',
-                        placeItems: 'center',
-                        textAlign: 'center'
-                    }}>
-                        <Box>
-                            <LottieFilesComponent animation={emptyAnimation} loop={true} />
-                            <Typography variant={"h5"} component={"p"}>Não há dados suficientes para gerar relatório</Typography>
-                        </Box>
-                    </Box>
-                </Box> */}
+            </ContainerCustom>
+            <ContainerCustom title="Relatórido de entrada e saída">
+                <TableCustom
+                    data={recordStock}
+                    titles={titlesRecordStock}
+                />
             </ContainerCustom>
         </React.Fragment>
     )

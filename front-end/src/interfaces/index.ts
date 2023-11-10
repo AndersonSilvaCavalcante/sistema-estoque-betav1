@@ -22,6 +22,9 @@ declare global {
         qtdCurrent: number,
         costPrice: number,
         salePrice: number,
+        type: string,
+        oldQtd: number,
+        qtdChange: number
     }
 
     interface ICLient {
@@ -58,6 +61,7 @@ declare global {
         totalCostPrice: number
         totalCurrentPrice: number
         currentPrice: number
+        oldQtd: number
     }
 
     //order service

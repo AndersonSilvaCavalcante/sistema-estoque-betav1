@@ -176,7 +176,7 @@ const SalesForm = () => {
 
         const valueTotalCurrentPrice = productSelecioned?.salePrice ? productSelecioned?.salePrice * parseInt(sale.qtd.toString()) : 0
         const valueTotalCostPrice = productSelecioned?.costPrice ? productSelecioned?.costPrice * parseInt(sale.qtd.toString()) : 0
-
+        
         setSale({
             ...sale,
             qtd: '',
@@ -190,7 +190,8 @@ const SalesForm = () => {
                     qtdChange: sale.qtd,
                     totalCostPrice: productSelecioned?.costPrice ? productSelecioned?.costPrice * parseInt(sale.qtd.toString()) : 0,
                     totalCurrentPrice: valueTotalCurrentPrice,
-                    currentPrice: productSelecioned?.salePrice ?? 0
+                    currentPrice: productSelecioned?.salePrice ?? 0,
+                    oldQtd: productSelecioned?.qtdCurrent ?? 0
                 }],
             value: sale.value + valueTotalCurrentPrice,
             valueCostPrice: sale.valueCostPrice + valueTotalCostPrice

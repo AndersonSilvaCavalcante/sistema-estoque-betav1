@@ -20,6 +20,7 @@
     public class ProductsList
     {
         public int ProductId { get; set; }
+        public int OldQtd { get; set; }
         public string ProductName { get; set; }
         public int NewQtd { get; set; }
         public int QtdChange { get; set; }
