@@ -91,7 +91,7 @@ const Suppliers: NextPage = () => {
         let error: any = {}
         const supplierAny: any = supplier
         Object.keys(supplier).map(key => {
-            if (key !== 'id' && (supplierAny[key] === '' || supplierAny[key] === 0 || (key === 'contact' && supplier?.contact.length < 17))) {
+            if (key !== 'id' && (supplierAny[key] === '' || supplierAny[key] === 0 || (key === 'contact' && (supplier?.contact.length < 16 || supplier?.contact.length > 17)))) {
                 error = { ...error, [key]: true }
             }
         })
@@ -187,7 +187,7 @@ const Suppliers: NextPage = () => {
                     gridGap: 20
                 }}>
                     <CustomTextInput value={supplier?.name} label={"Nome"} name={"name"} changeFunction={changeSuplierValues} error={errorInput?.name} />
-                    <CustomTelInput label={"Contato"} value={supplier?.contact} name={"contact"} changeFunction={changeSuplierValues} error={errorInput?.contact} errorMessage={supplier?.contact.length < 17 ? "Número inválido" : undefined} />
+                    <CustomTelInput label={"Contato"} value={supplier?.contact} name={"contact"} changeFunction={changeSuplierValues} error={errorInput?.contact} errorMessage={supplier?.contact.length < 16 || supplier?.contact.length > 17 ? "Número inválido" : undefined} />
                 </Box>
             </CustomPopup>
         </React.Fragment>
