@@ -126,7 +126,7 @@ const Products: NextPage = () => {
                             <TextField
                                 {...params}
                                 name="supplierId"
-                                label="Fornecedor *"
+                                label="Fornecedor"
                             />
                         </FormControl>
                     )}

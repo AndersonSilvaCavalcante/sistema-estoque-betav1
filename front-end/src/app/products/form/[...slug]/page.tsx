@@ -52,7 +52,9 @@ const ProductRegisterOrUpdate = ({ params }: IProps) => {
         salePrice: 0,
         type: '',
         oldQtd: 0,
-        qtdChange: 0
+        qtdChange: 0,
+        valueProfit: 0,
+        perProfit: ""
     }
     const [errorInput, setErrorInput] = useState<null | IErroForm>(null)
 
@@ -84,25 +86,42 @@ const ProductRegisterOrUpdate = ({ params }: IProps) => {
             value = parseInt(value)
         }
 
-        if (name === 'qtdCurrent') {
-            let qtdChange = product.oldQtd - value
-            let type = 'reposição'
+        let salePrice = 0
+        let perProfit = 0
 
-            if (qtdChange < 0) {
-                qtdChange = qtdChange * -1
-            }
+        switch (name) {
+            case "qtdCurrent":
+                let qtdChange = product.oldQtd - value
+                let type = 'reposição'
 
-            if (slug[0] === 'register') {
-                qtdChange = 0
-            } else {
-                if (value < product.oldQtd) {
-                    type = 'retirada'
+                if (qtdChange < 0) {
+                    qtdChange = qtdChange * -1
                 }
-            }
 
-            setProduct({ ...product, qtdChange: qtdChange, type: type, [name]: value })
-        } else {
-            setProduct({ ...product, [name]: value })
+                if (slug[0] === 'register') {
+                    qtdChange = 0
+                } else {
+                    if (value < product.oldQtd) {
+                        type = 'retirada'
+                    }
+                }
+                setProduct({ ...product, qtdChange: qtdChange, type: type, [name]: value })
+                break;
+            case "salePrice":
+                perProfit = ((value - product.costPrice) / value) * 100
+                setProduct({ ...product, [name]: value, perProfit: perProfit.toFixed(2), valueProfit: value - product.costPrice })
+                break;
+            case "perProfit":
+                salePrice = ((100 * product.costPrice) / (value - 100) * -1)
+                setProduct({ ...product, [name]: value, salePrice: salePrice, valueProfit: salePrice - product.costPrice })
+                break;
+            case "valueProfit":
+                salePrice = product.costPrice - value
+                perProfit = ((salePrice - product.costPrice) / salePrice) * 100
+                setProduct({ ...product, [name]: value, salePrice: salePrice, perProfit: perProfit.toString() })
+                break;
+            default:
+                setProduct({ ...product, [name]: value })
         }
     }
 
@@ -164,8 +183,8 @@ const ProductRegisterOrUpdate = ({ params }: IProps) => {
             <PageHeader title={`${action} Produto`} />
             <ContainerCustom title="Dados do Produto">
                 <Stack direction="row" spacing={2} mb={2} mt={2}>
-                    <CustomTextInput value={product?.name} label={"Nome"} name={"name"} required={true} changeFunction={changeValues} error={errorInput?.name} />
-                    <CustomTextInput value={product?.barcode} label={"Código de Barras"} name={"barcode"} required={true} changeFunction={changeValues} error={errorInput?.barcode} />
+                    <CustomTextInput fullWidth value={product?.name} label={"Nome"} name={"name"} required={true} changeFunction={changeValues} error={errorInput?.name} />
+                    <CustomTextInput fullWidth value={product?.barcode} label={"Código de Barras"} name={"barcode"} required={true} changeFunction={changeValues} error={errorInput?.barcode} />
                     <FormControl variant="outlined" sx={{ m: 1, minWidth: 250 }} size="small" error={errorInput?.supplierId}>
                         <InputLabel >Fornecedor *</InputLabel>
                         <Select
@@ -185,10 +204,14 @@ const ProductRegisterOrUpdate = ({ params }: IProps) => {
                     </FormControl>
                 </Stack>
                 <Stack direction="row" spacing={2} mb={2} mt={2}>
-                    <CustomTextInput value={product?.qtdMin} label={"Estoque Mínimo"} required={true} type={"number"} name={"qtdMin"} changeFunction={changeValues} error={errorInput?.qtdMin} />
-                    <CustomTextInput value={product?.qtdCurrent} label={"Estoque"} required={true} type={"number"} name={"qtdCurrent"} changeFunction={changeValues} error={errorInput?.qtdCurrent} />
-                    <CustomTextInput value={product?.costPrice} label={"Preço de Custo"} required={true} type={"number"} name={"costPrice"} changeFunction={changeValues} error={errorInput?.costPrice} />
-                    <CustomTextInput value={product?.salePrice} label={"Preço de Venda"} required={true} type={"number"} name={"salePrice"} changeFunction={changeValues} error={errorInput?.salePrice} />
+                    <CustomTextInput fullWidth value={product?.qtdMin} label={"Estoque Mínimo"} required={true} type={"number"} name={"qtdMin"} changeFunction={changeValues} error={errorInput?.qtdMin} />
+                    <CustomTextInput fullWidth value={product?.qtdCurrent} label={"Estoque"} required={true} type={"number"} name={"qtdCurrent"} changeFunction={changeValues} error={errorInput?.qtdCurrent} />
+                    <CustomTextInput fullWidth value={product?.costPrice} label={"Preço de Custo"} required={true} type={"number"} name={"costPrice"} changeFunction={changeValues} error={errorInput?.costPrice} />
+                </Stack>
+                <Stack direction="row" spacing={2} mb={2} mt={2}>
+                    <CustomTextInput fullWidth value={product?.salePrice} label={"Preço de Venda"} required={true} type={"number"} name={"salePrice"} changeFunction={changeValues} error={errorInput?.salePrice} />
+                    <CustomTextInput fullWidth value={product?.perProfit} disabled={true} label={"Porcentagem de Lucro"} type={"number"} name={"perProfit"} changeFunction={changeValues} error={errorInput?.qtdMin} />
+                    <CustomTextInput fullWidth value={product?.valueProfit} disabled={true} label={"Valor do Lucro"} type={"number"} name={"valueProfit"} changeFunction={changeValues} error={errorInput?.qtdCurrent} />
                 </Stack>
                 <Box sx={{ display: 'flex', placeContent: 'flex-end' }}>
                     <Stack direction="row" spacing={2}>

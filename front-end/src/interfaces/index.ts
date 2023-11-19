@@ -24,7 +24,9 @@ declare global {
         salePrice: number,
         type: string,
         oldQtd: number,
-        qtdChange: number
+        qtdChange: number,
+        perProfit: string,
+        valueProfit: number
     }
 
     interface ICLient {
