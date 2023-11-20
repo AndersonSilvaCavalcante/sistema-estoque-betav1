@@ -148,10 +148,10 @@ const ProductRegisterOrUpdate = ({ params }: IProps) => {
         if (Object.keys(error).length !== 0) {
             return setErrorInput(error)
         }
-
+        
         try {
-            slug[0] == "register" ? await ProductServices.saveProduct(product) : null
-            slug[0] == "edit" ? await ProductServices.editProduct(product) : null
+            slug[0] == "register" ? await ProductServices.saveProduct({ ...product, type: 'cadastro' } ) : null
+            slug[0] == "edit" ? await ProductServices.editProduct(!product.type ? { ...product, type: 'edição' } : product) : null
             setProduct(initialProduct)
             handleClose
             toast.success("Produto Salvo com sucesso!")
