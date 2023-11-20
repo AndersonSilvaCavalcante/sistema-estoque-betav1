@@ -18,15 +18,15 @@ declare global {
         name: string,
         barcode: string,
         supplierId: number,
-        qtdMin: number,
-        qtdCurrent: number,
-        costPrice: number,
-        salePrice: number,
+        qtdMin: number | undefined,
+        qtdCurrent: number| undefined,
+        costPrice: number| undefined,
+        salePrice: number| undefined,
         type: string,
         oldQtd: number,
         qtdChange: number,
-        perProfit: string,
-        valueProfit: number,
+        perProfit: number | undefined,
+        valueProfit: number | undefined,
         status: string
     }
 
@@ -44,7 +44,7 @@ declare global {
         id: number,
         products: Array<IProductSale>,
         productsString: string,
-        qtd: number | string,
+        qtd: number | undefined,
         clientId: number | string,
         value: number,
         clientName: string,
@@ -60,7 +60,7 @@ declare global {
         productName: string
         productId: number
         newQtd: number
-        qtdChange: number | string
+        qtdChange: number | undefined
         totalCostPrice: number
         totalCurrentPrice: number
         currentPrice: number

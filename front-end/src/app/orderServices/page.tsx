@@ -33,7 +33,7 @@ import CardCustom from '@/components/Card';
 
 export interface IFilter {
     plate: string,
-    order: number | string,
+    order: number | undefined,
     status: string,
     clientId: number | string
 }
@@ -70,7 +70,7 @@ const optionsInitial: Array<IOPtion> = [
 
 const OrderServices: NextPage = () => {
 
-    const initialFIlter: IFilter = { plate: '', order: '', status: 'started', clientId: '' }
+    const initialFIlter: IFilter = { plate: '', order: undefined, status: 'started', clientId: '' }
     const listStatus: Array<IStatus> = [
         { label: "Todos", value: ' ', },
         { label: "Abertas", value: 'started' },
@@ -194,7 +194,7 @@ const OrderServices: NextPage = () => {
             </PageHeader>
             <Filter cleanFunction={cleanFilters} filterFucntion={() => getListOrderService(false)}>
                 <CustomTextInput value={filter?.plate} name='plate' label="Placa" changeFunction={changeValues} />
-                <CustomTextInput value={filter?.order} name='order' label="N° da ordem" changeFunction={changeValues} />
+                <CustomTextInput value={filter.order || ''} name='order' type='number' label="N° da ordem" changeFunction={changeValues} />
                 <FormControl variant="outlined" sx={{ minWidth: 120 }} size="small">
                     <InputLabel id="demo-simple-select-standard-label">Status</InputLabel>
                     <Select
@@ -226,7 +226,7 @@ const OrderServices: NextPage = () => {
                         <FormControl variant="outlined" sx={{ minWidth: 275 }} size="small"  >
                             <TextField
                                 {...params}
-                                label="Nome do Cliente *"
+                                label="Nome do Cliente"
                             />
                         </FormControl>
                     )}

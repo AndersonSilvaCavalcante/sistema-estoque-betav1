@@ -43,7 +43,7 @@ const SalesForm = () => {
     const initialSale: ISale = {
         id: 0,
         products: [],
-        qtd: '',
+        qtd: undefined,
         clientId: '',
         value: 0,
         clientName: "",
@@ -70,7 +70,7 @@ const SalesForm = () => {
     const [clientSelecioned, setClientSelecioned] = useState<ICLient | null>(null)
 
     const [openAddDiscount, setOpenAddDiscount] = useState<boolean>(false)
-    
+
 
     const changeValues = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | SelectChangeEvent<string> | React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const name = e.target.name
@@ -125,7 +125,7 @@ const SalesForm = () => {
 
     const getProductsList = async () => {
         try {
-            const { data } = await ProductServices.getProducts({ name: '', barcode: '' })
+            const { data } = await ProductServices.getProducts({ name: '', barcode: '', status: 'ativo' })
             setProducts(data)
         } catch (error) {
             toast.error("Algo deu errado")
@@ -158,7 +158,8 @@ const SalesForm = () => {
             error = { ...error, clientId: true }
         }
 
-        if (sale.qtd === 0 || sale.qtd === '') {
+        console.log('sale', sale)
+        if (sale.qtd === 0 || sale.qtd === undefined) {
             error = { ...error, quantidade: true }
         }
 
@@ -166,7 +167,7 @@ const SalesForm = () => {
             error = { ...error, produtoId: true }
         }
 
-        if (productSelecioned && (productSelecioned.qtdCurrent < parseInt(sale.qtd.toString()))) {
+        if (productSelecioned && productSelecioned.qtdCurrent && sale.qtd && productSelecioned.qtdCurrent < sale.qtd) {
             return toast.info(`Só existe ${productSelecioned.qtdCurrent} unidades de ${productSelecioned.name} no estoque`)
         }
 
@@ -174,30 +175,32 @@ const SalesForm = () => {
             return setErrorInput(error)
         }
 
-        const valueTotalCurrentPrice = productSelecioned?.salePrice ? productSelecioned?.salePrice * parseInt(sale.qtd.toString()) : 0
-        const valueTotalCostPrice = productSelecioned?.costPrice ? productSelecioned?.costPrice * parseInt(sale.qtd.toString()) : 0
-        
-        setSale({
-            ...sale,
-            qtd: '',
-            products: [
-                ...sale.products,
-                {
-                    id: productSelecioned?.id ?? 0,
-                    productName: productSelecioned?.name ?? "",
-                    productId: productSelecioned?.id ?? 0,
-                    newQtd: productSelecioned?.qtdCurrent ? productSelecioned?.qtdCurrent - parseInt(sale.qtd.toString()) : 0,
-                    qtdChange: sale.qtd,
-                    totalCostPrice: productSelecioned?.costPrice ? productSelecioned?.costPrice * parseInt(sale.qtd.toString()) : 0,
-                    totalCurrentPrice: valueTotalCurrentPrice,
-                    currentPrice: productSelecioned?.salePrice ?? 0,
-                    oldQtd: productSelecioned?.qtdCurrent ?? 0
-                }],
-            value: sale.value + valueTotalCurrentPrice,
-            valueCostPrice: sale.valueCostPrice + valueTotalCostPrice
-        })
+        if (sale.qtd) {
+            const valueTotalCurrentPrice = productSelecioned?.salePrice ? productSelecioned?.salePrice * sale.qtd : 0
+            const valueTotalCostPrice = productSelecioned?.costPrice ? productSelecioned?.costPrice * sale.qtd : 0
 
-        setProductSelecioned(null)
+            setSale({
+                ...sale,
+                qtd: undefined,
+                products: [
+                    ...sale.products,
+                    {
+                        id: productSelecioned?.id ?? 0,
+                        productName: productSelecioned?.name ?? "",
+                        productId: productSelecioned?.id ?? 0,
+                        newQtd: productSelecioned?.qtdCurrent ? productSelecioned?.qtdCurrent - parseInt(sale.qtd.toString()) : 0,
+                        qtdChange: sale.qtd,
+                        totalCostPrice: productSelecioned?.costPrice ? productSelecioned?.costPrice * parseInt(sale.qtd.toString()) : 0,
+                        totalCurrentPrice: valueTotalCurrentPrice,
+                        currentPrice: productSelecioned?.salePrice ?? 0,
+                        oldQtd: productSelecioned?.qtdCurrent ?? 0
+                    }],
+                value: sale.value + valueTotalCurrentPrice,
+                valueCostPrice: sale.valueCostPrice + valueTotalCostPrice
+            })
+
+            setProductSelecioned(null)
+        }
     }
 
     useEffect(() => {
@@ -276,7 +279,7 @@ const SalesForm = () => {
                             </FormControl>
                         )}
                     />
-                    <CustomTextInput value={sale?.qtd} label={"Quantidade *"} name={"qtd"} changeFunction={changeValues} error={errorInput?.quantidade} />
+                    <CustomTextInput value={sale.qtd || ''} type="number" label={"Quantidade *"} name={"qtd"} changeFunction={changeValues} error={errorInput?.quantidade} />
                     <FormControl>
                         <ButtonPlus onCLick={addProductList} title="Adicionar" />
                     </FormControl>
