@@ -22,8 +22,8 @@ import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import { ButtonPlus } from "@/components/ButtonPlus";
 
 const titles: Array<ITitles> = [
-    { label: "N° da venda", value: 'id' },
     { label: "Data da Venda", value: 'dateCreated', date: true },
+    { label: "N° da venda", value: 'id' },
     { label: "Nome do Cliente", value: 'clientName' },
     { label: "Custo da venda", value: 'valueCostPrice', valuePrefix: "currency" },
     { label: "Total Sem Desconto", value: 'valueBeforeDIscount', valuePrefix: "currency" },
@@ -42,7 +42,7 @@ const titlesReceipt: Array<ITitles> = [
 
 const Sales: NextPage = () => {
     const [salesList, setSalesList] = useState<Array<ISale> | null>(null)
-    const [filter, setFilter] = useState<number | string>('')
+    const [filter, setFilter] = useState<number | undefined>(undefined)
 
     const [openReceipt, setOpenReceipt] = useState<boolean>(false)
     const [productSelected, setProductSelected] = useState<IProduct>()
@@ -51,13 +51,13 @@ const Sales: NextPage = () => {
 
     const returnSalesList = async (clean?: boolean) => {
         try {
-            const { data } = await SalesService.getListSales(clean ? '' : filter)
+            const { data } = await SalesService.getListSales(clean ? undefined : filter)
             setSalesList(data)
         } catch { }
     }
 
     const cleanSales = () => {
-        setFilter('')
+        setFilter(undefined)
         returnSalesList(true)
     }
 
@@ -79,7 +79,7 @@ const Sales: NextPage = () => {
                 <ButtonPlus onCLick={() => router.push("/sales/form")} title="Realizar Venda" />
             </PageHeader>
             <Filter cleanFunction={cleanSales} filterFucntion={() => returnSalesList(false)}>
-                <CustomTextInput value={filter} label={"N° de venda"} name={"codigoVenda"} changeFunction={(e) => setFilter(parseInt(e.target.value))} />
+                <CustomTextInput value={filter} type="nunber" label={"N° de venda"} name={"codigoVenda"} changeFunction={(e) => setFilter(parseInt(e.target.value))} />
             </Filter>
             <ContainerCustom>
                 <TableCustom

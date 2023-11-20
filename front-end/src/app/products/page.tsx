@@ -21,17 +21,15 @@ import { ButtonPlus } from "@/components/ButtonPlus";
 import { ConfirmPopup } from "@/components/Popups";
 
 const titles: Array<ITitles> = [
-    { label: "Data Criação", value: "dateCreated" },
-    { label: "Data Atualização", value: "dateUpdated" },
+    { label: "Data de Criação", value: 'dateCreated', date: true },
+    { label: "Data de Atualização", value: 'dateUpdated', date: true },
     { label: "Nome", value: 'name' },
     { label: "Status", value: 'status' },
     { label: "Fornecedor", value: 'supplierName' },
     { label: "Estoque Mínimo", value: 'qtdMin' },
     { label: "Estoque Atual", value: 'qtdCurrent' },
     { label: "Preço de Custo", value: 'costPrice', valuePrefix: "currency" },
-    { label: "Preço de Venda", value: 'salePrice', valuePrefix: "currency" },
-    { label: "Data de Criação", value: 'dateCreated', date: true },
-    { label: "Data de Atualização", value: 'dateUpdated', date: true },
+    { label: "Preço de Venda", value: 'salePrice', valuePrefix: "currency" }
 ]
 
 export interface IFilter {

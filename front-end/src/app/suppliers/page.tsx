@@ -22,6 +22,8 @@ import { ButtonPlus } from "@/components/ButtonPlus"
 
 
 const titles: Array<ITitles> = [
+    { label: "Data Criação", value: 'dateCreated', date: true },
+    { label: "Data de Atualização", value: 'dateUpdated', date: true },
     { label: "Nome", value: 'name' },
     { label: "Telefone", value: 'contact' }
 ]

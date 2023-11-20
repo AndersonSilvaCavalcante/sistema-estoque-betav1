@@ -28,6 +28,10 @@ body {
 }
 */
 
+.c-pointer{
+  cursor: pointer;
+}
+
 .grid-Skeleton {
   display: grid;
   margin: 0 auto;

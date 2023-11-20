@@ -1,9 +1,9 @@
 import api from "./api"
 
 class SalesService {
-    static getListSales(id: number | string) {
+    static getListSales(id: number | undefined) {
         let filter = ''
-        if (id !== '') {
+        if (id) {
             filter = `?id=${id}`
         }
         return api.get(`ListSales${filter}`)

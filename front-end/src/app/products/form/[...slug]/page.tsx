@@ -46,15 +46,15 @@ const ProductRegisterOrUpdate = ({ params }: IProps) => {
         name: "",
         barcode: "",
         supplierId: 0,
-        qtdMin: 0,
-        qtdCurrent: 0,
-        costPrice: 0,
-        salePrice: 0,
+        qtdMin: undefined,
+        qtdCurrent: undefined,
+        costPrice: undefined,
+        salePrice: undefined,
         type: '',
         oldQtd: 0,
         qtdChange: 0,
-        valueProfit: 0,
-        perProfit: "",
+        valueProfit: undefined,
+        perProfit: undefined,
         status: ''
     }
     const [errorInput, setErrorInput] = useState<null | IErroForm>(null)
@@ -109,17 +109,33 @@ const ProductRegisterOrUpdate = ({ params }: IProps) => {
                 setProduct({ ...product, qtdChange: qtdChange, type: type, [name]: value })
                 break;
             case "salePrice":
-                perProfit = ((value - product.costPrice) / value) * 100
-                setProduct({ ...product, [name]: value, perProfit: perProfit.toFixed(2), valueProfit: value - product.costPrice })
+                if (product.costPrice) {
+                    perProfit = ((value - product.costPrice) / value) * 100
+                    setProduct({ ...product, [name]: value, perProfit: parseFloat(perProfit.toFixed(2)), valueProfit: parseFloat((value - product.costPrice).toFixed(2)) })
+                } else {
+                    setProduct({ ...product, [name]: value })
+                }
+                break;
+            case "costPrice":
+                if (product.salePrice) {
+                    perProfit = ((product.salePrice - value) / product.salePrice) * 100
+                    setProduct({ ...product, [name]: value, perProfit: parseFloat(perProfit.toFixed(2)), valueProfit: parseFloat((product.salePrice - value).toFixed(2)) })
+                } else {
+                    setProduct({ ...product, [name]: value })
+                }
                 break;
             case "perProfit":
-                salePrice = ((100 * product.costPrice) / (value - 100) * -1)
-                setProduct({ ...product, [name]: value, salePrice: salePrice, valueProfit: salePrice - product.costPrice })
+                if (product.costPrice) {
+                    salePrice = ((100 * product.costPrice) / (value - 100) * -1)
+                    setProduct({ ...product, [name]: value, salePrice: parseFloat(salePrice.toFixed(2)), valueProfit: parseFloat((salePrice - product.costPrice).toFixed(2)) })
+                }
                 break;
             case "valueProfit":
-                salePrice = product.costPrice - value
-                perProfit = ((salePrice - product.costPrice) / salePrice) * 100
-                setProduct({ ...product, [name]: value, salePrice: salePrice, perProfit: perProfit.toString() })
+                if (product.costPrice) {
+                    salePrice = product.costPrice + parseFloat(value)
+                    perProfit = ((salePrice - product.costPrice) / salePrice) * 100
+                    setProduct({ ...product, [name]: value, salePrice: parseFloat(salePrice.toFixed(2)), perProfit: parseFloat(perProfit.toFixed(2)) })
+                }
                 break;
             default:
                 setProduct({ ...product, [name]: value })
@@ -141,8 +157,17 @@ const ProductRegisterOrUpdate = ({ params }: IProps) => {
         let error: any = {}
         const productAny: any = product
         Object.keys(product).map(key => {
-            if (key !== 'id' && key !== 'qtdChange' && key !== 'oldQtd' && (productAny[key] === '' || productAny[key] === 0)) {
-                error = { ...error, [key]: true }
+            if (
+                key !== 'id' &&
+                key !== 'qtdChange' &&
+                key !== 'oldQtd' &&
+                key !== 'perProfit' &&
+                key !== 'valueProfit' &&
+                key !== 'status' &&
+                (productAny[key] === '' || productAny[key] === 0 || productAny[key] === undefined)) {
+                error = {
+                    ...error, [key]: true
+                }
             }
         })
 
@@ -205,14 +230,14 @@ const ProductRegisterOrUpdate = ({ params }: IProps) => {
                     </FormControl>
                 </Stack>
                 <Stack direction="row" spacing={2} mb={2} mt={2}>
-                    <CustomTextInput fullWidth value={product?.qtdMin} label={"Estoque Mínimo"} required={true} type={"number"} name={"qtdMin"} changeFunction={changeValues} error={errorInput?.qtdMin} />
-                    <CustomTextInput fullWidth value={product?.qtdCurrent} label={"Estoque"} required={true} type={"number"} name={"qtdCurrent"} changeFunction={changeValues} error={errorInput?.qtdCurrent} />
-                    <CustomTextInput fullWidth value={product?.costPrice} label={"Preço de Custo"} required={true} type={"number"} name={"costPrice"} changeFunction={changeValues} error={errorInput?.costPrice} />
+                    <CustomTextInput fullWidth value={product.qtdMin || ''} label={"Estoque Mínimo"} required={true} type={"number"} name={"qtdMin"} changeFunction={changeValues} error={errorInput?.qtdMin} />
+                    <CustomTextInput fullWidth value={product.qtdCurrent || ''} label={"Estoque"} required={true} type={"number"} name={"qtdCurrent"} changeFunction={changeValues} error={errorInput?.qtdCurrent} />
+                    <CustomTextInput fullWidth value={product.costPrice || ''} label={"Preço de Custo"} required={true} type={"number"} name={"costPrice"} changeFunction={changeValues} error={errorInput?.costPrice} />
                 </Stack>
                 <Stack direction="row" spacing={2} mb={2} mt={2}>
-                    <CustomTextInput fullWidth value={product?.salePrice} label={"Preço de Venda"} required={true} type={"number"} name={"salePrice"} changeFunction={changeValues} error={errorInput?.salePrice} />
-                    <CustomTextInput fullWidth value={product?.perProfit} disabled={true} label={"Porcentagem de Lucro"} type={"number"} name={"perProfit"} changeFunction={changeValues} error={errorInput?.qtdMin} />
-                    <CustomTextInput fullWidth value={product?.valueProfit} disabled={true} label={"Valor do Lucro"} type={"number"} name={"valueProfit"} changeFunction={changeValues} error={errorInput?.qtdCurrent} />
+                    <CustomTextInput fullWidth value={product.salePrice || ''} label={"Preço de Venda"} required={true} type={"number"} name={"salePrice"} changeFunction={changeValues} error={errorInput?.salePrice} />
+                    <CustomTextInput fullWidth value={product.perProfit || ''} disabled={!(product.costPrice && product.costPrice > 0) ? true : false} label={"Porcentagem de Lucro"} type={"number"} name={"perProfit"} changeFunction={changeValues} />
+                    <CustomTextInput fullWidth value={product.valueProfit || ''} disabled={!(product.costPrice && product.costPrice > 0) ? true : false} label={"Valor do Lucro"} type={"number"} name={"valueProfit"} changeFunction={changeValues} />
                 </Stack>
                 <Box sx={{ display: 'flex', placeContent: 'flex-end' }}>
                     <Stack direction="row" spacing={2}>
