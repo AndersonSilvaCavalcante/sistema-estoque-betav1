@@ -632,3 +632,136 @@ declare crProducts cursor
  CLOSE crProducts      
  DEALLOCATE crProducts    
 
+-- 20/11
+ALTER TABLE [dbo].[sales] 
+ADD paymentForm VARCHAR(255) null, amountPaid FLOAT NULL, customerChangeCash FLOAT NULL, paymentInstallments INT DEFAULT 1
+GO
+
+/****** Object:  StoredProcedure [dbo].[post_sales]    Script Date: 20/11/2023 19:42:05 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+
+ALTER     PROCEDURE [dbo].[post_sales]       
+ @clientId int,      
+ @discount float,      
+ @products NVARCHAR(MAX),      
+ @value float,  
+ @valueBeforeDIscount float,  
+ @valueCostPrice float,
+  @paymentForm VARCHAR,
+ @amountPaid float,
+ @customerChangeCash float,
+ @paymentInstallments int 
+AS         
+      
+ INSERT INTO sales      
+           (products      
+           ,discount      
+           ,clientId      
+           ,value  
+		   ,valueBeforeDIscount  
+		   ,valueCostPrice  
+		   ,paymentForm
+			,amountPaid
+ 			,customerChangeCash
+ 			,paymentInstallments
+     )      
+     VALUES      
+           (@products      
+           ,@discount      
+           ,@clientId      
+           ,@value  
+		   ,@valueBeforeDIscount  
+		   ,@valueCostPrice  
+		   ,@paymentForm 
+ 			,@amountPaid 
+ 			,@customerChangeCash 
+ 			,@paymentInstallments  
+     )      
+      
+declare crProducts cursor      
+ for SELECT       
+  jsonVariable.*      
+  FROM OPENJSON(@products, N'$') WITH (      
+  productId int N'$.ProductId',      
+  newQtd int N'$.NewQtd',      
+  qtdChange int N'$.QtdChange',      
+  totalCostPrice float N'$.TotalCostPrice',      
+  currentPrice float N'$.CurrentPrice',      
+  totalCurrentPrice float N'$.TotalCurrentPrice',      
+  oldQtd float N'$.OldQtd'      
+  ) AS jsonVariable      
+      
+      
+ open crProducts      
+      
+ declare @productId INTEGER      
+ declare @newQtd INTEGER      
+ declare @qtdChange INTEGER      
+ declare @totalCostPrice float      
+ declare @totalCurrentPrice float      
+ declare @currentPrice float
+ declare @oldQtd INTEGER
+      
+ fetch NEXT FROM crProducts into @productId, @newQtd, @qtdChange, @totalCostPrice, @currentPrice, @totalCurrentPrice, @oldQtd      
+      
+ WHILE @@FETCH_STATUS = 0      
+ BEGIN      
+      
+ print @productId      
+      
+ UPDATE products      
+ SET qtdCurrent = @newQtd      
+ WHERE id = @productId;       
+      
+ INSERT INTO recordStock(      
+            productId      
+           ,type
+		   ,oldQtd
+           ,newQtd      
+           ,qtdChange      
+           ,totalCostPrice      
+           ,totalCurrentPrice  
+		   ,currentPrice)      
+     VALUES      
+           (@productId      
+           ,'venda'
+		   ,@oldQtd
+           ,@newQtd      
+           ,@qtdChange      
+           ,@totalCostPrice      
+           ,@totalCurrentPrice  
+     ,@currentPrice)      
+      
+      
+ FETCH NEXT FROM crProducts into @productId, @newQtd, @qtdChange, @totalCostPrice, @currentPrice, @totalCurrentPrice, @oldQtd    
+ END      
+ CLOSE crProducts      
+ DEALLOCATE crProducts
+GO
+
+CREATE OR ALTER PROCEDURE [dbo].[get_sales]   
+ @id int  
+AS    
+ SELECT     
+  s.id ,    
+  s.dateCreated,    
+  s.value,  
+     s.discount,
+  s.valueBeforeDIscount,
+  s.valueCostPrice,
+  s.paymentForm,
+  s.amountPaid,
+	s.customerChangeCash,
+	s.paymentInstallments,
+  c.name AS clientName
+ FROM sales s   
+ INNER JOIN client c ON c.id = s.clientId  
+ WHERE     
+  (s.id = @id or @id IS NULL)    
+ ORDER BY s.dateCreated desc 
+GO

@@ -48,7 +48,7 @@ const SalesForm = () => {
     const initialSale: ISale = {
         id: 0,
         products: [],
-        qtd: undefined,
+        qtd: 0,
         clientId: '',
         value: 0,
         clientName: "",
@@ -82,8 +82,13 @@ const SalesForm = () => {
 
     const changeValues = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | SelectChangeEvent<string> | React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const name = e.target.name
-        const value = e.target.value
-
+        let value: any = e.target.value
+        switch (name) {
+            case "discount":
+            case "valueBeforeDIscount":
+            case "amountPaid":
+                value = parseFloat(value)
+        }
         setSale({ ...sale, [name]: value })
     }
 
@@ -100,7 +105,7 @@ const SalesForm = () => {
         const product: IProductSale = sale.products.filter(p => p.id === id)[0]
         setSale({
             ...sale, products: sale.products.filter(p => p.id !== id), value: sale.value - product.totalCurrentPrice,
-            valueCostPrice: sale.valueCostPrice - product.totalCostPrice
+            valueCostPrice: sale.valueCostPrice - product.totalCostPrice, valueBeforeDIscount: sale.value - product.totalCurrentPrice - sale.discount
         })
     }
 
@@ -121,18 +126,16 @@ const SalesForm = () => {
             if (Object.keys(error).length !== 0) {
                 return setErrorInput(error)
             }
-            console.log("aqui", {
-                ...sale,
-                valueBeforeDIscount: sale.value,
-                value: sale.value - sale.discount
-            })
-            // await SalesService.saveSale({
-            //     ...sale,
-            //     valueBeforeDIscount: sale.value,
-            //     value: sale.value - sale.discount
-            // })
-            // toast.success("Sucesso ao realizar venda!")
-            // goBack()
+            if(sale.amountPaid == 0 && sale.valueBeforeDIscount == 0){
+                sale.amountPaid = sale.value
+            }
+            else if(sale.amountPaid == 0 && sale.valueBeforeDIscount >0){
+                sale.amountPaid = sale.valueBeforeDIscount
+            }
+  
+            await SalesService.saveSale(sale)
+            toast.success("Sucesso ao realizar venda!")
+            goBack()
         } catch {
             toast.error("Erro ao realizar venda!")
         }
@@ -167,7 +170,7 @@ const SalesForm = () => {
         setProductSelecioned(products.filter(p => p.id === product.id)[0])
         setSale({
             ...sale, qtd: product.qtdChange, products: sale.products.filter(p => p.id !== product.id), value: sale.value - product.totalCurrentPrice,
-            valueCostPrice: sale.valueCostPrice - product.totalCostPrice
+            valueCostPrice: sale.valueCostPrice - product.totalCostPrice,  valueBeforeDIscount: sale.value - product.totalCurrentPrice - sale.discount
         })
     }
 
@@ -177,7 +180,7 @@ const SalesForm = () => {
         if (sale.discount === 0) {
             return setErrorInput({ ...errorInput, discount: true })
         }
-        setSale({...sale, value: sale.value - sale.discount})
+        setSale({ ...sale, valueBeforeDIscount: sale.value - sale.discount })
         setOpenAddDiscount(false)
     }
 
@@ -228,7 +231,8 @@ const SalesForm = () => {
                         oldQtd: productSelecioned?.qtdCurrent ?? 0
                     }],
                 value: sale.value + valueTotalCurrentPrice,
-                valueCostPrice: sale.valueCostPrice + valueTotalCostPrice
+                valueCostPrice: sale.valueCostPrice + valueTotalCostPrice,
+                valueBeforeDIscount: sale.value + valueTotalCurrentPrice - sale.discount
             })
 
             setProductSelecioned(null)
@@ -249,10 +253,20 @@ const SalesForm = () => {
     }, [clientSelecioned])
 
     //Calcula o troco quando a forma de pagamento é dinheiro
+    const calcCustomerChangeCash = () => {
+
+        let resultCustomerChangeCash = 0
+        if (sale.discount > 0) {
+            resultCustomerChangeCash = parseFloat((sale.amountPaid - sale.valueBeforeDIscount).toFixed(2))
+        } else {
+            resultCustomerChangeCash = parseFloat((sale.amountPaid - sale.value).toFixed(2))
+        }
+        setSale({ ...sale, customerChangeCash: resultCustomerChangeCash })
+
+    }
     useEffect(() => {
-        let resultCustomerChangeCash = sale.value < sale.amountPaid ? parseFloat((sale.amountPaid - (sale.value - sale.discount)).toFixed(2)) : 0
-        sale.amountPaid > 0 ? setSale({ ...sale, customerChangeCash: resultCustomerChangeCash }) : setSale({ ...sale, customerChangeCash: 0, amountPaid: 0 })
-    }, [sale.value, sale.amountPaid, sale.discount, sale.paymentForm])
+        sale.amountPaid > 0 ? calcCustomerChangeCash() : null
+    }, [sale.value, sale.amountPaid, sale.paymentForm, sale.valueBeforeDIscount])
 
     //Faz o reset dos dados de pagamento caso a forma de pagamento mude
     useEffect(() => {
