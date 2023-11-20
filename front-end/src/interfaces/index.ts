@@ -26,7 +26,8 @@ declare global {
         oldQtd: number,
         qtdChange: number,
         perProfit: string,
-        valueProfit: number
+        valueProfit: number,
+        status: string
     }
 
     interface ICLient {
@@ -86,6 +87,13 @@ declare global {
         value: string
         valuePrefix?: "currency"
         date?: boolean
+    }
+
+    interface IOthersButtons {
+        title: string,
+        click: (data: any) => void,
+        viewButton: (data: any) => boolean,
+        color: "inherit" | "error" | "primary" | "secondary" | "info" | "success" | "warning" 
     }
 
 }

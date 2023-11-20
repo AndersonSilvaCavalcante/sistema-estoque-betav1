@@ -9,6 +9,7 @@ class ProductServices {
             filter.barcode ? filterBody = `&barcode=` + filter.barcode : null
             filter.id ? filterBody = `&id=` + filter.id : null
             filter.supplierId ? filterBody = `&supplierId=` + filter.supplierId : null
+            filter.status !== 'todos' ? filterBody = `&status=` + filter.status : null
         }
         return api.get(`ListProducts?${filterBody}`)
     }
@@ -23,6 +24,10 @@ class ProductServices {
 
     static editProduct(product: IProduct) {
         return api.put(`EditProducts?id=${product.id}`, product)
+    }
+
+    static alterStatusProducts(id: number) {
+        return api.put(`AlterStatusProducts?id=${id}`)
     }
 }
 

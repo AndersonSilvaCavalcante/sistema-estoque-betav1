@@ -7,13 +7,14 @@ namespace stock_api.EndPoints
     {
         public static void MapProductsEndPoint(this WebApplication app)
         {
-            app.MapGet("ListProducts", async (Int32? id, string? name, string? barcode, int? supplierId) => {
+            app.MapGet("ListProducts", async (Int32? id, string? name, string? barcode, int? supplierId, string? status) => {
                 List<ParametroValor> pv = new List<ParametroValor>();
                 pv.Add(new ParametroValor("@id", id));
                 pv.Add(new ParametroValor("@barcode", barcode));
                 pv.Add(new ParametroValor("@supplierId", supplierId));
                 pv.Add(new ParametroValor("@name", name));
                 pv.Add(new ParametroValor("@supplierId", supplierId));
+                pv.Add(new ParametroValor("@status", status));
                 return Persistencia.ExecutarSql<Products>(@"get_products", pv, tipoconsulta: TipoConsulta.STORED_PROCEDURE).ToList();
             }).WithTags("products");
 
@@ -52,6 +53,12 @@ namespace stock_api.EndPoints
                 List<ParametroValor> pv = new List<ParametroValor>();
                 pv.Add(new ParametroValor("@Id", id));
                 Persistencia.ExecutarSqlSemRetorno(@"delete_products", pv, tipoconsulta: TipoConsulta.STORED_PROCEDURE);
+            }).WithTags("products");
+            
+            app.MapPut("AlterStatusProducts", async (Int32 id) => {
+                List<ParametroValor> pv = new List<ParametroValor>();
+                pv.Add(new ParametroValor("@Id", id));
+                Persistencia.ExecutarSqlSemRetorno(@"alter_status_products", pv, tipoconsulta: TipoConsulta.STORED_PROCEDURE);
             }).WithTags("products");
 
         }

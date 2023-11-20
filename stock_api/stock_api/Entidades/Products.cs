@@ -8,6 +8,7 @@
         public int SupplierId { get; set; }
         public string? SupplierName { get; }
         public string Type { get; set; }
+        public string Status { get; set; }
         public int QtdMin { get; set; }
         public int OldQtd { get; set; }
         public int QtdChange { get; set; }

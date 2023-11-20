@@ -28,7 +28,8 @@ interface IProps {
     removeFunction?: (id: number) => void,
     sum?: boolean
     subValue?: number,
-    addStock?: boolean
+    addStock?: boolean,
+    othersButtons?: Array<IOthersButtons>
 }
 
 interface IPopupData {
@@ -38,7 +39,7 @@ interface IPopupData {
 
 const valuePrefixes = { currency: "R$" }
 
-const TableCustom = ({ titles, data, edit, remove, editFunction, removeFunction, sum, subValue = 0, view, viewFunction, addStock }: IProps) => {
+const TableCustom = ({ titles, data, edit, remove, editFunction, removeFunction, sum, subValue = 0, view, viewFunction, addStock, othersButtons }: IProps) => {
     const [popupData, setPopupData] = useState<IPopupData>({ toggle: false, id: 0 })
     const [sumPrice, setSumPrice] = useState<number>(0)
     const handleClose = () => {
@@ -111,6 +112,11 @@ const TableCustom = ({ titles, data, edit, remove, editFunction, removeFunction,
                                         )}
                                         {addStock && (
                                             <Button onClick={() => router.replace(`/products/form/edit/${data.id}`)} color="success" variant="outlined" startIcon={<AddIcon />}>Adicionar estoque</Button>
+                                        )}
+                                        {othersButtons?.map(o =>
+                                            o.viewButton(data) && (
+                                                <Button onClick={() => o.click(data)} color={o.color} variant="outlined" startIcon={<AddIcon />}>{o.title}</Button>
+                                            )
                                         )}
                                     </Stack>
                                 </TableCell>

@@ -54,7 +54,8 @@ const ProductRegisterOrUpdate = ({ params }: IProps) => {
         oldQtd: 0,
         qtdChange: 0,
         valueProfit: 0,
-        perProfit: ""
+        perProfit: "",
+        status: ''
     }
     const [errorInput, setErrorInput] = useState<null | IErroForm>(null)
 
@@ -148,9 +149,9 @@ const ProductRegisterOrUpdate = ({ params }: IProps) => {
         if (Object.keys(error).length !== 0) {
             return setErrorInput(error)
         }
-        
+
         try {
-            slug[0] == "register" ? await ProductServices.saveProduct({ ...product, type: 'cadastro' } ) : null
+            slug[0] == "register" ? await ProductServices.saveProduct({ ...product, type: 'cadastro' }) : null
             slug[0] == "edit" ? await ProductServices.editProduct(!product.type ? { ...product, type: 'edição' } : product) : null
             setProduct(initialProduct)
             handleClose
