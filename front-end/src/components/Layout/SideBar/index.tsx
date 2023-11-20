@@ -17,10 +17,12 @@ const menuOptions =
         }, {
             name: "Vendas",
             path: "/sales"
-        }, {
-            name: "Ordens de Serviço",
-            path: "/orderServices"
-        }, {
+        }, 
+        // {
+        //     name: "Ordens de Serviço",
+        //     path: "/orderServices"
+        // }, 
+        {
             name: "Fornecedores",
             path: "/suppliers"
         }, {
@@ -32,13 +34,14 @@ const menuOptions =
         }, {
             name: "Clientes",
             path: "/clients"
-        }, {
-            name: "Configurações",
-            path: "/settings"
-        }, {
-            name: "Sobre",
-            path: "/about"
         }
+        // , {
+        //     name: "Configurações",
+        //     path: "/settings"
+        // }, {
+        //     name: "Sobre",
+        //     path: "/about"
+        // }
     ]
 
 interface IProps {
@@ -70,7 +73,7 @@ const SideBar = ({ toggle }: IProps) => {
                 }}
             >
                 <Box flexGrow={1}>
-                    <Image src={"/logo_supermotos_no_bg.svg"} alt={"Logo"} width={120} height={80} onClick={() => goPath("/dashboard")} className="c-pointer" />
+                    <Image src={"/logo_criselegance_no_bg.svg"} alt={"Logo"} width={120} height={80} onClick={() => goPath("/dashboard")} className="c-pointer" />
                 </Box>
                 <IconButton onClick={() => setState(false)}>
                     <ArrowBackIosNewIcon />

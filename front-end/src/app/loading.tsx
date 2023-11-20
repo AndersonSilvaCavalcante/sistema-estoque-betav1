@@ -12,7 +12,7 @@ export default function Loading() {
       placeItems: 'center',
       textAlign: 'center'
   }}>
-      <Image src={"/logo_supermotos_no_bg.svg"} alt={""} width={400} height={380} />
+      <Image src={"/logo_criselegance_no_bg.svg"} alt={""} width={400} height={380} />
       <Image src={dots_loading} alt={""} width={60} height={60}/>
     </Box>
   )

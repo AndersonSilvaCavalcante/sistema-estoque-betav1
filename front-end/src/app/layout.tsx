@@ -10,7 +10,7 @@ import 'react-toastify/dist/ReactToastify.css';
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'SuperMotos',
+  title: 'Cris Elegance',
 }
 
 export default function RootLayout({
