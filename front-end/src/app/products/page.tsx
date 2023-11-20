@@ -21,6 +21,8 @@ import { ButtonPlus } from "@/components/ButtonPlus";
 import { ConfirmPopup } from "@/components/Popups";
 
 const titles: Array<ITitles> = [
+    { label: "Data Criação", value: "dateCreated" },
+    { label: "Data Atualização", value: "dateUpdated" },
     { label: "Nome", value: 'name' },
     { label: "Status", value: 'status' },
     { label: "Fornecedor", value: 'supplierName' },
