@@ -108,7 +108,7 @@ const TableCustom = ({ titles, data, edit, remove, editFunction, removeFunction,
                                         <TableCell key={index} >{title.valuePrefix ? valuePrefixes[title.valuePrefix] : null}{data[title.value]}</TableCell>
                                     )
                                 ))}
-                                <TableCell>
+                                <TableCell key={"actions"}>
                                     <Stack direction="row" spacing={2}>
                                         {edit && editFunction && (
                                             <Button variant="outlined" color="warning" startIcon={<EditIcon />} onClick={() => editFunction(data)} >Editar</Button>
@@ -124,7 +124,7 @@ const TableCustom = ({ titles, data, edit, remove, editFunction, removeFunction,
                                         )}
                                         {othersButtons?.map(o =>
                                             o.viewButton(data) && (
-                                                <Button onClick={() => o.click(data)} color={o.color} variant="outlined" startIcon={<AddIcon />}>{o.title}</Button>
+                                                <Button key={o.title} onClick={() => o.click(data)} color={o.color} variant="outlined" startIcon={<AddIcon />}>{o.title}</Button>
                                             )
                                         )}
                                     </Stack>
