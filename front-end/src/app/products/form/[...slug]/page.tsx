@@ -111,20 +111,30 @@ const ProductRegisterOrUpdate = ({ params }: IProps) => {
             case "salePrice":
                 if (product.costPrice) {
                     perProfit = ((value - product.costPrice) / value) * 100
-                    setProduct({ ...product, [name]: value, perProfit: parseFloat(perProfit.toFixed(2)), valueProfit: value - product.costPrice })
+                    setProduct({ ...product, [name]: value, perProfit: parseFloat(perProfit.toFixed(2)), valueProfit: parseFloat((value - product.costPrice).toFixed(2)) })
+                } else {
+                    setProduct({ ...product, [name]: value })
+                }
+                break;
+            case "costPrice":
+                if (product.salePrice) {
+                    perProfit = ((product.salePrice - value) / product.salePrice) * 100
+                    setProduct({ ...product, [name]: value, perProfit: parseFloat(perProfit.toFixed(2)), valueProfit: parseFloat((product.salePrice - value).toFixed(2)) })
+                } else {
+                    setProduct({ ...product, [name]: value })
                 }
                 break;
             case "perProfit":
                 if (product.costPrice) {
                     salePrice = ((100 * product.costPrice) / (value - 100) * -1)
-                    setProduct({ ...product, [name]: value, salePrice: salePrice, valueProfit: salePrice - product.costPrice })
+                    setProduct({ ...product, [name]: value, salePrice: parseFloat(salePrice.toFixed(2)), valueProfit: parseFloat((salePrice - product.costPrice).toFixed(2)) })
                 }
                 break;
             case "valueProfit":
                 if (product.costPrice) {
-                    salePrice = product.costPrice - value
+                    salePrice = product.costPrice + parseFloat(value)
                     perProfit = ((salePrice - product.costPrice) / salePrice) * 100
-                    setProduct({ ...product, [name]: value, salePrice: salePrice, perProfit: perProfit })
+                    setProduct({ ...product, [name]: value, salePrice: parseFloat(salePrice.toFixed(2)), perProfit: parseFloat(perProfit.toFixed(2)) })
                 }
                 break;
             default:
@@ -155,7 +165,8 @@ const ProductRegisterOrUpdate = ({ params }: IProps) => {
                 key !== 'valueProfit' &&
                 key !== 'status' &&
                 (productAny[key] === '' || productAny[key] === 0 || productAny[key] === undefined)) {
-                error = { ...error, [key]: true 
+                error = {
+                    ...error, [key]: true
                 }
             }
         })
@@ -225,8 +236,8 @@ const ProductRegisterOrUpdate = ({ params }: IProps) => {
                 </Stack>
                 <Stack direction="row" spacing={2} mb={2} mt={2}>
                     <CustomTextInput fullWidth value={product.salePrice || ''} label={"Preço de Venda"} required={true} type={"number"} name={"salePrice"} changeFunction={changeValues} error={errorInput?.salePrice} />
-                    <CustomTextInput fullWidth value={product.perProfit || ''} disabled={true} label={"Porcentagem de Lucro"} type={"number"} name={"perProfit"} changeFunction={changeValues} />
-                    <CustomTextInput fullWidth value={product.valueProfit || ''} disabled={true} label={"Valor do Lucro"} type={"number"} name={"valueProfit"} changeFunction={changeValues} />
+                    <CustomTextInput fullWidth value={product.perProfit || ''} disabled={!(product.costPrice && product.costPrice > 0) ? true : false} label={"Porcentagem de Lucro"} type={"number"} name={"perProfit"} changeFunction={changeValues} />
+                    <CustomTextInput fullWidth value={product.valueProfit || ''} disabled={!(product.costPrice && product.costPrice > 0) ? true : false} label={"Valor do Lucro"} type={"number"} name={"valueProfit"} changeFunction={changeValues} />
                 </Stack>
                 <Box sx={{ display: 'flex', placeContent: 'flex-end' }}>
                     <Stack direction="row" spacing={2}>

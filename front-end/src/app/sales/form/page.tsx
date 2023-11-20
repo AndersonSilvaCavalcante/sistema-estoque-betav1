@@ -158,7 +158,6 @@ const SalesForm = () => {
             error = { ...error, clientId: true }
         }
 
-        console.log('sale', sale)
         if (sale.qtd === 0 || sale.qtd === undefined) {
             error = { ...error, quantidade: true }
         }

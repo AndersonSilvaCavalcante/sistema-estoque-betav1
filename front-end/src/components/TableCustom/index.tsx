@@ -87,7 +87,16 @@ const TableCustom = ({ titles, data, edit, remove, editFunction, removeFunction,
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {data && data.map((data: any, index: number) => (
+                        {!data && Array.from(new Array(3)).map((index) => (
+                            <TableRow key={index} sx={{ '&:last-child td, &:last-child th': { border: 0 } }} >
+                                {Array.from(new Array(titles.length  + 1)).map(index => (
+                                    <TableCell key={index}>
+                                        <Skeleton animation="wave" />
+                                    </TableCell>
+                                ))}
+                            </TableRow>
+                        ))}
+                        {data && data.map((data: any) => (
                             <TableRow
                                 key={data.id}
                                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
@@ -161,12 +170,6 @@ const TableCustom = ({ titles, data, edit, remove, editFunction, removeFunction,
                     </Box>
                 </Box>
             )}
-            <div className="grid-Skeleton ">
-                {!data && Array.from(new Array(9)).map((index) => (
-                    <Skeleton key={index} animation="wave" />
-                ))}
-            </div>
-
         </React.Fragment>
     )
 }
