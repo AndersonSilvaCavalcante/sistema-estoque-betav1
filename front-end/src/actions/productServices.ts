@@ -9,7 +9,7 @@ class ProductServices {
             filter.barcode ? filterBody = `&barcode=` + filter.barcode : null
             filter.id ? filterBody = `&id=` + filter.id : null
             filter.supplierId ? filterBody = `&supplierId=` + filter.supplierId : null
-            filter.status !== 'todos' ? filterBody = `&status=` + filter.status : null
+            filter.status && filter.status !== 'todos' ? filterBody = `&status=` + filter.status : null
         }
         return api.get(`ListProducts?${filterBody}`)
     }

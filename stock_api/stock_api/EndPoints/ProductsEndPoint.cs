@@ -30,6 +30,8 @@ namespace stock_api.EndPoints
                 pv.Add(new ParametroValor("@type", products.Type));
                 pv.Add(new ParametroValor("@oldQtd", products.OldQtd));
                 pv.Add(new ParametroValor("@qtdChange", products.QtdChange));
+                pv.Add(new ParametroValor("@perProfit", products.PerProfit));
+                pv.Add(new ParametroValor("@valueProfit", products.ValueProfit));
                 Persistencia.ExecutarSqlSemRetorno(@"post_products", pv, tipoconsulta: TipoConsulta.STORED_PROCEDURE);
             }).WithTags("products"); 
             
@@ -46,6 +48,8 @@ namespace stock_api.EndPoints
                 pv.Add(new ParametroValor("@type", products.Type));
                 pv.Add(new ParametroValor("@oldQtd", products.OldQtd));
                 pv.Add(new ParametroValor("@qtdChange", products.QtdChange));
+                pv.Add(new ParametroValor("@perProfit", products.PerProfit));
+                pv.Add(new ParametroValor("@valueProfit", products.ValueProfit));
                 Persistencia.ExecutarSqlSemRetorno(@"put_products", pv, tipoconsulta: TipoConsulta.STORED_PROCEDURE);
             }).WithTags("products");
 
