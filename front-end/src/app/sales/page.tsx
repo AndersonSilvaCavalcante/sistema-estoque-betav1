@@ -28,6 +28,7 @@ const titles: Array<ITitles> = [
     { label: "Custo da venda", value: 'valueCostPrice', valuePrefix: "currency" },
     { label: "Total Sem Desconto", value: 'valueBeforeDIscount', valuePrefix: "currency" },
     { label: "Desconto", value: 'discount', valuePrefix: "currency" },
+    { label: "Lucro da Venda", value: 'profit', valuePrefix: "currency" },
     { label: "Total Com Desconto", value: 'value', valuePrefix: "currency" }
 ]
 

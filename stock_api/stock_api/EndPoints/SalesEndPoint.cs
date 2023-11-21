@@ -22,10 +22,10 @@ namespace stock_api.EndPoints
                 pv.Add(new ParametroValor("@value", sales.Value));
                 pv.Add(new ParametroValor("@valueBeforeDIscount", sales.ValueBeforeDIscount));
                 pv.Add(new ParametroValor("@valueCostPrice", sales.ValueCostPrice));
-                pv.Add(new ParametroValor("@paymentForm", sales.paymentForm));
-                pv.Add(new ParametroValor("@amountPaid", sales.amountPaid));
-                pv.Add(new ParametroValor("@customerChangeCash", sales.customerChangeCash));
-                pv.Add(new ParametroValor("@paymentInstallments", sales.paymentInstallments));
+                pv.Add(new ParametroValor("@paymentForm", sales.PaymentForm));
+                pv.Add(new ParametroValor("@amountPaid", sales.AmountPaid));
+                pv.Add(new ParametroValor("@customerChangeCash", sales.CustomerChangeCash));
+                pv.Add(new ParametroValor("@paymentInstallments", sales.PaymentInstallments));
                 Persistencia.ExecutarSqlSemRetorno(@"post_sales", pv, tipoconsulta: TipoConsulta.STORED_PROCEDURE);
             }).WithTags("sales");
         }

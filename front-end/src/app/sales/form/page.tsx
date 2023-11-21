@@ -58,7 +58,7 @@ const SalesForm = () => {
         valueCostPrice: 0,
         productsString: '',
         paymentForm: "",
-        amountPaid: 0,
+        amountPaid: undefined,
         customerChangeCash: 0,
         paymentInstallments: 1
     }
@@ -79,6 +79,7 @@ const SalesForm = () => {
 
     const [openAddDiscount, setOpenAddDiscount] = useState<boolean>(false)
 
+    const [discountInput, setDiscountInput] = useState<number | undefined>(undefined)
 
     const changeValues = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | SelectChangeEvent<string> | React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const name = e.target.name
@@ -115,7 +116,7 @@ const SalesForm = () => {
 
             let error: IErroForm = {}
 
-            if ((sale.amountPaid <= 0 || sale.amountPaid.toString() === "" || sale.amountPaid < sale.value) && sale.paymentForm === "Dinheiro") {
+            if (((sale.amountPaid) && (sale.amountPaid <= 0 || sale.amountPaid.toString() === "" || sale.amountPaid < sale.value)) && sale.paymentForm === "Dinheiro") {
                 error = { ...error, amountPaid: true }
             }
 
@@ -126,13 +127,13 @@ const SalesForm = () => {
             if (Object.keys(error).length !== 0) {
                 return setErrorInput(error)
             }
-            if(sale.amountPaid == 0 && sale.valueBeforeDIscount == 0){
+            if (sale.amountPaid == 0 && sale.valueBeforeDIscount == 0) {
                 sale.amountPaid = sale.value
             }
-            else if(sale.amountPaid == 0 && sale.valueBeforeDIscount >0){
+            else if (sale.amountPaid == 0 && sale.valueBeforeDIscount > 0) {
                 sale.amountPaid = sale.valueBeforeDIscount
             }
-  
+
             await SalesService.saveSale(sale)
             toast.success("Sucesso ao realizar venda!")
             goBack()
@@ -154,7 +155,7 @@ const SalesForm = () => {
 
     const closeAddDiscount = () => {
         setOpenAddDiscount(false)
-        setSale({ ...sale, discount: 0 })
+        // setSale({ ...sale, discount: 0 })
     }
 
     const getProductsList = async () => {
@@ -170,17 +171,18 @@ const SalesForm = () => {
         setProductSelecioned(products.filter(p => p.id === product.id)[0])
         setSale({
             ...sale, qtd: product.qtdChange, products: sale.products.filter(p => p.id !== product.id), value: sale.value - product.totalCurrentPrice,
-            valueCostPrice: sale.valueCostPrice - product.totalCostPrice,  valueBeforeDIscount: sale.value - product.totalCurrentPrice - sale.discount
+            valueCostPrice: sale.valueCostPrice - product.totalCostPrice, valueBeforeDIscount: sale.value - product.totalCurrentPrice - sale.discount
         })
     }
 
     const addDiscount = () => {
         setErrorInput(null)
 
-        if (sale.discount === 0) {
+        if (discountInput === 0 || !discountInput) {
             return setErrorInput({ ...errorInput, discount: true })
+        } else {
+            setSale({ ...sale, discount: discountInput, valueBeforeDIscount: sale.value - discountInput })
         }
-        setSale({ ...sale, valueBeforeDIscount: sale.value - sale.discount })
         setOpenAddDiscount(false)
     }
 
@@ -254,23 +256,23 @@ const SalesForm = () => {
 
     //Calcula o troco quando a forma de pagamento é dinheiro
     const calcCustomerChangeCash = () => {
-
-        let resultCustomerChangeCash = 0
-        if (sale.discount > 0) {
-            resultCustomerChangeCash = parseFloat((sale.amountPaid - sale.valueBeforeDIscount).toFixed(2))
-        } else {
-            resultCustomerChangeCash = parseFloat((sale.amountPaid - sale.value).toFixed(2))
+        if (sale.amountPaid) {
+            let resultCustomerChangeCash = 0
+            if (sale.discount > 0) {
+                resultCustomerChangeCash = parseFloat((sale.amountPaid - sale.valueBeforeDIscount).toFixed(2))
+            } else {
+                resultCustomerChangeCash = parseFloat((sale.amountPaid - sale.value).toFixed(2))
+            }
+            setSale({ ...sale, customerChangeCash: resultCustomerChangeCash })
         }
-        setSale({ ...sale, customerChangeCash: resultCustomerChangeCash })
-
     }
     useEffect(() => {
-        sale.amountPaid > 0 ? calcCustomerChangeCash() : null
+        sale.amountPaid && sale.amountPaid > 0 ? calcCustomerChangeCash() : null
     }, [sale.value, sale.amountPaid, sale.paymentForm, sale.valueBeforeDIscount])
 
     //Faz o reset dos dados de pagamento caso a forma de pagamento mude
     useEffect(() => {
-        setSale({ ...sale, customerChangeCash: 0, amountPaid: 0, paymentInstallments: 1 })
+        setSale({ ...sale, customerChangeCash: 0, amountPaid: undefined, paymentInstallments: 1 })
     }, [sale.paymentForm])
 
     return (
@@ -378,7 +380,7 @@ const SalesForm = () => {
                                 {sale.paymentForm === "Cartão de Crédito Parcelado" && (<CustomTextInput label={"Parcelas"} type={"number"} value={sale.paymentInstallments} name={"paymentInstallments"} changeFunction={changeValues} />)}
                                 {sale.paymentForm === "Dinheiro" && (
                                     <>
-                                        <CustomTextInput label={"Valor Pago"} type="number" value={sale.amountPaid} adorment="currency" name={"amountPaid"} changeFunction={changeValues} error={errorInput?.amountPaid} errorMessage={sale.amountPaid < sale.value ? "Valor inválido" : ""} />
+                                        <CustomTextInput label={"Valor Pago"} type="number" value={sale.amountPaid} adorment="currency" name={"amountPaid"} changeFunction={changeValues} error={errorInput?.amountPaid} errorMessage={(sale.amountPaid && sale.amountPaid < sale.value) ? "Valor inválido" : ""} />
                                         <Typography>Troco: R$ {sale.customerChangeCash}</Typography>
                                     </>
                                 )}
@@ -420,7 +422,7 @@ const SalesForm = () => {
                     flexDirection: "column",
                     gridGap: 20
                 }}>
-                    <CustomTextInput value={sale?.discount} type={"number"} label={"Desconto *"} adorment="currency" name={"discount"} changeFunction={changeValues} error={errorInput?.discount} />
+                    <CustomTextInput value={discountInput} type={"number"} label={"Desconto *"} adorment="currency" name={"discount"} changeFunction={e => setDiscountInput(e.target.value)} error={errorInput?.discount} />
                 </Box>
             </CustomPopup>
         </React.Fragment>
