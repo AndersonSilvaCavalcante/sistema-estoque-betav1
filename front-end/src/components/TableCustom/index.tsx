@@ -58,7 +58,7 @@ const TableCustom = ({ titles, data, edit, remove, editFunction, removeFunction,
             }
         })
 
-        setSumPrice(sum)
+        setSumPrice(parseFloat(sum.toFixed(2)))
     }
 
     useEffect(() => {
@@ -108,7 +108,7 @@ const TableCustom = ({ titles, data, edit, remove, editFunction, removeFunction,
                                         <TableCell key={index} >{title.valuePrefix ? valuePrefixes[title.valuePrefix] : null}{data[title.value]}</TableCell>
                                     )
                                 ))}
-                                <TableCell>
+                                <TableCell key={"actions"}>
                                     <Stack direction="row" spacing={2}>
                                         {edit && editFunction && (
                                             <Button variant="outlined" color="warning" startIcon={<EditIcon />} onClick={() => editFunction(data)} >Editar</Button>
@@ -124,26 +124,28 @@ const TableCustom = ({ titles, data, edit, remove, editFunction, removeFunction,
                                         )}
                                         {othersButtons?.map(o =>
                                             o.viewButton(data) && (
-                                                <Button onClick={() => o.click(data)} color={o.color} variant="outlined" startIcon={<AddIcon />}>{o.title}</Button>
+                                                <Button key={o.title} onClick={() => o.click(data)} color={o.color} variant="outlined" startIcon={<AddIcon />}>{o.title}</Button>
                                             )
                                         )}
                                     </Stack>
                                 </TableCell>
                             </TableRow>
                         ))}
+                        {sum && (
+                            <TableRow
+                                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                            >
+                                <TableCell><Typography>Subtotal</Typography></TableCell>
+                                <TableCell colSpan={2}><Typography>R$ {(sumPrice).toFixed(2)}</Typography></TableCell>
+                            </TableRow>
+                        )}
                         {subValue !== 0 && (
                             <>
                                 <TableRow
                                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                                 >
-                                    <TableCell>SubTotal</TableCell>
-                                    <TableCell colSpan={2}>R$ {sumPrice}</TableCell>
-                                </TableRow>
-                                <TableRow
-                                    sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                                >
-                                    <TableCell>Desconto</TableCell>
-                                    <TableCell colSpan={2}>R$ {subValue}</TableCell>
+                                    <TableCell><Typography>Desconto</Typography></TableCell>
+                                    <TableCell colSpan={2}><Typography>R$ {subValue}</Typography></TableCell>
                                 </TableRow>
                             </>
                         )}
@@ -151,8 +153,8 @@ const TableCustom = ({ titles, data, edit, remove, editFunction, removeFunction,
                             <TableRow
                                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                             >
-                                <TableCell>TOTAL</TableCell>
-                                <TableCell colSpan={2}>R$ {sumPrice - subValue}</TableCell>
+                                <TableCell><Typography variant="h6">TOTAL</Typography></TableCell>
+                                <TableCell colSpan={2}><Typography variant="h6">R$ {(sumPrice - subValue).toFixed(2)}</Typography></TableCell>
                             </TableRow>
                         )}
                     </TableBody>

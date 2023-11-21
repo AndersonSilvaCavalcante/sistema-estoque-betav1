@@ -3,7 +3,7 @@ import { MuiTelInput } from "mui-tel-input"
 
 interface IProps {
     value?: string | number
-    defaultValue?: string
+    defaultValue?: string | number
     required?: boolean
     type?: string
     adorment?: "currency"

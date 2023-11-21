@@ -2,9 +2,10 @@ import { INTERNAL_HEADERS } from "next/dist/shared/lib/constants"
 
 export { }
 declare global {
+    //Payment Form
+    type PaymentForm = "Cartão de Crédito a Vista" | "Cartão de Crédito Parcelado" | "Cartão de Débito" | "PIX" | "Dinheiro" | ""
 
     //Supplier
-
     interface ISupplier {
         id: number
         name: string
@@ -50,8 +51,12 @@ declare global {
         clientName: string,
         discount: number,
         dateCreated: Date,
-        valueBeforeDIscount: number
-        valueCostPrice: number
+        valueBeforeDIscount: number,
+        valueCostPrice: number,
+        paymentForm: PaymentForm,
+        amountPaid: number,
+        customerChangeCash: number,
+        paymentInstallments: number
     }
 
     //usado na tabela de venda de produtos 

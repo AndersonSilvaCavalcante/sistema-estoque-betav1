@@ -13,8 +13,10 @@
         public float? ValueCostPrice { get; set; }
         public DateTime DateCreated { get; set; }
         public DateTime DateUpdated { get; set; }
-
-
+        public string paymentForm { get; set; }
+        public int  amountPaid { get; set; }
+        public int customerChangeCash { get; set; }
+        public int paymentInstallments { get; set; }
     }
 
     public class ProductsList

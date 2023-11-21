@@ -1,3 +1,4 @@
+//ESTÁ COM ERRO QUE AO EDITAR OU EXCLUIR PRODUTO O VALOR DA VENDA, VALOR PAGO, TROCO E PARCELAS NÃO SOFREM ALTERAÇÃO
 'use client'
 
 /**Dependencies */
@@ -12,7 +13,7 @@ import { ConfirmPopup, CustomPopup } from "@/components/Popups";
 import ContainerCustom from "@/components/Container";
 import { ButtonPlus } from "@/components/ButtonPlus";
 import { CustomTextInput } from "@/components/CustomInputs";
-import { Box, Button, Stack, TextField, SelectChangeEvent, FormControl, FormHelperText, Autocomplete } from "@mui/material"
+import { Box, Button, Stack, TextField, SelectChangeEvent, FormControl, FormHelperText, Autocomplete, InputLabel, Select, MenuItem, Typography } from "@mui/material"
 
 /**Icons */
 import SaveIcon from '@mui/icons-material/Save';
@@ -28,7 +29,9 @@ interface IErroForm {
     clientId?: boolean,
     produtoId?: boolean,
     quantidade?: boolean
-    discount?: boolean
+    discount?: boolean,
+    amountPaid?: boolean,
+    paymentForm?: boolean
 }
 
 const SalesForm = () => {
@@ -40,10 +43,12 @@ const SalesForm = () => {
         { label: "Total", value: 'totalCurrentPrice', valuePrefix: "currency" }
     ]
 
+    const paymentForms: Array<PaymentForm> = ["Cartão de Crédito a Vista", "Cartão de Crédito Parcelado", "Cartão de Débito", "PIX", "Dinheiro"]
+
     const initialSale: ISale = {
         id: 0,
         products: [],
-        qtd: undefined,
+        qtd: 0,
         clientId: '',
         value: 0,
         clientName: "",
@@ -51,9 +56,12 @@ const SalesForm = () => {
         dateCreated: new Date(),
         valueBeforeDIscount: 0,
         valueCostPrice: 0,
-        productsString: ''
+        productsString: '',
+        paymentForm: "",
+        amountPaid: 0,
+        customerChangeCash: 0,
+        paymentInstallments: 1
     }
-
 
     const router = useRouter()
 
@@ -74,8 +82,13 @@ const SalesForm = () => {
 
     const changeValues = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | SelectChangeEvent<string> | React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const name = e.target.name
-        const value = e.target.value
-
+        let value: any = e.target.value
+        switch (name) {
+            case "discount":
+            case "valueBeforeDIscount":
+            case "amountPaid":
+                value = parseFloat(value)
+        }
         setSale({ ...sale, [name]: value })
     }
 
@@ -85,21 +98,42 @@ const SalesForm = () => {
         if (exist.length > 0) {
             return toast.info("Produto já adicionado")
         }
-
         setProductSelecioned(newProduct)
     }
 
     const deleteProducList = (id: number) => {
-        setSale({ ...sale, products: sale.products.filter(p => p.id !== id) })
+        const product: IProductSale = sale.products.filter(p => p.id === id)[0]
+        setSale({
+            ...sale, products: sale.products.filter(p => p.id !== id), value: sale.value - product.totalCurrentPrice,
+            valueCostPrice: sale.valueCostPrice - product.totalCostPrice, valueBeforeDIscount: sale.value - product.totalCurrentPrice - sale.discount
+        })
     }
 
     const addSale = async () => {
         try {
-            await SalesService.saveSale({
-                ...sale,
-                valueBeforeDIscount: sale.value,
-                value: sale.value - sale.discount
-            })
+            setErrorInput(null)
+
+            let error: IErroForm = {}
+
+            if ((sale.amountPaid <= 0 || sale.amountPaid.toString() === "" || sale.amountPaid < sale.value) && sale.paymentForm === "Dinheiro") {
+                error = { ...error, amountPaid: true }
+            }
+
+            if (sale.paymentForm === "" || sale.paymentForm === null) {
+                error = { ...error, paymentForm: true }
+            }
+
+            if (Object.keys(error).length !== 0) {
+                return setErrorInput(error)
+            }
+            if(sale.amountPaid == 0 && sale.valueBeforeDIscount == 0){
+                sale.amountPaid = sale.value
+            }
+            else if(sale.amountPaid == 0 && sale.valueBeforeDIscount >0){
+                sale.amountPaid = sale.valueBeforeDIscount
+            }
+  
+            await SalesService.saveSale(sale)
             toast.success("Sucesso ao realizar venda!")
             goBack()
         } catch {
@@ -134,8 +168,10 @@ const SalesForm = () => {
 
     const edtProductList = (product: IProductSale) => {
         setProductSelecioned(products.filter(p => p.id === product.id)[0])
-        setSale({ ...sale, qtd: product.qtdChange, products: sale.products.filter(p => p.id !== product.id) })
-
+        setSale({
+            ...sale, qtd: product.qtdChange, products: sale.products.filter(p => p.id !== product.id), value: sale.value - product.totalCurrentPrice,
+            valueCostPrice: sale.valueCostPrice - product.totalCostPrice,  valueBeforeDIscount: sale.value - product.totalCurrentPrice - sale.discount
+        })
     }
 
     const addDiscount = () => {
@@ -144,7 +180,7 @@ const SalesForm = () => {
         if (sale.discount === 0) {
             return setErrorInput({ ...errorInput, discount: true })
         }
-
+        setSale({ ...sale, valueBeforeDIscount: sale.value - sale.discount })
         setOpenAddDiscount(false)
     }
 
@@ -195,7 +231,8 @@ const SalesForm = () => {
                         oldQtd: productSelecioned?.qtdCurrent ?? 0
                     }],
                 value: sale.value + valueTotalCurrentPrice,
-                valueCostPrice: sale.valueCostPrice + valueTotalCostPrice
+                valueCostPrice: sale.valueCostPrice + valueTotalCostPrice,
+                valueBeforeDIscount: sale.value + valueTotalCurrentPrice - sale.discount
             })
 
             setProductSelecioned(null)
@@ -214,6 +251,27 @@ const SalesForm = () => {
             setSale({ ...sale, clientId: '' })
         }
     }, [clientSelecioned])
+
+    //Calcula o troco quando a forma de pagamento é dinheiro
+    const calcCustomerChangeCash = () => {
+
+        let resultCustomerChangeCash = 0
+        if (sale.discount > 0) {
+            resultCustomerChangeCash = parseFloat((sale.amountPaid - sale.valueBeforeDIscount).toFixed(2))
+        } else {
+            resultCustomerChangeCash = parseFloat((sale.amountPaid - sale.value).toFixed(2))
+        }
+        setSale({ ...sale, customerChangeCash: resultCustomerChangeCash })
+
+    }
+    useEffect(() => {
+        sale.amountPaid > 0 ? calcCustomerChangeCash() : null
+    }, [sale.value, sale.amountPaid, sale.paymentForm, sale.valueBeforeDIscount])
+
+    //Faz o reset dos dados de pagamento caso a forma de pagamento mude
+    useEffect(() => {
+        setSale({ ...sale, customerChangeCash: 0, amountPaid: 0, paymentInstallments: 1 })
+    }, [sale.paymentForm])
 
     return (
         <React.Fragment>
@@ -297,6 +355,38 @@ const SalesForm = () => {
                         subValue={sale.discount}
                     />
                 )}
+                <Box sx={{ display: 'flex' }}>
+                    <Stack direction="row" spacing={2}>
+                        {sale.products.length > 0 && (
+                            <>
+                                <FormControl variant="outlined" sx={{ minWidth: 220 }} size="small" error={errorInput?.paymentForm}>
+                                    <InputLabel id="demo-simple-select-standard-label">Forma de pagamento</InputLabel>
+                                    <Select
+                                        label="Forma de pagamento"
+                                        value={sale?.paymentForm}
+                                        name="paymentForm"
+                                        onChange={changeValues}
+                                    >
+                                        {paymentForms.map((paymentForm, index: number) => (
+                                            <MenuItem key={index} value={paymentForm}>{paymentForm}</MenuItem>
+                                        ))}
+                                    </Select>
+                                    {errorInput?.paymentForm && (
+                                        <FormHelperText>Campo obrigatório</FormHelperText>
+                                    )}
+                                </FormControl>
+                                {sale.paymentForm === "Cartão de Crédito Parcelado" && (<CustomTextInput label={"Parcelas"} type={"number"} value={sale.paymentInstallments} name={"paymentInstallments"} changeFunction={changeValues} />)}
+                                {sale.paymentForm === "Dinheiro" && (
+                                    <>
+                                        <CustomTextInput label={"Valor Pago"} type="number" value={sale.amountPaid} adorment="currency" name={"amountPaid"} changeFunction={changeValues} error={errorInput?.amountPaid} errorMessage={sale.amountPaid < sale.value ? "Valor inválido" : ""} />
+                                        <Typography>Troco: R$ {sale.customerChangeCash}</Typography>
+                                    </>
+                                )}
+
+                            </>
+                        )}
+                    </Stack>
+                </Box>
                 <Box sx={{ display: 'flex', placeContent: 'flex-end' }}>
                     <Stack direction="row" spacing={2}>
                         <Button color="error" variant="outlined" endIcon={<CloseIcon />} onClick={goBack} >Cancelar</Button>
@@ -330,7 +420,7 @@ const SalesForm = () => {
                     flexDirection: "column",
                     gridGap: 20
                 }}>
-                    <CustomTextInput value={sale?.discount} label={"Desconto *"} name={"discount"} changeFunction={changeValues} error={errorInput?.discount} />
+                    <CustomTextInput value={sale?.discount} type={"number"} label={"Desconto *"} adorment="currency" name={"discount"} changeFunction={changeValues} error={errorInput?.discount} />
                 </Box>
             </CustomPopup>
         </React.Fragment>
