@@ -12,7 +12,7 @@ import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 const menuOptions =
     [
         {
-            name: "Dashboard",
+            name: "Painel Administrativo",
             path: "/dashboard"
         }, {
             name: "Vendas",

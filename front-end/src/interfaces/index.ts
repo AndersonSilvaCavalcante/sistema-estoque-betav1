@@ -54,7 +54,7 @@ declare global {
         valueBeforeDIscount: number,
         valueCostPrice: number,
         paymentForm: PaymentForm,
-        amountPaid: number,
+        amountPaid: number | undefined,
         customerChangeCash: number,
         paymentInstallments: number
     }

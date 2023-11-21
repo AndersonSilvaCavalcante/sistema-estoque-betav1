@@ -56,8 +56,8 @@ const Dashboard: NextPage = () => {
             setResumeDay([
                 { title: "Vendas", value: data[0].qtdSales },
                 { title: "Serviços Concluídos", value: data[0].qtdOrderService },
-                { title: "Receita", value: 'R$' + data[0].revenue },
-                { title: "Lucro", value: 'R$' + data[0].profit }
+                { title: "Faturamento", value: 'R$' + data[0].revenue },
+                { title: "Lucro Líquido", value: 'R$' + data[0].profit }
             ])
         } catch { }
     }
@@ -84,7 +84,7 @@ const Dashboard: NextPage = () => {
 
     return (
         <React.Fragment>
-            <PageHeader title="Dashboard" />
+            <PageHeader title="Painel Administrativo" />
             <ContainerCustom title="Resumo do dia">
                 <div className="d-grid">
                     {resumeDay && resumeDay.map((resume, index: number) => (
@@ -109,7 +109,7 @@ const Dashboard: NextPage = () => {
                     addStock={true}
                 />
             </ContainerCustom>
-            <ContainerCustom title="Relatórido de entrada e saída">
+            <ContainerCustom title="Relatório de entrada e saída">
                 <TableCustom
                     data={recordStock}
                     titles={titlesRecordStock}
