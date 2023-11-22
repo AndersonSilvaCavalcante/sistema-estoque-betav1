@@ -90,7 +90,7 @@ declare global {
     interface ITitles {
         label: string,
         value: string
-        valuePrefix?: "currency"
+        valuePrefix?: "currency" | "percentage"
         date?: boolean
     }
 

@@ -10,7 +10,6 @@ import PageHeader from "@/components/PageHeader"
 import TableCustom from "@/components/TableCustom"
 import ContainerCustom from "@/components/Container"
 import { CustomTextInput } from "@/components/CustomInputs"
-import { Button } from "@mui/material";
 
 /**Service */
 import SalesService from "@/actions/sales";
@@ -18,7 +17,6 @@ import SalesService from "@/actions/sales";
 /**Icons */
 import SaveIcon from '@mui/icons-material/Save';
 import { CustomPopup } from "@/components/Popups";
-import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import { ButtonPlus } from "@/components/ButtonPlus";
 
 const titles: Array<ITitles> = [
@@ -27,7 +25,7 @@ const titles: Array<ITitles> = [
     { label: "Nome do Cliente", value: 'clientName' },
     { label: "Custo da venda", value: 'valueCostPrice', valuePrefix: "currency" },
     { label: "Total Sem Desconto", value: 'valueBeforeDIscount', valuePrefix: "currency" },
-    { label: "Desconto", value: 'discount', valuePrefix: "currency" },
+    { label: "Desconto", value: 'discount', valuePrefix: "percentage" },
     { label: "Lucro da Venda", value: 'profit', valuePrefix: "currency" },
     { label: "Total Com Desconto", value: 'value', valuePrefix: "currency" }
 ]

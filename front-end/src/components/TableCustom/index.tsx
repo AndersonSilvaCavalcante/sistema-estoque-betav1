@@ -26,8 +26,10 @@ interface IProps {
     editFunction?: (data: any) => void,
     viewFunction?: (data: any) => void,
     removeFunction?: (id: number) => void,
-    sum?: boolean
-    subValue?: number,
+    sum?: boolean,
+    valueSale?: number,
+    valueBeforeDIscount?: number,
+    discountPercent?: number,
     addStock?: boolean,
     othersButtons?: Array<IOthersButtons>
 }
@@ -37,35 +39,14 @@ interface IPopupData {
     id: number
 }
 
-const valuePrefixes = { currency: "R$" }
+const valuePrefixes = { currency: "R$", percentage: "%" }
 
-const TableCustom = ({ titles, data, edit, remove, editFunction, removeFunction, sum, subValue = 0, view, viewFunction, addStock, othersButtons }: IProps) => {
+const TableCustom = ({ titles, data, edit, remove, valueSale = 0, valueBeforeDIscount = 0, editFunction, removeFunction, sum, discountPercent = 0, view, viewFunction, addStock, othersButtons }: IProps) => {
     const [popupData, setPopupData] = useState<IPopupData>({ toggle: false, id: 0 })
-    const [sumPrice, setSumPrice] = useState<number>(0)
     const handleClose = () => {
         setPopupData({ toggle: false, id: 0 })
     }
     const router = useRouter()
-
-    const sumValues = () => {
-        let sum = 0
-
-        data.map((data: { salePrice: number, totalCurrentPrice: number }) => {
-            if (data.salePrice) {
-                sum = sum + data.salePrice
-            } else {
-                sum = sum + data.totalCurrentPrice
-            }
-        })
-
-        setSumPrice(parseFloat(sum.toFixed(2)))
-    }
-
-    useEffect(() => {
-        if (data) {
-            sumValues()
-        }
-    }, [data])
 
     return (
         <React.Fragment>
@@ -87,9 +68,9 @@ const TableCustom = ({ titles, data, edit, remove, editFunction, removeFunction,
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {!data && Array.from(new Array(3)).map((index) => (
+                        {!data && Array.from(new Array(3)).map((val, index) => (
                             <TableRow key={`row${index}`} sx={{ '&:last-child td, &:last-child th': { border: 0 } }} >
-                                {Array.from(new Array(titles.length  + 1)).map(index => (
+                                {Array.from(new Array(titles.length + 1)).map((val, index) => (
                                     <TableCell key={`col${index}`}>
                                         <Skeleton animation="wave" />
                                     </TableCell>
@@ -105,7 +86,15 @@ const TableCustom = ({ titles, data, edit, remove, editFunction, removeFunction,
                                     title.date ? (
                                         <TableCell key={index} >{moment(data[title.value]).format("DD/MM/YYYY HH:mm:ss")}</TableCell>
                                     ) : (
-                                        <TableCell key={index} >{title.valuePrefix ? valuePrefixes[title.valuePrefix] : null}{data[title.value]}</TableCell>
+                                        title.valuePrefix ? (
+                                            title.valuePrefix === "currency" ? (
+                                                <TableCell key={index} >{valuePrefixes[title.valuePrefix]}{data[title.value]}</TableCell>
+                                            ) : (
+                                                <TableCell key={index} >{data[title.value]}{valuePrefixes[title.valuePrefix]}</TableCell>
+                                            )
+                                        ) : (
+                                            <TableCell key={index} >{data[title.value]}</TableCell>
+                                        )
                                     )
                                 ))}
                                 <TableCell key={"actions"}>
@@ -131,30 +120,30 @@ const TableCustom = ({ titles, data, edit, remove, editFunction, removeFunction,
                                 </TableCell>
                             </TableRow>
                         ))}
-                        {sum && (
+                        {valueBeforeDIscount > 0 && (
                             <TableRow
                                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                             >
                                 <TableCell><Typography>Subtotal</Typography></TableCell>
-                                <TableCell colSpan={2}><Typography>R$ {(sumPrice).toFixed(2)}</Typography></TableCell>
+                                <TableCell colSpan={2}><Typography>R$ {(valueBeforeDIscount).toFixed(2)}</Typography></TableCell>
                             </TableRow>
                         )}
-                        {subValue !== 0 && (
+                        {discountPercent !== 0 && (
                             <>
                                 <TableRow
                                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                                 >
                                     <TableCell><Typography>Desconto</Typography></TableCell>
-                                    <TableCell colSpan={2}><Typography>R$ {subValue}</Typography></TableCell>
+                                    <TableCell colSpan={2}><Typography>{discountPercent} %</Typography></TableCell>
                                 </TableRow>
                             </>
                         )}
-                        {sum && (
+                        {valueSale && (
                             <TableRow
                                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                             >
                                 <TableCell><Typography variant="h6">TOTAL</Typography></TableCell>
-                                <TableCell colSpan={2}><Typography variant="h6">R$ {(sumPrice - subValue).toFixed(2)}</Typography></TableCell>
+                                <TableCell colSpan={2}><Typography variant="h6">R$ {(valueSale).toFixed(2)}</Typography></TableCell>
                             </TableRow>
                         )}
                     </TableBody>

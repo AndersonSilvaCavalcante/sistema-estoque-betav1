@@ -104,9 +104,13 @@ const SalesForm = () => {
 
     const deleteProducList = (id: number) => {
         const product: IProductSale = sale.products.filter(p => p.id === id)[0]
+        const valueBeforeDIscount = sale.valueBeforeDIscount - product.totalCurrentPrice
         setSale({
-            ...sale, products: sale.products.filter(p => p.id !== id), value: sale.value - product.totalCurrentPrice,
-            valueCostPrice: sale.valueCostPrice - product.totalCostPrice, valueBeforeDIscount: sale.value - product.totalCurrentPrice - sale.discount
+            ...sale,
+            products: sale.products.filter(p => p.id !== id),
+            value: valueBeforeDIscount - (valueBeforeDIscount * (sale.discount / 100)),
+            valueCostPrice: sale.valueCostPrice - product.totalCostPrice,
+            valueBeforeDIscount: valueBeforeDIscount
         })
     }
 
@@ -167,11 +171,17 @@ const SalesForm = () => {
         }
     }
 
-    const edtProductList = (product: IProductSale) => {
+    const editProductList = (product: IProductSale) => {
         setProductSelecioned(products.filter(p => p.id === product.id)[0])
+        const valueBeforeDIscount = sale.valueBeforeDIscount - product.totalCurrentPrice
+
         setSale({
-            ...sale, qtd: product.qtdChange, products: sale.products.filter(p => p.id !== product.id), value: sale.value - product.totalCurrentPrice,
-            valueCostPrice: sale.valueCostPrice - product.totalCostPrice, valueBeforeDIscount: sale.value - product.totalCurrentPrice - sale.discount
+            ...sale,
+            qtd: product.qtdChange,
+            products: sale.products.filter(p => p.id !== product.id),
+            value: valueBeforeDIscount - (valueBeforeDIscount * (sale.discount / 100)),
+            valueCostPrice: sale.valueCostPrice - product.totalCostPrice,
+            valueBeforeDIscount: valueBeforeDIscount
         })
     }
 
@@ -181,7 +191,11 @@ const SalesForm = () => {
         if (discountInput === 0 || !discountInput) {
             return setErrorInput({ ...errorInput, discount: true })
         } else {
-            setSale({ ...sale, discount: discountInput, valueBeforeDIscount: sale.value - discountInput })
+            setSale({
+                ...sale,
+                discount: discountInput,
+                value: sale.valueBeforeDIscount - (sale.valueBeforeDIscount * (discountInput / 100))
+            })
         }
         setOpenAddDiscount(false)
     }
@@ -196,7 +210,7 @@ const SalesForm = () => {
             error = { ...error, clientId: true }
         }
 
-        if (sale.qtd === 0 || sale.qtd === undefined) {
+        if (sale.qtd == 0 || sale.qtd === undefined) {
             error = { ...error, quantidade: true }
         }
 
@@ -216,6 +230,8 @@ const SalesForm = () => {
             const valueTotalCurrentPrice = productSelecioned?.salePrice ? productSelecioned?.salePrice * sale.qtd : 0
             const valueTotalCostPrice = productSelecioned?.costPrice ? productSelecioned?.costPrice * sale.qtd : 0
 
+            const valueBeforeDIscount = sale.valueBeforeDIscount + valueTotalCurrentPrice
+
             setSale({
                 ...sale,
                 qtd: undefined,
@@ -232,9 +248,9 @@ const SalesForm = () => {
                         currentPrice: productSelecioned?.salePrice ?? 0,
                         oldQtd: productSelecioned?.qtdCurrent ?? 0
                     }],
-                value: sale.value + valueTotalCurrentPrice,
+                value: valueBeforeDIscount - (valueBeforeDIscount * (sale.discount / 100)),
                 valueCostPrice: sale.valueCostPrice + valueTotalCostPrice,
-                valueBeforeDIscount: sale.value + valueTotalCurrentPrice - sale.discount
+                valueBeforeDIscount: valueBeforeDIscount
             })
 
             setProductSelecioned(null)
@@ -258,11 +274,7 @@ const SalesForm = () => {
     const calcCustomerChangeCash = () => {
         if (sale.amountPaid) {
             let resultCustomerChangeCash = 0
-            if (sale.discount > 0) {
-                resultCustomerChangeCash = parseFloat((sale.amountPaid - sale.valueBeforeDIscount).toFixed(2))
-            } else {
-                resultCustomerChangeCash = parseFloat((sale.amountPaid - sale.value).toFixed(2))
-            }
+            resultCustomerChangeCash = parseFloat((sale.amountPaid - sale.value).toFixed(2))
             setSale({ ...sale, customerChangeCash: resultCustomerChangeCash })
         }
     }
@@ -352,9 +364,11 @@ const SalesForm = () => {
                         remove={true}
                         removeFunction={deleteProducList}
                         edit={true}
-                        editFunction={edtProductList}
+                        editFunction={editProductList}
                         sum={true}
-                        subValue={sale.discount}
+                        valueSale={sale.value}
+                        valueBeforeDIscount={sale.valueBeforeDIscount}
+                        discountPercent={sale.discount}
                     />
                 )}
                 <Box sx={{ display: 'flex' }}>
@@ -422,7 +436,7 @@ const SalesForm = () => {
                     flexDirection: "column",
                     gridGap: 20
                 }}>
-                    <CustomTextInput value={discountInput} type={"number"} label={"Desconto *"} adorment="currency" name={"discount"} changeFunction={e => setDiscountInput(e.target.value)} error={errorInput?.discount} />
+                    <CustomTextInput value={discountInput} adorment="percentage" type={"number"} label={"Desconto *"} name={"discount"} changeFunction={e => setDiscountInput(e.target.value)} error={errorInput?.discount} />
                 </Box>
             </CustomPopup>
         </React.Fragment>

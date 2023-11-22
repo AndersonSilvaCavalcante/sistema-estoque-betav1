@@ -221,7 +221,7 @@ const ProductRegisterOrUpdate = ({ params }: IProps) => {
                 </Stack>
                 <Stack direction="row" spacing={2} mb={2} mt={2}>
                     <CustomTextInput fullWidth value={product.salePrice || ''} disabled={true} label={"Preço de Venda"} type={"number"} name={"salePrice"} changeFunction={changeValues} />
-                    <CustomTextInput fullWidth value={product.perProfit || ''} disabled={!(product.costPrice && product.costPrice > 0) ? true : false} required={true} label={"Porcentagem de Lucro"} type={"number"} name={"perProfit"} changeFunction={changeValues}  error={errorInput?.perProfit} />
+                    <CustomTextInput fullWidth value={product.perProfit || ''} adorment="percentage" disabled={!(product.costPrice && product.costPrice > 0) ? true : false} required={true} label={"Porcentagem de Lucro"} type={"number"} name={"perProfit"} changeFunction={changeValues} error={errorInput?.perProfit} />
                     <CustomTextInput fullWidth value={product.valueProfit || ''} disabled={true} label={"Valor do Lucro"} type={"number"} name={"valueProfit"} changeFunction={changeValues} />
                 </Stack>
                 <Box sx={{ display: 'flex', placeContent: 'flex-end' }}>
