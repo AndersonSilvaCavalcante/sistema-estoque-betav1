@@ -88,9 +88,9 @@ const TableCustom = ({ titles, data, edit, remove, editFunction, removeFunction,
                     </TableHead>
                     <TableBody>
                         {!data && Array.from(new Array(3)).map((index) => (
-                            <TableRow key={index} sx={{ '&:last-child td, &:last-child th': { border: 0 } }} >
+                            <TableRow key={`row${index}`} sx={{ '&:last-child td, &:last-child th': { border: 0 } }} >
                                 {Array.from(new Array(titles.length  + 1)).map(index => (
-                                    <TableCell key={index}>
+                                    <TableCell key={`col${index}`}>
                                         <Skeleton animation="wave" />
                                     </TableCell>
                                 ))}
