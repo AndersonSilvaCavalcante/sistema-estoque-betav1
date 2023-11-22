@@ -11,6 +11,7 @@ import React, { useEffect, useState } from "react"
 import CardCustom from "@/components/Card"
 import DashboardService from "@/actions/dashboard"
 import TableCustom from "@/components/TableCustom"
+import { toast } from "react-toastify"
 
 interface IResumeDay {
     title: string
@@ -66,6 +67,7 @@ const Dashboard: NextPage = () => {
         try {
             const { data } = await DashboardService.getNoticeProducts()
             setProducts(data)
+            data.length > 0 && toast.warning(`Há ${data.length} produtos com estoque baixo!`,{draggable: false})
         } catch { }
     }
 
