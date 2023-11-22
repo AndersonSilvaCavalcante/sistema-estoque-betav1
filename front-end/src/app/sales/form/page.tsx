@@ -23,6 +23,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import Client from "@/actions/client";
 import SalesService from "@/actions/sales";
 import ProductServices from "@/actions/productServices";
+import DGrid from "@/components/DGrid";
 
 
 interface IErroForm {
@@ -289,15 +290,11 @@ const SalesForm = () => {
 
     return (
         <React.Fragment>
-            <PageHeader title="Realizar Venda">
-            </PageHeader>
+            <PageHeader title="Realizar Venda"></PageHeader>
             <ContainerCustom>
-                <Stack
-                    direction="row"
-                    spacing={2}>
+                <DGrid>
                     <Autocomplete
                         size="small"
-                        disablePortal
                         options={listClients}
                         disabled={sale.products.length > 0}
                         getOptionLabel={(option) => option.name}
@@ -311,7 +308,7 @@ const SalesForm = () => {
                         onChange={(event, newValue) => setClientSelecioned(newValue)}
                         value={clientSelecioned}
                         renderInput={(params) => (
-                            <FormControl variant="outlined" sx={{ minWidth: 220 }} size="small" error={errorInput?.clientId} >
+                            <FormControl fullWidth variant="outlined" size="small" error={errorInput?.clientId} >
                                 <TextField
                                     {...params}
                                     error={errorInput?.clientId}
@@ -325,7 +322,6 @@ const SalesForm = () => {
                     />
                     <Autocomplete
                         size="small"
-                        disablePortal
                         options={products}
                         getOptionLabel={(option) => option.name}
                         renderOption={(props, option) => {
@@ -338,7 +334,7 @@ const SalesForm = () => {
                         onChange={(event, newValue) => changeProductSelecioned(newValue)}
                         value={productSelecioned}
                         renderInput={(params) => (
-                            <FormControl variant="outlined" sx={{ minWidth: 220 }} size="small" error={errorInput?.produtoId} >
+                            <FormControl variant="outlined" fullWidth size="small" error={errorInput?.produtoId} >
                                 <TextField
                                     {...params}
                                     error={errorInput?.produtoId}
@@ -354,7 +350,7 @@ const SalesForm = () => {
                     <FormControl>
                         <ButtonPlus onCLick={addProductList} title="Adicionar" />
                     </FormControl>
-                </Stack>
+                </DGrid>
             </ContainerCustom>
             <ContainerCustom>
                 {sale.products.length > 0 && (
@@ -371,49 +367,45 @@ const SalesForm = () => {
                         discountPercent={sale.discount}
                     />
                 )}
-                <Box sx={{ display: 'flex' }}>
-                    <Stack direction="row" spacing={2}>
-                        {sale.products.length > 0 && (
-                            <>
-                                <FormControl variant="outlined" sx={{ minWidth: 220 }} size="small" error={errorInput?.paymentForm}>
-                                    <InputLabel id="demo-simple-select-standard-label">Forma de pagamento</InputLabel>
-                                    <Select
-                                        label="Forma de pagamento"
-                                        value={sale?.paymentForm}
-                                        name="paymentForm"
-                                        onChange={changeValues}
-                                    >
-                                        {paymentForms.map((paymentForm, index: number) => (
-                                            <MenuItem key={index} value={paymentForm}>{paymentForm}</MenuItem>
-                                        ))}
-                                    </Select>
-                                    {errorInput?.paymentForm && (
-                                        <FormHelperText>Campo obrigatório</FormHelperText>
-                                    )}
-                                </FormControl>
-                                {sale.paymentForm === "Cartão de Crédito Parcelado" && (<CustomTextInput label={"Parcelas"} type={"number"} value={sale.paymentInstallments} name={"paymentInstallments"} changeFunction={changeValues} />)}
-                                {sale.paymentForm === "Dinheiro" && (
-                                    <>
-                                        <CustomTextInput label={"Valor Pago"} type="number" value={sale.amountPaid} adorment="currency" name={"amountPaid"} changeFunction={changeValues} error={errorInput?.amountPaid} errorMessage={(sale.amountPaid && sale.amountPaid < sale.value) ? "Valor inválido" : ""} />
-                                        <Typography>Troco: R$ {sale.customerChangeCash}</Typography>
-                                    </>
+                <DGrid>
+                    {sale.products.length > 0 && (
+                        <>
+                            <FormControl variant="outlined" sx={{ minWidth: 220 }} size="small" error={errorInput?.paymentForm}>
+                                <InputLabel id="demo-simple-select-standard-label">Forma de pagamento</InputLabel>
+                                <Select
+                                    label="Forma de pagamento"
+                                    value={sale?.paymentForm}
+                                    name="paymentForm"
+                                    onChange={changeValues}
+                                >
+                                    {paymentForms.map((paymentForm, index: number) => (
+                                        <MenuItem key={index} value={paymentForm}>{paymentForm}</MenuItem>
+                                    ))}
+                                </Select>
+                                {errorInput?.paymentForm && (
+                                    <FormHelperText>Campo obrigatório</FormHelperText>
                                 )}
+                            </FormControl>
+                            {sale.paymentForm === "Cartão de Crédito Parcelado" && (<CustomTextInput label={"Parcelas"} type={"number"} value={sale.paymentInstallments} name={"paymentInstallments"} changeFunction={changeValues} />)}
+                            {sale.paymentForm === "Dinheiro" && (
+                                <>
+                                    <CustomTextInput label={"Valor Pago"} type="number" value={sale.amountPaid} adorment="currency" name={"amountPaid"} changeFunction={changeValues} error={errorInput?.amountPaid} errorMessage={(sale.amountPaid && sale.amountPaid < sale.value) ? "Valor inválido" : ""} />
+                                    <Typography>Troco: R$ {sale.customerChangeCash}</Typography>
+                                </>
+                            )}
 
-                            </>
-                        )}
-                    </Stack>
-                </Box>
-                <Box sx={{ display: 'flex', placeContent: 'flex-end' }}>
-                    <Stack direction="row" spacing={2}>
-                        <Button color="error" variant="outlined" endIcon={<CloseIcon />} onClick={goBack} >Cancelar</Button>
-                        {sale.products.length > 0 && (
-                            <>
-                                <Button color="info" variant="contained" onClick={() => setOpenAddDiscount(true)} >Adicionar Desconto</Button>
-                                <Button color="success" variant="contained" onClick={() => setOpenSale(true)}>FInalizar Venda</Button>
-                            </>
-                        )}
-                    </Stack>
-                </Box>
+                        </>
+                    )}
+                </DGrid>
+                <div className="d-flex-buttons">
+                    <Button color="error" variant="outlined" endIcon={<CloseIcon />} onClick={goBack} >Cancelar</Button>
+                    {sale.products.length > 0 && (
+                        <>
+                            <Button color="info" variant="contained" onClick={() => setOpenAddDiscount(true)} >Adicionar Desconto</Button>
+                            <Button color="success" variant="contained" onClick={() => setOpenSale(true)}>FInalizar Venda</Button>
+                        </>
+                    )}
+                </div>
             </ContainerCustom>
             <ConfirmPopup
                 toggle={openAddSale}

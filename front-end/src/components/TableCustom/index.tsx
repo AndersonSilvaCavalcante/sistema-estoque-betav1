@@ -120,7 +120,7 @@ const TableCustom = ({ titles, data, edit, remove, valueSale = 0, valueBeforeDIs
                                 </TableCell>
                             </TableRow>
                         ))}
-                        {valueBeforeDIscount > 0 && (
+                        {valueBeforeDIscount !== 0 && (
                             <TableRow
                                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                             >
@@ -138,7 +138,7 @@ const TableCustom = ({ titles, data, edit, remove, valueSale = 0, valueBeforeDIs
                                 </TableRow>
                             </>
                         )}
-                        {valueSale && (
+                        {valueSale !== 0  && (
                             <TableRow
                                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                             >

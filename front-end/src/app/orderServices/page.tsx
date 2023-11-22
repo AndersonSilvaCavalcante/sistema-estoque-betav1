@@ -30,6 +30,7 @@ import "../../assets/css/orderServices.scss"
 /**Animations */
 import emptyAnimation from "@/assets/animations/lottie/empty_animation.json"
 import CardCustom from '@/components/Card';
+import DGrid from '@/components/DGrid';
 
 export interface IFilter {
     plate: string,
@@ -223,7 +224,7 @@ const OrderServices: NextPage = () => {
                     onChange={(event, newValue) => setClientSelecioned(newValue)}
                     value={clientSelecioned}
                     renderInput={(params) => (
-                        <FormControl variant="outlined" sx={{ minWidth: 275 }} size="small"  >
+                        <FormControl variant="outlined" fullWidth size="small"  >
                             <TextField
                                 {...params}
                                 label="Nome do Cliente"
@@ -235,7 +236,7 @@ const OrderServices: NextPage = () => {
             {listOrderService && listOrderService.map((card, index: number) => (
                 card.list.length > 0 && (
                     <ContainerCustom title={card.type} key={index}>
-                        <div className='d-grid'>
+                        <DGrid>
                             {card.list.map((list, index: number) => (
                                 <CardCustom key={index} className='cardOrderService' >
                                     <div className='d-flex'>
@@ -293,15 +294,15 @@ const OrderServices: NextPage = () => {
                                     </MenuItem>
                                 ))}
                             </Menu>
-                        </div>
+                        </DGrid>
                     </ContainerCustom>
                 )
             ))}
 
             {!listOrderService && (
                 <ContainerCustom>
-                    <div className='d-grid'>
-                        {Array.from(new Array(3)).map((e, index: number) => (
+                    <DGrid>
+                        {Array.from(new Array(4)).map((e, index: number) => (
                             <CardCustom key={index}>
                                 <Stack direction="row" spacing={1} className='justify-space-between text-align-webkit-right' padding={2}>
                                     <div className='w-50'>
@@ -317,7 +318,7 @@ const OrderServices: NextPage = () => {
                                 </Stack>
                             </CardCustom>
                         ))}
-                    </div>
+                    </DGrid>
                 </ContainerCustom>
             )}
 

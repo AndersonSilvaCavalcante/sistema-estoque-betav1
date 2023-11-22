@@ -28,7 +28,7 @@ body {
 }
 */
 
-.c-pointer{
+.c-pointer {
   cursor: pointer;
 }
 
@@ -59,10 +59,26 @@ body {
   width: 40%;
 }
 
-.d-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+.d-flex-buttons {
+  display: flex;
+  justify-content: end;
   gap: 10px;
+}
+
+.d-flex-header {
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+@media only screen and (max-width: 610px) {
+  .d-flex-buttons,
+  .d-flex-header {
+    display: inline-grid;
+    width: 100%;
+    justify-content: normal;
+  }
 }
 
 body {

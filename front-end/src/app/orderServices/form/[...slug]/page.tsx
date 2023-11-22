@@ -23,6 +23,7 @@ import Services from "@/actions/services";
 import TableCustom from "@/components/TableCustom";
 import OrderService from "@/actions/orderServices";
 import { ConfirmPopup } from "@/components/Popups";
+import DGrid from "@/components/DGrid";
 
 
 
@@ -118,7 +119,7 @@ const OrderServicesRegister = ({ params }: IProps) => {
             id: index
         }))
         setServicesToBePerformed(dados)
-        setErrorInput({...errorInput, services: false})
+        setErrorInput({ ...errorInput, services: false })
     }
 
     const deleteServicesToBePerformed = (id: number) => {
@@ -237,10 +238,9 @@ const OrderServicesRegister = ({ params }: IProps) => {
             <PageHeader title={`${typeScreen} Ordem de Serviço`}>
             </PageHeader>
             <ContainerCustom>
-                <Stack direction="row" spacing={2} mb={2} mt={2}>
+                <DGrid>
                     <Autocomplete
                         size="small"
-                        disablePortal
                         options={listClients}
                         disabled={typeScreen !== 'Cadastrar'}
                         getOptionLabel={(option) => option.name}
@@ -254,7 +254,7 @@ const OrderServicesRegister = ({ params }: IProps) => {
                         onChange={(event, newValue) => setClientSelecioned(newValue)}
                         value={clientSelecioned || null}
                         renderInput={(params) => (
-                            <FormControl variant="outlined" sx={{ minWidth: 220 }} size="small" error={errorInput?.clientId} >
+                            <FormControl variant="outlined" fullWidth size="small" error={errorInput?.clientId} >
                                 <TextField
                                     {...params}
                                     error={errorInput?.clientId}
@@ -266,15 +266,15 @@ const OrderServicesRegister = ({ params }: IProps) => {
                             </FormControl>
                         )}
                     />
-                </Stack>
+                </DGrid>
                 {viewClient && infoClients && (
-                    <Stack direction="row" spacing={2} mb={2} mt={2}>
+                    <DGrid>
                         <TextField value={infoClients.plate} onChange={changeValuesClients} name='plate' label="Placa" size="small" variant="outlined" disabled={disableCLient} />
                         <TextField value={infoClients.model} onChange={changeValuesClients} name='model' label="Modelo" size="small" variant="outlined" disabled={disableCLient} />
                         <TextField value={infoClients.name} onChange={changeValuesClients} name='name' label="Nome" size="small" variant="outlined" disabled={disableCLient} />
                         <TextField value={infoClients.phone} onChange={changeValuesClients} name='phone' label="Telefone" size="small" variant="outlined" disabled={disableCLient} />
                         {disableCLient && typeScreen !== 'Visualizar' && (<Button color="warning" variant="outlined" onClick={() => setDIsableCLient(false)} endIcon={<CreateIcon />}>Editar</Button>)}
-                    </Stack>
+                    </DGrid>
                 )}
                 {!disableCLient && (
                     <Box sx={{ display: 'flex', placeContent: 'flex-end' }}>
@@ -285,8 +285,8 @@ const OrderServicesRegister = ({ params }: IProps) => {
                     </Box>
                 )}
                 {typeScreen !== 'Visualizar' && (
-                    <Stack direction="row" spacing={2} mb={2} mt={2} sx={{alignItems: "baseline"}}>
-                        <FormControl variant="outlined" sx={{ m: 1, minWidth: 300 }} size="small" error={errorInput?.services}>
+                    <DGrid>
+                        <FormControl variant="outlined" fullWidth size="small" error={errorInput?.services}>
                             <InputLabel >Serviços a serem feitos *</InputLabel>
                             <Select
                                 label="Serviços a serem feitos *"
@@ -303,7 +303,7 @@ const OrderServicesRegister = ({ params }: IProps) => {
                             )}
                         </FormControl>
                         <Button color="success" variant="outlined" endIcon={<AddIcon />} onClick={addServicesToBePerformed} disabled={orderService?.services == ''} >Adicionar</Button>
-                    </Stack>
+                    </DGrid>
                 )}
                 {servicesToBePerformed.length > 0 && (
                     <TableCustom

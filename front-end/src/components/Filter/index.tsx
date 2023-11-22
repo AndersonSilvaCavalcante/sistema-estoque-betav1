@@ -10,6 +10,7 @@ import { CustomTextInput } from "../CustomInputs"
 import FilterListIcon from '@mui/icons-material/FilterList';
 import CloseIcon from '@mui/icons-material/Close';
 import styled from "styled-components";
+import DGrid from "../DGrid";
 
 interface IProps {
     children: React.ReactNode
@@ -17,15 +18,6 @@ interface IProps {
     cleanFunction: () => void
     filterFucntion: () => void
 }
-
-const DGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: 20px;
-  margin-bottom: 20px;
-  margin-top: 20px;
-`;
-
 
 
 const Filter = ({ title, children, cleanFunction, filterFucntion }: IProps) => {

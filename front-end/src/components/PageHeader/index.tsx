@@ -1,4 +1,6 @@
-import { Box, Typography } from "@mui/material"
+import { Typography } from "@mui/material"
+import DGrid from "../DGrid"
+import styled from "styled-components";
 
 interface IProps {
     title: string
@@ -7,14 +9,10 @@ interface IProps {
 
 const PageHeader = ({ title, children }: IProps) => {
     return (
-        <Box mb={2} sx={{ display: 'flex' }}>
-            <Box flexGrow={1}>
-                <Typography component={'h1'} variant="h5" >{title}</Typography>
-            </Box>
-            <Box ml={2}>
-                {children}
-            </Box>
-        </Box>
+        <div className="d-flex-header">
+            <Typography component={'h1'} variant="h5" >{title}</Typography>
+            {children}
+        </div>
     )
 }
 

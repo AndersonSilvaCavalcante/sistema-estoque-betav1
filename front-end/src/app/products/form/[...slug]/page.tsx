@@ -19,6 +19,7 @@ import SaveIcon from '@mui/icons-material/Save';
 import { toast } from "react-toastify"
 import Supplier from "@/actions/suppliers"
 import { ConfirmPopup } from "@/components/Popups"
+import DGrid from "@/components/DGrid"
 
 interface IProps {
     params: {
@@ -193,10 +194,10 @@ const ProductRegisterOrUpdate = ({ params }: IProps) => {
         <React.Fragment>
             <PageHeader title={`${action} Produto`} />
             <ContainerCustom title="Dados do Produto">
-                <Stack direction="row" spacing={2} mb={2} mt={2}>
+                <DGrid>
                     <CustomTextInput fullWidth value={product?.name} label={"Nome"} name={"name"} required={true} changeFunction={changeValues} error={errorInput?.name} />
                     <CustomTextInput fullWidth value={product?.barcode} label={"Código de Barras"} name={"barcode"} required={true} changeFunction={changeValues} error={errorInput?.barcode} />
-                    <FormControl variant="outlined" sx={{ m: 1, minWidth: 250 }} size="small" error={errorInput?.supplierId}>
+                    <FormControl variant="outlined" fullWidth size="small" error={errorInput?.supplierId}>
                         <InputLabel >Fornecedor *</InputLabel>
                         <Select
                             label="Fornecedor *"
@@ -213,17 +214,17 @@ const ProductRegisterOrUpdate = ({ params }: IProps) => {
                             <FormHelperText>Campo obrigatório</FormHelperText>
                         )}
                     </FormControl>
-                </Stack>
-                <Stack direction="row" spacing={2} mb={2} mt={2}>
+                </DGrid>
+                <DGrid>
                     <CustomTextInput fullWidth value={product.qtdMin || ''} label={"Estoque Mínimo"} required={true} type={"number"} name={"qtdMin"} changeFunction={changeValues} error={errorInput?.qtdMin} />
                     <CustomTextInput fullWidth value={product.qtdCurrent || ''} label={"Estoque"} required={true} type={"number"} name={"qtdCurrent"} changeFunction={changeValues} error={errorInput?.qtdCurrent} />
                     <CustomTextInput fullWidth value={product.costPrice || ''} label={"Preço de Custo"} required={true} type={"number"} name={"costPrice"} changeFunction={changeValues} error={errorInput?.costPrice} />
-                </Stack>
-                <Stack direction="row" spacing={2} mb={2} mt={2}>
+                </DGrid>
+                <DGrid>
                     <CustomTextInput fullWidth value={product.salePrice || ''} disabled={true} label={"Preço de Venda"} type={"number"} name={"salePrice"} changeFunction={changeValues} />
                     <CustomTextInput fullWidth value={product.perProfit || ''} adorment="percentage" disabled={!(product.costPrice && product.costPrice > 0) ? true : false} required={true} label={"Porcentagem de Lucro"} type={"number"} name={"perProfit"} changeFunction={changeValues} error={errorInput?.perProfit} />
                     <CustomTextInput fullWidth value={product.valueProfit || ''} disabled={true} label={"Valor do Lucro"} type={"number"} name={"valueProfit"} changeFunction={changeValues} />
-                </Stack>
+                </DGrid>
                 <Box sx={{ display: 'flex', placeContent: 'flex-end' }}>
                     <Stack direction="row" spacing={2}>
                         <Button color="error" onClick={goBack} variant="outlined" endIcon={<CloseIcon />}>Cancelar</Button>

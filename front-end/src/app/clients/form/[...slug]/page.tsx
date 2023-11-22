@@ -18,6 +18,7 @@ import { toast } from "react-toastify";
 /**Icons */
 import SaveIcon from '@mui/icons-material/Save';
 import CloseIcon from '@mui/icons-material/Close';
+import DGrid from "@/components/DGrid";
 
 interface IProps {
     params: {
@@ -46,7 +47,7 @@ const ClientsRegisterOrUpdate = ({ params }: IProps) => {
     }
     const [client, setClient] = useState<ICLient>(initialClient)
     const [popupConfirmToggle, setPopupConfirmToggle] = useState<boolean>(false)
-    
+
     const [errorInput, setErrorInput] = useState<null | IErroForm>(null)
 
     const handleClose = () => {
@@ -124,12 +125,12 @@ const ClientsRegisterOrUpdate = ({ params }: IProps) => {
         <React.Fragment>
             <PageHeader title={`${action} Cliente`} />
             <ContainerCustom title="Dados do Cliente">
-                <Stack direction="row" spacing={2} mb={2} mt={2}>
+                <DGrid>
                     <CustomTextInput value={client?.name} changeFunction={changeValues} name='name' label="Nome" error={errorInput?.name} />
-                    <CustomTelInput value={client?.phone} changeFunction={changeValues} name='phone' label="Telefone"  error={errorInput?.phone}/>
-                    <CustomTextInput value={client?.model} changeFunction={changeValues} name='model' label="Modelo"  error={errorInput?.model}/>
-                    <CustomTextInput value={client?.plate} name='plate' label="Placa" changeFunction={changeValues}   error={errorInput?.plate}/>
-                </Stack>
+                    <CustomTelInput value={client?.phone} changeFunction={changeValues} name='phone' label="Telefone" error={errorInput?.phone} />
+                    <CustomTextInput value={client?.model} changeFunction={changeValues} name='model' label="Modelo" error={errorInput?.model} />
+                    <CustomTextInput value={client?.plate} name='plate' label="Placa" changeFunction={changeValues} error={errorInput?.plate} />
+                </DGrid>
                 <Box sx={{ display: 'flex', placeContent: 'flex-end' }}>
                     <Stack direction="row" spacing={2}>
                         <Button color="error" onClick={goBack} variant="outlined" endIcon={<CloseIcon />}>Cancelar</Button>

@@ -12,6 +12,7 @@ import CardCustom from "@/components/Card"
 import DashboardService from "@/actions/dashboard"
 import TableCustom from "@/components/TableCustom"
 import { toast } from "react-toastify"
+import DGrid from "@/components/DGrid"
 
 interface IResumeDay {
     title: string
@@ -88,7 +89,7 @@ const Dashboard: NextPage = () => {
         <React.Fragment>
             <PageHeader title="Painel Administrativo" />
             <ContainerCustom title="Resumo do dia">
-                <div className="d-grid">
+                <DGrid>
                     {resumeDay && resumeDay.map((resume, index: number) => (
                         <CardCustom key={index}>
                             <p>{resume.title}</p>
@@ -102,7 +103,7 @@ const Dashboard: NextPage = () => {
                             <Skeleton animation="wave" />
                         </CardCustom>
                     ))}
-                </div>
+                </DGrid>
             </ContainerCustom>
             <ContainerCustom title="Avisos do estoque">
                 <TableCustom
