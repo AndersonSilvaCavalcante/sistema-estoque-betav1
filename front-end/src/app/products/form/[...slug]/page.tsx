@@ -218,12 +218,12 @@ const ProductRegisterOrUpdate = ({ params }: IProps) => {
                 <DGrid>
                     <CustomTextInput fullWidth value={product.qtdMin || ''} label={"Estoque Mínimo"} required={true} type={"number"} name={"qtdMin"} changeFunction={changeValues} error={errorInput?.qtdMin} />
                     <CustomTextInput fullWidth value={product.qtdCurrent || ''} label={"Estoque"} required={true} type={"number"} name={"qtdCurrent"} changeFunction={changeValues} error={errorInput?.qtdCurrent} />
-                    <CustomTextInput fullWidth value={product.costPrice || ''} label={"Preço de Custo"} required={true} type={"number"} name={"costPrice"} changeFunction={changeValues} error={errorInput?.costPrice} />
+                    <CustomTextInput fullWidth value={product.costPrice || ''} adorment="currency" label={"Preço de Custo"} required={true} type={"number"} name={"costPrice"} changeFunction={changeValues} error={errorInput?.costPrice} />
                 </DGrid>
                 <DGrid>
-                    <CustomTextInput fullWidth value={product.salePrice || ''} disabled={true} label={"Preço de Venda"} type={"number"} name={"salePrice"} changeFunction={changeValues} />
+                    <CustomTextInput fullWidth value={product.salePrice || ''} adorment="currency" disabled={true} label={"Preço de Venda"} type={"number"} name={"salePrice"} changeFunction={changeValues} />
                     <CustomTextInput fullWidth value={product.perProfit || ''} adorment="percentage" disabled={!(product.costPrice && product.costPrice > 0) ? true : false} required={true} label={"Porcentagem de Lucro"} type={"number"} name={"perProfit"} changeFunction={changeValues} error={errorInput?.perProfit} />
-                    <CustomTextInput fullWidth value={product.valueProfit || ''} disabled={true} label={"Valor do Lucro"} type={"number"} name={"valueProfit"} changeFunction={changeValues} />
+                    <CustomTextInput fullWidth value={product.valueProfit || ''} adorment="currency" disabled={true} label={"Valor do Lucro"} type={"number"} name={"valueProfit"} changeFunction={changeValues} />
                 </DGrid>
                 <Box sx={{ display: 'flex', placeContent: 'flex-end' }}>
                     <Stack direction="row" spacing={2}>
