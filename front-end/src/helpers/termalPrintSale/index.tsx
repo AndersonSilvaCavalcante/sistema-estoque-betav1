@@ -2,14 +2,15 @@ const qz = require("qz-tray");
 import moment from "moment";
 import { toast } from "react-toastify";
 
-const printSale = (data: Array<string>) => {
-    qz.websocket.connect().then(() => {
+const printSale = async (data: Array<string>) => {
+    await qz.websocket.connect().then(() => {
         return qz.printers.find("POS-58");
-    }).then((printer: any) => {
+    }).then(async (printer: any) => {
         var config = qz.configs.create(printer, { encodeURI: "PC3847" })
-        return qz.print(config, data);
-    }).then(() => {
         toast.info("Imprimindo recibo...")
+        return await qz.print(config, data);
+    }).then(() => {
+        toast.success("Recibo Impresso!")
         return qz.websocket.disconnect();
     }).catch((err: any) => {
         toast.error("Falha ao imprimir recibo!")
