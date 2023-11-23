@@ -26,7 +26,7 @@ namespace stock_api.EndPoints
                 pv.Add(new ParametroValor("@amountPaid", sales.AmountPaid));
                 pv.Add(new ParametroValor("@customerChangeCash", sales.CustomerChangeCash));
                 pv.Add(new ParametroValor("@paymentInstallments", sales.PaymentInstallments));
-                Persistencia.ExecutarSqlSemRetorno(@"post_sales", pv, tipoconsulta: TipoConsulta.STORED_PROCEDURE);
+                return Persistencia.ExecutarSql<Sales>(@"post_sales", pv, tipoconsulta: TipoConsulta.STORED_PROCEDURE).ToList();
             }).WithTags("sales");
         }
     }

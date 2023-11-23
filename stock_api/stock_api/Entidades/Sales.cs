@@ -15,8 +15,8 @@
         public DateTime DateUpdated { get; set; }
         public float Profit { get; set; }
         public string PaymentForm { get; set; }
-        public int  AmountPaid { get; set; }
-        public int CustomerChangeCash { get; set; }
+        public float  AmountPaid { get; set; }
+        public float CustomerChangeCash { get; set; }
         public int PaymentInstallments { get; set; }
     }
 

@@ -140,11 +140,16 @@ const SalesForm = () => {
                 sale.amountPaid = sale.valueBeforeDIscount
             }
 
-            //await SalesService.saveSale(sale)
+            const payload: ISale = {
+                ...sale,
+                amountPaid: sale.amountPaid === 0 || !sale.amountPaid ? sale.value : sale.amountPaid
+            }
+
+            const { data } = await SalesService.saveSale(payload)
             toast.success("Sucesso ao realizar venda!")
-            await generateTermalPrintSale(sale)
-            //goBack()
-        } catch {
+            await generateTermalPrintSale({ ...data[0], products: JSON.parse(data[0].productsString) })
+            goBack()
+        } catch (err) {
             toast.error("Erro ao realizar venda!")
         }
     }
