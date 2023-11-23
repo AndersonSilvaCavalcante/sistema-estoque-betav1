@@ -30,9 +30,9 @@ const Header = () => {
                         <MenuIcon />
                         <SideBar toggle={toggle} />
                     </IconButton>
-                    <Typography sx={{ flexGrow: 1 }}>
+                    <Box sx={{ flexGrow: 1 }}>
                         <Image src={"/logo_criselegance_no_bg.svg"} alt={"Logo"} width={120} height={80} onClick={() => goPath("/dashboard")} className="c-pointer" />
-                    </Typography>
+                    </Box>
                 </Toolbar>
             </Container>
         </AppBar>
