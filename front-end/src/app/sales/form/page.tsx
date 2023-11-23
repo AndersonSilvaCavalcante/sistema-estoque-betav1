@@ -24,6 +24,7 @@ import Client from "@/actions/client";
 import SalesService from "@/actions/sales";
 import ProductServices from "@/actions/productServices";
 import DGrid from "@/components/DGrid";
+import generateTermalPrintSale from "@/helpers/termalPrintSale";
 
 
 interface IErroForm {
@@ -139,9 +140,10 @@ const SalesForm = () => {
                 sale.amountPaid = sale.valueBeforeDIscount
             }
 
-            await SalesService.saveSale(sale)
+            //await SalesService.saveSale(sale)
             toast.success("Sucesso ao realizar venda!")
-            goBack()
+            await generateTermalPrintSale(sale)
+            //goBack()
         } catch {
             toast.error("Erro ao realizar venda!")
         }
