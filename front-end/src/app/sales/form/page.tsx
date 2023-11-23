@@ -23,6 +23,8 @@ import CloseIcon from '@mui/icons-material/Close';
 import Client from "@/actions/client";
 import SalesService from "@/actions/sales";
 import ProductServices from "@/actions/productServices";
+import DGrid from "@/components/DGrid";
+import generateTermalPrintSale from "@/helpers/termalPrintSale";
 
 
 interface IErroForm {
@@ -104,9 +106,13 @@ const SalesForm = () => {
 
     const deleteProducList = (id: number) => {
         const product: IProductSale = sale.products.filter(p => p.id === id)[0]
+        const valueBeforeDIscount = sale.valueBeforeDIscount - product.totalCurrentPrice
         setSale({
-            ...sale, products: sale.products.filter(p => p.id !== id), value: sale.value - product.totalCurrentPrice,
-            valueCostPrice: sale.valueCostPrice - product.totalCostPrice, valueBeforeDIscount: sale.value - product.totalCurrentPrice - sale.discount
+            ...sale,
+            products: sale.products.filter(p => p.id !== id),
+            value: valueBeforeDIscount - (valueBeforeDIscount * (sale.discount / 100)),
+            valueCostPrice: sale.valueCostPrice - product.totalCostPrice,
+            valueBeforeDIscount: valueBeforeDIscount
         })
     }
 
@@ -134,10 +140,16 @@ const SalesForm = () => {
                 sale.amountPaid = sale.valueBeforeDIscount
             }
 
-            await SalesService.saveSale(sale)
+            const payload: ISale = {
+                ...sale,
+                amountPaid: sale.amountPaid === 0 || !sale.amountPaid ? sale.value : sale.amountPaid
+            }
+
+            const { data } = await SalesService.saveSale(payload)
             toast.success("Sucesso ao realizar venda!")
+            await generateTermalPrintSale({ ...data[0], products: JSON.parse(data[0].productsString) })
             goBack()
-        } catch {
+        } catch (err) {
             toast.error("Erro ao realizar venda!")
         }
     }
@@ -167,11 +179,17 @@ const SalesForm = () => {
         }
     }
 
-    const edtProductList = (product: IProductSale) => {
+    const editProductList = (product: IProductSale) => {
         setProductSelecioned(products.filter(p => p.id === product.id)[0])
+        const valueBeforeDIscount = sale.valueBeforeDIscount - product.totalCurrentPrice
+
         setSale({
-            ...sale, qtd: product.qtdChange, products: sale.products.filter(p => p.id !== product.id), value: sale.value - product.totalCurrentPrice,
-            valueCostPrice: sale.valueCostPrice - product.totalCostPrice, valueBeforeDIscount: sale.value - product.totalCurrentPrice - sale.discount
+            ...sale,
+            qtd: product.qtdChange,
+            products: sale.products.filter(p => p.id !== product.id),
+            value: valueBeforeDIscount - (valueBeforeDIscount * (sale.discount / 100)),
+            valueCostPrice: sale.valueCostPrice - product.totalCostPrice,
+            valueBeforeDIscount: valueBeforeDIscount
         })
     }
 
@@ -181,7 +199,11 @@ const SalesForm = () => {
         if (discountInput === 0 || !discountInput) {
             return setErrorInput({ ...errorInput, discount: true })
         } else {
-            setSale({ ...sale, discount: discountInput, valueBeforeDIscount: sale.value - discountInput })
+            setSale({
+                ...sale,
+                discount: discountInput,
+                value: sale.valueBeforeDIscount - (sale.valueBeforeDIscount * (discountInput / 100))
+            })
         }
         setOpenAddDiscount(false)
     }
@@ -196,7 +218,7 @@ const SalesForm = () => {
             error = { ...error, clientId: true }
         }
 
-        if (sale.qtd === 0 || sale.qtd === undefined) {
+        if (sale.qtd == 0 || sale.qtd === undefined) {
             error = { ...error, quantidade: true }
         }
 
@@ -216,6 +238,8 @@ const SalesForm = () => {
             const valueTotalCurrentPrice = productSelecioned?.salePrice ? productSelecioned?.salePrice * sale.qtd : 0
             const valueTotalCostPrice = productSelecioned?.costPrice ? productSelecioned?.costPrice * sale.qtd : 0
 
+            const valueBeforeDIscount = sale.valueBeforeDIscount + valueTotalCurrentPrice
+
             setSale({
                 ...sale,
                 qtd: undefined,
@@ -232,9 +256,9 @@ const SalesForm = () => {
                         currentPrice: productSelecioned?.salePrice ?? 0,
                         oldQtd: productSelecioned?.qtdCurrent ?? 0
                     }],
-                value: sale.value + valueTotalCurrentPrice,
+                value: valueBeforeDIscount - (valueBeforeDIscount * (sale.discount / 100)),
                 valueCostPrice: sale.valueCostPrice + valueTotalCostPrice,
-                valueBeforeDIscount: sale.value + valueTotalCurrentPrice - sale.discount
+                valueBeforeDIscount: valueBeforeDIscount
             })
 
             setProductSelecioned(null)
@@ -258,11 +282,7 @@ const SalesForm = () => {
     const calcCustomerChangeCash = () => {
         if (sale.amountPaid) {
             let resultCustomerChangeCash = 0
-            if (sale.discount > 0) {
-                resultCustomerChangeCash = parseFloat((sale.amountPaid - sale.valueBeforeDIscount).toFixed(2))
-            } else {
-                resultCustomerChangeCash = parseFloat((sale.amountPaid - sale.value).toFixed(2))
-            }
+            resultCustomerChangeCash = parseFloat((sale.amountPaid - sale.value).toFixed(2))
             setSale({ ...sale, customerChangeCash: resultCustomerChangeCash })
         }
     }
@@ -277,15 +297,11 @@ const SalesForm = () => {
 
     return (
         <React.Fragment>
-            <PageHeader title="Realizar Venda">
-            </PageHeader>
+            <PageHeader title="Realizar Venda"></PageHeader>
             <ContainerCustom>
-                <Stack
-                    direction="row"
-                    spacing={2}>
+                <DGrid>
                     <Autocomplete
                         size="small"
-                        disablePortal
                         options={listClients}
                         disabled={sale.products.length > 0}
                         getOptionLabel={(option) => option.name}
@@ -299,7 +315,7 @@ const SalesForm = () => {
                         onChange={(event, newValue) => setClientSelecioned(newValue)}
                         value={clientSelecioned}
                         renderInput={(params) => (
-                            <FormControl variant="outlined" sx={{ minWidth: 220 }} size="small" error={errorInput?.clientId} >
+                            <FormControl fullWidth variant="outlined" size="small" error={errorInput?.clientId} >
                                 <TextField
                                     {...params}
                                     error={errorInput?.clientId}
@@ -313,7 +329,6 @@ const SalesForm = () => {
                     />
                     <Autocomplete
                         size="small"
-                        disablePortal
                         options={products}
                         getOptionLabel={(option) => option.name}
                         renderOption={(props, option) => {
@@ -326,7 +341,7 @@ const SalesForm = () => {
                         onChange={(event, newValue) => changeProductSelecioned(newValue)}
                         value={productSelecioned}
                         renderInput={(params) => (
-                            <FormControl variant="outlined" sx={{ minWidth: 220 }} size="small" error={errorInput?.produtoId} >
+                            <FormControl variant="outlined" fullWidth size="small" error={errorInput?.produtoId} >
                                 <TextField
                                     {...params}
                                     error={errorInput?.produtoId}
@@ -342,7 +357,7 @@ const SalesForm = () => {
                     <FormControl>
                         <ButtonPlus onCLick={addProductList} title="Adicionar" />
                     </FormControl>
-                </Stack>
+                </DGrid>
             </ContainerCustom>
             <ContainerCustom>
                 {sale.products.length > 0 && (
@@ -352,54 +367,52 @@ const SalesForm = () => {
                         remove={true}
                         removeFunction={deleteProducList}
                         edit={true}
-                        editFunction={edtProductList}
+                        editFunction={editProductList}
                         sum={true}
-                        subValue={sale.discount}
+                        valueSale={sale.value}
+                        valueBeforeDIscount={sale.valueBeforeDIscount}
+                        discountPercent={sale.discount}
                     />
                 )}
-                <Box sx={{ display: 'flex' }}>
-                    <Stack direction="row" spacing={2}>
-                        {sale.products.length > 0 && (
-                            <>
-                                <FormControl variant="outlined" sx={{ minWidth: 220 }} size="small" error={errorInput?.paymentForm}>
-                                    <InputLabel id="demo-simple-select-standard-label">Forma de pagamento</InputLabel>
-                                    <Select
-                                        label="Forma de pagamento"
-                                        value={sale?.paymentForm}
-                                        name="paymentForm"
-                                        onChange={changeValues}
-                                    >
-                                        {paymentForms.map((paymentForm, index: number) => (
-                                            <MenuItem key={index} value={paymentForm}>{paymentForm}</MenuItem>
-                                        ))}
-                                    </Select>
-                                    {errorInput?.paymentForm && (
-                                        <FormHelperText>Campo obrigatório</FormHelperText>
-                                    )}
-                                </FormControl>
-                                {sale.paymentForm === "Cartão de Crédito Parcelado" && (<CustomTextInput label={"Parcelas"} type={"number"} value={sale.paymentInstallments} name={"paymentInstallments"} changeFunction={changeValues} />)}
-                                {sale.paymentForm === "Dinheiro" && (
-                                    <>
-                                        <CustomTextInput label={"Valor Pago"} type="number" value={sale.amountPaid} adorment="currency" name={"amountPaid"} changeFunction={changeValues} error={errorInput?.amountPaid} errorMessage={(sale.amountPaid && sale.amountPaid < sale.value) ? "Valor inválido" : ""} />
-                                        <Typography>Troco: R$ {sale.customerChangeCash}</Typography>
-                                    </>
+                <DGrid>
+                    {sale.products.length > 0 && (
+                        <>
+                            <FormControl variant="outlined" sx={{ minWidth: 220 }} size="small" error={errorInput?.paymentForm}>
+                                <InputLabel id="demo-simple-select-standard-label">Forma de pagamento</InputLabel>
+                                <Select
+                                    label="Forma de pagamento"
+                                    value={sale?.paymentForm}
+                                    name="paymentForm"
+                                    onChange={changeValues}
+                                >
+                                    {paymentForms.map((paymentForm, index: number) => (
+                                        <MenuItem key={index} value={paymentForm}>{paymentForm}</MenuItem>
+                                    ))}
+                                </Select>
+                                {errorInput?.paymentForm && (
+                                    <FormHelperText>Campo obrigatório</FormHelperText>
                                 )}
+                            </FormControl>
+                            {sale.paymentForm === "Cartão de Crédito Parcelado" && (<CustomTextInput label={"Parcelas"} type={"number"} value={sale.paymentInstallments} name={"paymentInstallments"} changeFunction={changeValues} />)}
+                            {sale.paymentForm === "Dinheiro" && (
+                                <>
+                                    <CustomTextInput label={"Valor Pago"} type="number" value={sale.amountPaid} adorment="currency" name={"amountPaid"} changeFunction={changeValues} error={errorInput?.amountPaid} errorMessage={(sale.amountPaid && sale.amountPaid < sale.value) ? "Valor inválido" : ""} />
+                                    <Typography>Troco: R$ {sale.customerChangeCash}</Typography>
+                                </>
+                            )}
 
-                            </>
-                        )}
-                    </Stack>
-                </Box>
-                <Box sx={{ display: 'flex', placeContent: 'flex-end' }}>
-                    <Stack direction="row" spacing={2}>
-                        <Button color="error" variant="outlined" endIcon={<CloseIcon />} onClick={goBack} >Cancelar</Button>
-                        {sale.products.length > 0 && (
-                            <>
-                                <Button color="info" variant="contained" onClick={() => setOpenAddDiscount(true)} >Adicionar Desconto</Button>
-                                <Button color="success" variant="contained" onClick={() => setOpenSale(true)}>FInalizar Venda</Button>
-                            </>
-                        )}
-                    </Stack>
-                </Box>
+                        </>
+                    )}
+                </DGrid>
+                <div className="d-flex-buttons">
+                    <Button color="error" variant="outlined" endIcon={<CloseIcon />} onClick={goBack} >Cancelar</Button>
+                    {sale.products.length > 0 && (
+                        <>
+                            <Button color="info" variant="contained" onClick={() => setOpenAddDiscount(true)} >Adicionar Desconto</Button>
+                            <Button color="success" variant="contained" onClick={() => setOpenSale(true)}>FInalizar Venda</Button>
+                        </>
+                    )}
+                </div>
             </ContainerCustom>
             <ConfirmPopup
                 toggle={openAddSale}
@@ -422,7 +435,7 @@ const SalesForm = () => {
                     flexDirection: "column",
                     gridGap: 20
                 }}>
-                    <CustomTextInput value={discountInput} type={"number"} label={"Desconto *"} adorment="currency" name={"discount"} changeFunction={e => setDiscountInput(e.target.value)} error={errorInput?.discount} />
+                    <CustomTextInput value={discountInput} adorment="percentage" type={"number"} label={"Desconto *"} name={"discount"} changeFunction={e => setDiscountInput(e.target.value)} error={errorInput?.discount} />
                 </Box>
             </CustomPopup>
         </React.Fragment>

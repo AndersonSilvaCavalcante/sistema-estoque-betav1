@@ -6,7 +6,7 @@ interface IProps {
     defaultValue?: string | number
     required?: boolean
     type?: string
-    adorment?: "currency"
+    adorment?: "currency" | "percentage"
     label: string
     name: string
     size?: "small" | "medium"
@@ -17,7 +17,7 @@ interface IProps {
     changeFunction: (e: any) => void,
     disabled?: boolean
 }
-const adorments = { currency: "R$" }
+const adorments = { currency: "R$", percentage: "%" }
 
 export const CustomTextInput = ({ disabled = false, value, defaultValue, required, label, name, size, fullWidth, error, type, rows, errorMessage, adorment, changeFunction }: IProps) => {
     return (
@@ -35,9 +35,14 @@ export const CustomTextInput = ({ disabled = false, value, defaultValue, require
             variant="outlined"
             rows={rows}
             disabled={disabled}
-            InputProps={{
-                startAdornment: adorment ? <InputAdornment position="start">{adorments[adorment]}</InputAdornment> : null
-            }}
+            InputProps={
+                adorment === "currency" ? (
+                    { startAdornment: adorment ? <InputAdornment position="start" > {adorments[adorment]}</InputAdornment> : null }
+                ) : (
+                    { endAdornment: adorment ? <InputAdornment position="end">{adorments[adorment]}</InputAdornment> : null }
+                )
+            }
+
             helperText={error ? errorMessage ? errorMessage : "Campo obrigatório!" : null}
         />
     )
