@@ -57,7 +57,7 @@ const Dashboard: NextPage = () => {
             const { data } = await DashboardService.getDashboard()
             setResumeDay([
                 { title: "Vendas", value: data[0].qtdSales },
-                { title: "Serviços Concluídos", value: data[0].qtdOrderService },
+                // { title: "Serviços Concluídos", value: data[0].qtdOrderService },
                 { title: "Faturamento", value: 'R$' + data[0].revenue },
                 { title: "Lucro Líquido", value: 'R$' + data[0].profit }
             ])

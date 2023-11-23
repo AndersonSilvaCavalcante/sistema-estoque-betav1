@@ -28,10 +28,12 @@ const menuOptions =
         }, {
             name: "Produtos",
             path: "/products"
-        }, {
-            name: "Serviços",
-            path: "/services"
-        }, {
+        }, 
+        // {
+        //     name: "Serviços",
+        //     path: "/services"
+        // }, 
+        {
             name: "Clientes",
             path: "/clients"
         }
@@ -73,7 +75,7 @@ const SideBar = ({ toggle }: IProps) => {
                 }}
             >
                 <Box flexGrow={1}>
-                    <Image src={"/logo_criselegance_no_bg.svg"} alt={"Logo"} width={120} height={80} onClick={() => goPath("/dashboard")} className="c-pointer" />
+                    <Image src={"/logo_criselegance_no_bg.svg"} alt={"Logo"} width={170} height={46} onClick={() => goPath("/dashboard")} className="c-pointer" />
                 </Box>
                 <IconButton onClick={() => setState(false)}>
                     <ArrowBackIosNewIcon />
