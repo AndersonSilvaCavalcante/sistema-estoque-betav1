@@ -31,7 +31,7 @@ const Header = () => {
                         <SideBar toggle={toggle} />
                     </IconButton>
                     <Box sx={{ flexGrow: 1 }}>
-                        <Image src={"/logo_criselegance_no_bg.svg"} alt={"Logo"} width={120} height={80} onClick={() => goPath("/dashboard")} className="c-pointer" />
+                        <Image src={"/logo_criselegance_no_bg.svg"} alt={"Logo"} width={170} height={40} onClick={() => goPath("/dashboard")} className="c-pointer" />
                     </Box>
                 </Toolbar>
             </Container>

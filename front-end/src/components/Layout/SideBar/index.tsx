@@ -75,7 +75,7 @@ const SideBar = ({ toggle }: IProps) => {
                 }}
             >
                 <Box flexGrow={1}>
-                    <Image src={"/logo_criselegance_no_bg.svg"} alt={"Logo"} width={170} height={46} onClick={() => goPath("/dashboard")} className="c-pointer" />
+                    <Image src={"/logo_criselegance_no_bg.svg"} alt={"Logo"} width={160} height={43} onClick={() => goPath("/dashboard")} className="c-pointer" />
                 </Box>
                 <IconButton onClick={() => setState(false)}>
                     <ArrowBackIosNewIcon />
