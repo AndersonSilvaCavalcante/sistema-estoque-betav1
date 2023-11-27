@@ -12,7 +12,10 @@ import CardCustom from "@/components/Card"
 import DashboardService from "@/actions/dashboard"
 import TableCustom from "@/components/TableCustom"
 import { toast } from "react-toastify"
-import DGrid from "@/components/DGrid"
+import moment from "moment"
+
+import "../../assets/css/dashboard.scss"
+
 
 interface IResumeDay {
     title: string
@@ -57,9 +60,11 @@ const Dashboard: NextPage = () => {
             const { data } = await DashboardService.getDashboard()
             setResumeDay([
                 { title: "Vendas", value: data[0].qtdSales },
-                { title: "Serviços Concluídos", value: data[0].qtdOrderService },
-                { title: "Faturamento", value: 'R$' + data[0].revenue },
-                { title: "Lucro Líquido", value: 'R$' + data[0].profit }
+                // { title: "Serviços Concluídos", value: data[0].qtdOrderService },
+                { title: "Faturamento", value: 'R$' + parseFloat(data[0].revenue).toFixed(2) },
+                { title: "Lucro Líquido", value: 'R$' + parseFloat(data[0].profit).toFixed(2) },
+                { title: "Despesas", value: 'R$' + parseFloat(data[0].expenses).toFixed(2) },
+                { title: "Caixa", value: 'R$' + parseFloat(data[0].box).toFixed(2) },
             ])
         } catch { }
     }
@@ -68,7 +73,7 @@ const Dashboard: NextPage = () => {
         try {
             const { data } = await DashboardService.getNoticeProducts()
             setProducts(data)
-            data.length > 0 && toast.warning(`Há ${data.length} produtos com estoque baixo!`,{draggable: false})
+            data.length > 0 && toast.warning(`Há ${data.length} produtos com estoque baixo!`, { draggable: false })
         } catch { }
     }
 
@@ -88,8 +93,8 @@ const Dashboard: NextPage = () => {
     return (
         <React.Fragment>
             <PageHeader title="Painel Administrativo" />
-            <ContainerCustom title="Resumo do dia">
-                <DGrid>
+            <ContainerCustom title={`Resumo do dia ${moment(new Date()).format("DD/MM/YYYY")}`}>
+                <div className="resume-day-grid">
                     {resumeDay && resumeDay.map((resume, index: number) => (
                         <CardCustom key={index}>
                             <p>{resume.title}</p>
@@ -97,13 +102,13 @@ const Dashboard: NextPage = () => {
                         </CardCustom>
                     ))}
 
-                    {!resumeDay && Array.from(new Array(4)).map((e, index: number) => (
+                    {!resumeDay && Array.from(new Array(5)).map((e, index: number) => (
                         <CardCustom key={index}>
                             <Skeleton animation="wave" />
                             <Skeleton animation="wave" />
                         </CardCustom>
                     ))}
-                </DGrid>
+                </div>
             </ContainerCustom>
             <ContainerCustom title="Avisos do estoque">
                 <TableCustom

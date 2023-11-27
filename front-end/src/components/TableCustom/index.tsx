@@ -172,7 +172,7 @@ const TableCustom = ({ titles, data, edit, remove, valueSale = 0, valueBeforeDIs
             {viewPagination && (
                 <TablePagination
                     component="div"
-                    count={data?.length}
+                    count={data ? data.length : 0}
                     page={page}
                     onPageChange={handleChangePage}
                     rowsPerPage={rowsPerPage}

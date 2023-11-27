@@ -73,13 +73,13 @@ const ClientsRegisterOrUpdate = ({ params }: IProps) => {
             error = { ...error, name: true }
         }
 
-        if (client.plate === '') {
-            error = { ...error, plate: true }
-        }
+        // if (client.plate === '') {
+        //     error = { ...error, plate: true }
+        // }
 
-        if (client.model === '') {
-            error = { ...error, model: true }
-        }
+        // if (client.model === '') {
+        //     error = { ...error, model: true }
+        // }
 
         if (client.phone === '') {
             error = { ...error, phone: true }
@@ -126,10 +126,10 @@ const ClientsRegisterOrUpdate = ({ params }: IProps) => {
             <PageHeader title={`${action} Cliente`} />
             <ContainerCustom title="Dados do Cliente">
                 <DGrid>
-                    <CustomTextInput value={client?.name} changeFunction={changeValues} name='name' label="Nome" error={errorInput?.name} />
-                    <CustomTelInput value={client?.phone} changeFunction={changeValues} name='phone' label="Telefone" error={errorInput?.phone} />
-                    <CustomTextInput value={client?.model} changeFunction={changeValues} name='model' label="Modelo" error={errorInput?.model} />
-                    <CustomTextInput value={client?.plate} name='plate' label="Placa" changeFunction={changeValues} error={errorInput?.plate} />
+                    <CustomTextInput value={client?.name} changeFunction={changeValues} name='name' label="Nome" required={true} error={errorInput?.name} />
+                    <CustomTelInput value={client?.phone} changeFunction={changeValues} name='phone' label="Telefone" required={true} error={errorInput?.phone} />
+                    {/* <CustomTextInput value={client?.model} changeFunction={changeValues} name='model' label="Modelo" error={errorInput?.model} />
+                    <CustomTextInput value={client?.plate} name='plate' label="Placa" changeFunction={changeValues} error={errorInput?.plate} /> */}
                 </DGrid>
                 <Box sx={{ display: 'flex', placeContent: 'flex-end' }}>
                     <Stack direction="row" spacing={2}>

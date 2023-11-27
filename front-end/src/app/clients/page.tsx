@@ -14,9 +14,9 @@ const titles: Array<ITitles> = [
     { label: "Data Criação", value: 'dateCreated', date: true },
     { label: "Data de Atualização", value: 'dateUpdated', date: true },
     { label: "Nome", value: 'name' },
-    { label: "Contato", value: 'phone' },
-    { label: "Modelo", value: 'model' },
-    { label: "Placa", value: 'plate' }
+    { label: "Contato", value: 'phone' }
+    // { label: "Modelo", value: 'model' },
+    // { label: "Placa", value: 'plate' }
 ]
 
 export interface IFilter {

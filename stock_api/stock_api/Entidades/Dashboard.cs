@@ -2,10 +2,12 @@
 {
     public class Dashboard
     {
-        public int qtdSales { get; set; }
-        public int qtdOrderService { get; set; }
-        public float revenue { get; set; }
-        public float profit { get; set; }
+        public int QtdSales { get; set; }
+        public int QtdOrderService { get; set; }
+        public float Revenue { get; set; }
+        public float Profit { get; set; }
+        public float Expenses { get; set; }
+        public float Box { get; set; }
 
     }
 }
