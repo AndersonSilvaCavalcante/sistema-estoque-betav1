@@ -13,6 +13,9 @@ import DashboardService from "@/actions/dashboard"
 import TableCustom from "@/components/TableCustom"
 import { toast } from "react-toastify"
 import moment from "moment"
+moment.locale('pt', {
+    months: ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'],
+});
 
 import "../../assets/css/dashboard.scss"
 
@@ -63,6 +66,7 @@ const Dashboard: NextPage = () => {
                 // { title: "Serviços Concluídos", value: data[0].qtdOrderService },
                 { title: "Faturamento", value: 'R$' + parseFloat(data[0].revenue).toFixed(2) },
                 { title: "Lucro Líquido", value: 'R$' + parseFloat(data[0].profit).toFixed(2) },
+                { title: "Investimento", value: 'R$' + parseFloat(data[0].investment).toFixed(2) },
                 { title: "Despesas", value: 'R$' + parseFloat(data[0].expenses).toFixed(2) },
                 { title: "Caixa", value: 'R$' + parseFloat(data[0].box).toFixed(2) },
             ])
@@ -93,7 +97,7 @@ const Dashboard: NextPage = () => {
     return (
         <React.Fragment>
             <PageHeader title="Painel Administrativo" />
-            <ContainerCustom title={`Resumo do dia ${moment(new Date()).format("DD/MM/YYYY")}`}>
+            <ContainerCustom title={`Resumo do dia ${moment(new Date()).format("MMMM/YYYY")}`}>
                 <div className="resume-day-grid">
                     {resumeDay && resumeDay.map((resume, index: number) => (
                         <CardCustom key={index}>
@@ -102,7 +106,7 @@ const Dashboard: NextPage = () => {
                         </CardCustom>
                     ))}
 
-                    {!resumeDay && Array.from(new Array(5)).map((e, index: number) => (
+                    {!resumeDay && Array.from(new Array(6)).map((e, index: number) => (
                         <CardCustom key={index}>
                             <Skeleton animation="wave" />
                             <Skeleton animation="wave" />

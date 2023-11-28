@@ -8,6 +8,7 @@
         public float Profit { get; set; }
         public float Expenses { get; set; }
         public float Box { get; set; }
+        public float Investment { get; set; }
 
     }
 }
