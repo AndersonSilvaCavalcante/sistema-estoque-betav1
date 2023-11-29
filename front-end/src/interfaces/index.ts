@@ -90,11 +90,12 @@ declare global {
         name: string,
         value: number,
         repeat: number,
-        portions: Array<IPortionsList> | []
+        portions: Array<IPortionsList> | [],
+        datePortion: string
     }
 
     interface IPortionsList {
-        DatePortion: Date
+        datePortion: string
     }
     // Tabela
     interface ITitles {

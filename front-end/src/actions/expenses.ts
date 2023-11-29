@@ -1,12 +1,8 @@
 import api from "./api"
 
 class ExpenseService {
-    static getListExpenseS(id: number | undefined) {
-        let filter = ''
-        if (id) {
-            filter = `?id=${id}`
-        }
-        return api.get(`ListSales${filter}`)
+    static getListExpenseS() {
+        return api.get(`ListExpenses`)
     }
 
     static saveExpense(expense: IExpense) {

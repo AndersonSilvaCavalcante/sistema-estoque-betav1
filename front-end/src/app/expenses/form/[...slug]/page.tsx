@@ -19,6 +19,7 @@ import { toast } from "react-toastify"
 import { ConfirmPopup } from "@/components/Popups"
 import DGrid from "@/components/DGrid"
 import ExpenseService from "@/actions/expenses"
+import moment from "moment"
 
 interface IProps {
     params: {
@@ -40,7 +41,8 @@ const ExpenseRegisterOrUpdate = ({ params }: IProps) => {
         name: "",
         value: 0,
         repeat: 0,
-        portions: []
+        portions: [],
+        datePortion: ''
     }
     const [errorInput, setErrorInput] = useState<null | IErroForm>(null)
 
@@ -53,6 +55,11 @@ const ExpenseRegisterOrUpdate = ({ params }: IProps) => {
     const changeValues = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | SelectChangeEvent<string> | React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const name = e.target.name
         let value: any = e.target.value
+
+        if (name == 'repeat') {
+            value = parseInt(value)
+        }
+
         setExpense({ ...expense, [name]: value })
     }
 
@@ -71,6 +78,7 @@ const ExpenseRegisterOrUpdate = ({ params }: IProps) => {
         Object.keys(expense).map(key => {
             if (
                 key !== 'id' &&
+                key !== 'repeat' &&
                 (expenseAny[key] === '' || expenseAny[key] === 0 || expenseAny[key] === undefined)) {
                 error = {
                     ...error, [key]: true
@@ -82,13 +90,18 @@ const ExpenseRegisterOrUpdate = ({ params }: IProps) => {
             return setErrorInput(error)
         }
 
+        const portions: IPortionsList[] = Array.from(new Array(expense.repeat - 1)).map((value, index) => ({
+            datePortion: moment(moment().add(index + 1, 'M'), '', true).format()
+        }))
+
+
         try {
-            slug[0] == "register" ? await ExpenseService.saveExpense({ ...expense, portions: [] }) : null
+            slug[0] == "register" ? await ExpenseService.saveExpense({ ...expense, portions }) : null
             // slug[0] == "edit" ? await ProductServices.editProduct(!expense.type ? { ...expense, type: 'edição' } : expense) : null
-            setExpense(initialExpense)
+            // setExpense(initialExpense)
             handleClose
             toast.success("Despesa Salvo com sucesso!")
-            goBack
+            // goBack
         } catch (error) {
             toast.error("Algo deu errado ao salvar o Despesa")
         }
@@ -114,7 +127,7 @@ const ExpenseRegisterOrUpdate = ({ params }: IProps) => {
                 <DGrid>
                     <CustomTextInput fullWidth value={expense?.name} label={"Nome"} name={"name"} required={true} changeFunction={changeValues} error={errorInput?.name} />
                     <CustomTextInput fullWidth value={expense?.value} label={"Valor"} name={"value"} required={true} changeFunction={changeValues} error={errorInput?.value} />
-                    <CustomTextInput fullWidth value={expense?.repeat} label={"Esta Despesa Se Repete Por Quantos Meses?"} name={"repeat"} required={true} changeFunction={changeValues} error={errorInput?.repeat} />
+                    <CustomTextInput fullWidth value={expense?.repeat} label={"Esta Despesa Se Repete Por Quantos Meses?"} name={"repeat"} required={true} changeFunction={changeValues} error={errorInput?.repeat} type="number" />
                 </DGrid>
                 <Box sx={{ display: 'flex', placeContent: 'flex-end' }}>
                     <Stack direction="row" spacing={2}>

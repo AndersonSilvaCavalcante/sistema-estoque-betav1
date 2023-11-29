@@ -8,6 +8,10 @@ namespace stock_api.EndPoints
     {
         public static void MapExpensesEndPoint(this WebApplication app)
         {
+            app.MapGet("ListExpenses", async () => {
+                List<ParametroValor> pv = new List<ParametroValor>();
+                return Persistencia.ExecutarSql<Expenses>(@"get_expenses", pv, tipoconsulta: TipoConsulta.STORED_PROCEDURE).ToList();
+            }).WithTags("expenses");
 
             app.MapPost("SaveExpenses", async ([FromBody] Expenses expenses) => {
                 List<ParametroValor> pv = new List<ParametroValor>();

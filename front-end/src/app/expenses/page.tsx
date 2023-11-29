@@ -11,6 +11,7 @@ import { SelectChangeEvent } from "@mui/material";
 import Filter from "@/components/Filter";
 import { toast } from "react-toastify";
 import { ButtonPlus } from "@/components/ButtonPlus";
+import ExpenseService from "@/actions/expenses";
 
 export interface IFilter {
     id?: number
@@ -27,7 +28,9 @@ const Products: NextPage = () => {
 
     const getExpenses = async (clean?: boolean) => {
         try {
-
+            const { data } = await ExpenseService.getListExpenseS()
+            const dates: Array<string> = data.map((d: IExpense) => d.datePortion)
+            const uniques = dates.filter((d, i) => dates.indexOf(d) === i);
         } catch (error) {
             toast.error("Algo deu errado")
         }

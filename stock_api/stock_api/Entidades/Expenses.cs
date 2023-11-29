@@ -7,6 +7,7 @@
         public float Value { get; set; }
         public DateTime DateCreated { get; set; }
         public DateTime DateUpdated { get; set; }
+        public DateTime DatePortion { get; set; }
         public List<PortionsList> Portions { get; set; }
     }
 
