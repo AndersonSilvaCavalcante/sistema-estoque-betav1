@@ -13,9 +13,6 @@ import DashboardService from "@/actions/dashboard"
 import TableCustom from "@/components/TableCustom"
 import { toast } from "react-toastify"
 import moment from "moment"
-moment.locale('pt', {
-    months: ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'],
-});
 
 import "../../assets/css/dashboard.scss"
 

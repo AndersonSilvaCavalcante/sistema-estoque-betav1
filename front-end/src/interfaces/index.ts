@@ -87,11 +87,14 @@ declare global {
     }
 
     interface IExpense {
+        id: number,
         name: string,
         value: number,
         repeat: number,
         portions: Array<IPortionsList> | [],
-        datePortion: string
+        datePortion: string,
+        dateCreated: Date,
+        dateUpdated: Date
     }
 
     interface IPortionsList {
