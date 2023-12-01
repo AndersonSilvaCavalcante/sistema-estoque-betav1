@@ -3,14 +3,9 @@ import './globals.css'
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import StyledComponentsRegistry from '@/lib/registry'
-import { Box, Container } from '@mui/material'
-import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css';
-import moment from 'moment'
+import ApplicationView from '@/components/AplicationView'
 
-moment.locale('pt', {
-  months: ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'],
-});
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
@@ -22,19 +17,16 @@ export default function RootLayout({
 }: {
   children: React.ReactNode
 }) {
+
   return (
-      <html lang="pt-br">
-        <body suppressHydrationWarning={true} className={inter.className}>
+    <html lang="pt-br">
+      <body suppressHydrationWarning={true} className={inter.className}>
           <StyledComponentsRegistry>
-            <Header />
-            <ToastContainer theme="colored" />
-            <Container sx={{ minWidth: '90vw' }}>
-              <Box pt={3} pb={3}>
-                {children}
-              </Box>
-            </Container>
+            <ApplicationView>
+              {children}
+            </ApplicationView>
           </StyledComponentsRegistry>
-        </body>
-      </html>
+      </body>
+    </html>
   )
 }

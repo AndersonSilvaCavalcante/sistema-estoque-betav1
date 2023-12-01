@@ -5,6 +5,7 @@ import { NextPage } from "next";
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
+
 /**Components */
 import PageHeader from "@/components/PageHeader";
 import { Box, Collapse, IconButton, Paper, SelectChangeEvent, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material";
@@ -16,9 +17,8 @@ import moment from "moment";
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { LocalizationProvider } from "@mui/x-date-pickers";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs, { Dayjs } from "dayjs";
+
 export interface IFilter {
     firstDate: Dayjs
     lastDate: Dayjs
@@ -129,10 +129,10 @@ const Products: NextPage = () => {
                 <ButtonPlus onCLick={() => router.push("/expenses/form/register")} title="Cadastrar Despesa" />
             </PageHeader>
             <Filter cleanFunction={cleanFilters} filterFucntion={() => getExpenses(false)}>
-                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                
                     <DatePicker views={['month', 'year']} value={filter.firstDate} onChange={newValue => changeFilterValues(newValue, "firstDate")} />
                     <DatePicker views={['month', 'year']} value={filter.lastDate} onChange={newValue => changeFilterValues(newValue, "lastDate")} />
-                </LocalizationProvider>
+          
             </Filter>
             <TableContainer component={Paper}>
                 <Table aria-label="collapsible table">

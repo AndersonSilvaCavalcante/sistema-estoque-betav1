@@ -13,6 +13,10 @@ const nextConfig = {
         '@mui/icons-material/?(((\\w*)?/?)*)': {
             transform: '@mui/icons-material/{{ matches.[1] }}/{{member}}'
         }
+    },
+    i18n: {
+        locales: ['br'],
+        defaultLocale: 'br'
     }
 }
 
