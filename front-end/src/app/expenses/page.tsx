@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation";
 
 /**Components */
 import PageHeader from "@/components/PageHeader";
-import { Box, Collapse, IconButton, Paper, SelectChangeEvent, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material";
+import { Box, Collapse, IconButton, Paper, SelectChangeEvent, Skeleton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material";
 import Filter from "@/components/Filter";
 import { toast } from "react-toastify";
 import { ButtonPlus } from "@/components/ButtonPlus";
@@ -18,6 +18,8 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import dayjs, { Dayjs } from "dayjs";
+import LottieFilesComponent from "@/components/LottieFilesComponent";
+import emptyAnimation from "@/assets/animations/lottie/empty_animation.json"
 
 export interface IFilter {
     firstDate: Dayjs
@@ -32,6 +34,10 @@ export interface IListExpenses {
 function Row(props: { row: IListExpenses }) {
     const { row } = props;
     const [open, setOpen] = React.useState(false);
+    let valueExpanse: number = 0
+    row.values.map((expense: IExpense) => {
+        valueExpanse = expense.value + valueExpanse
+    })
 
     return (
         <React.Fragment>
@@ -46,7 +52,9 @@ function Row(props: { row: IListExpenses }) {
                     </IconButton>
                 </TableCell>
                 <TableCell component="th" scope="row">
-                    {row.title}
+                    <Typography sx={{ wordBreak: 'break-all' }} variant="h6">
+                        {row.title} | R${(valueExpanse).toFixed(2)}
+                    </Typography>
                 </TableCell>
             </TableRow>
             <TableRow>
@@ -63,7 +71,7 @@ function Row(props: { row: IListExpenses }) {
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
-                                    {row.values.map((expense) => (
+                                    {row.values.map((expense: IExpense) => (
                                         <TableRow key={expense.id}>
                                             <TableCell>{moment(expense.dateCreated).format("DD/MM/YYYY HH:mm:ss")}</TableCell>
                                             <TableCell>{moment(expense.dateUpdated).format("DD/MM/YYYY HH:mm:ss")}</TableCell>
@@ -71,6 +79,11 @@ function Row(props: { row: IListExpenses }) {
                                             <TableCell>R$ {expense.value}</TableCell>
                                         </TableRow>
                                     ))}
+                                    <TableRow
+                                        sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                                    >
+                                        <TableCell><Typography variant="h6">Total: R${(valueExpanse).toFixed(2)}</Typography></TableCell>
+                                    </TableRow>
                                 </TableBody>
                             </Table>
                         </Box>
@@ -86,7 +99,7 @@ const Products: NextPage = () => {
     const initialFIlter: IFilter = { firstDate: dayjs(new Date()), lastDate: dayjs(new Date()) }
     const [filter, setFilter] = useState<IFilter>(initialFIlter)
 
-    const [listExpenses, setListExpenses] = useState<Array<IListExpenses>>([])
+    const [listExpenses, setListExpenses] = useState<Array<IListExpenses> | null>(null)
 
     const getExpenses = async (clean?: boolean) => {
         try {
@@ -95,7 +108,7 @@ const Products: NextPage = () => {
                 lastDate: moment(new Date(filter.lastDate.toDate().getFullYear(), filter.lastDate.toDate().getMonth() + 1, 0)).format("YYYY-MM-DD")
             }
 
-            const { data } = await ExpenseService.getListExpenseS(payload)
+            const { data } = await ExpenseService.getListExpenses(payload)
             const dates: Array<string> = data.map((d: IExpense) => moment(d.datePortion).format("MMMM/YYYY"))
 
             const list: Array<IListExpenses> = [...new Set(dates)].map(date => ({
@@ -106,6 +119,7 @@ const Products: NextPage = () => {
             setListExpenses(list)
         } catch (error) {
             toast.error("Algo deu errado")
+            console.log("aqui", error)
         }
     }
 
@@ -129,20 +143,39 @@ const Products: NextPage = () => {
                 <ButtonPlus onCLick={() => router.push("/expenses/form/register")} title="Cadastrar Despesa" />
             </PageHeader>
             <Filter cleanFunction={cleanFilters} filterFucntion={() => getExpenses(false)}>
-                
-                    <DatePicker views={['month', 'year']} value={filter.firstDate} onChange={newValue => changeFilterValues(newValue, "firstDate")} />
-                    <DatePicker views={['month', 'year']} value={filter.lastDate} onChange={newValue => changeFilterValues(newValue, "lastDate")} />
-          
+
+                <DatePicker views={['month', 'year']} value={filter.firstDate} onChange={newValue => changeFilterValues(newValue, "firstDate")} />
+                <DatePicker views={['month', 'year']} value={filter.lastDate} onChange={newValue => changeFilterValues(newValue, "lastDate")} />
+
             </Filter>
             <TableContainer component={Paper}>
                 <Table aria-label="collapsible table">
                     <TableBody>
-                        {listExpenses.map((row) => (
+                        {listExpenses && listExpenses.map((row: IListExpenses) => (
                             <Row key={row.title} row={row} />
+                        ))}
+                        {!listExpenses && Array.from(new Array(3)).map((e, index: number) => (
+                            <TableRow key={`row${index}`} sx={{ '&:last-child td, &:last-child th': { border: 0 } }} >
+                                <TableCell key={`col${index}`}>
+                                    <Skeleton animation="wave" height={50} />
+                                </TableCell>
+                            </TableRow>
                         ))}
                     </TableBody>
                 </Table>
             </TableContainer>
+            {listExpenses && listExpenses.length == 0 && (
+                <Box mt={5} mb={5} sx={{
+                    display: 'grid',
+                    placeItems: 'center',
+                    textAlign: 'center'
+                }}>
+                    <Box>
+                        <LottieFilesComponent animation={emptyAnimation} loop={true} />
+                        <Typography variant={"h5"} component={"p"}>Não há dados</Typography>
+                    </Box>
+                </Box>
+            )}
         </React.Fragment >
     )
 }

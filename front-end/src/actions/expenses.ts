@@ -6,7 +6,7 @@ interface IPayload {
 }
 
 class ExpenseService {
-    static getListExpenseS(payload: IPayload) {
+    static getListExpenses(payload: IPayload) {
         return api.get(`ListExpenses?firstDate=${payload.firstDate}&lastDate=${payload.lastDate}`)
     }
 
