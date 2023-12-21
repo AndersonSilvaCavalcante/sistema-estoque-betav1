@@ -7,7 +7,7 @@
         public float Revenue { get; set; }
         public float Profit { get; set; }
         public float Expenses { get; set; }
-        public float Box { get; set; }
+        public float Cashier { get; set; }
         public float Investment { get; set; }
 
     }
