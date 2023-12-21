@@ -92,9 +92,9 @@ declare global {
         value: number,
         repeat: number,
         portions: Array<IPortionsList> | [],
-        datePortion: string,
         dateCreated: Date,
-        dateUpdated: Date
+        dateUpdate: Date,
+        datePortion: Date
     }
 
     interface IPortionsList {

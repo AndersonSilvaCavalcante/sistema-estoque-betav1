@@ -22,6 +22,15 @@ namespace stock_api.EndPoints
                 pv.Add(new ParametroValor("@portions", JsonSerializer.Serialize(expenses.Portions)));
                 Persistencia.ExecutarSqlSemRetorno(@"post_expenses", pv, tipoconsulta: TipoConsulta.STORED_PROCEDURE);
             }).WithTags("expenses");
+            
+            app.MapPut("SaveExpenses", async ([FromBody] Expenses expenses, int id) => {
+                List<ParametroValor> pv = new List<ParametroValor>();
+                pv.Add(new ParametroValor("@id", id));
+                pv.Add(new ParametroValor("@name", expenses.Name));
+                pv.Add(new ParametroValor("@value", expenses.Value));
+                pv.Add(new ParametroValor("@portions", JsonSerializer.Serialize(expenses.Portions)));
+                Persistencia.ExecutarSqlSemRetorno(@"put_expenses", pv, tipoconsulta: TipoConsulta.STORED_PROCEDURE);
+            }).WithTags("expenses");
         }
     }
 }

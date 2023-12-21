@@ -66,7 +66,7 @@ function Row(props: { row: IListExpenses }) {
                                     {row.values.map((expense) => (
                                         <TableRow key={expense.id}>
                                             <TableCell>{moment(expense.dateCreated).format("DD/MM/YYYY HH:mm:ss")}</TableCell>
-                                            <TableCell>{moment(expense.dateUpdated).format("DD/MM/YYYY HH:mm:ss")}</TableCell>
+                                            <TableCell>{moment(expense.dateUpdate).format("DD/MM/YYYY HH:mm:ss")}</TableCell>
                                             <TableCell>{expense.name}</TableCell>
                                             <TableCell>R$ {expense.value}</TableCell>
                                         </TableRow>

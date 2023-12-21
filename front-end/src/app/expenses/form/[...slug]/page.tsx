@@ -42,7 +42,10 @@ const ExpenseRegisterOrUpdate = ({ params }: IProps) => {
         value: 0,
         repeat: 0,
         portions: [],
-        datePortion: ''
+        id: 0,
+        dateCreated: new Date(),
+        dateUpdate: new Date(),
+        datePortion: new Date()
     }
     const [errorInput, setErrorInput] = useState<null | IErroForm>(null)
 
@@ -79,6 +82,7 @@ const ExpenseRegisterOrUpdate = ({ params }: IProps) => {
             if (
                 key !== 'id' &&
                 key !== 'repeat' &&
+                key !== 'datePortion' &&
                 (expenseAny[key] === '' || expenseAny[key] === 0 || expenseAny[key] === undefined)) {
                 error = {
                     ...error, [key]: true
@@ -86,6 +90,7 @@ const ExpenseRegisterOrUpdate = ({ params }: IProps) => {
             }
         })
 
+        console.log('Object.keys(error).length', Object.keys(error))
         if (Object.keys(error).length !== 0) {
             return setErrorInput(error)
         }
@@ -99,10 +104,11 @@ const ExpenseRegisterOrUpdate = ({ params }: IProps) => {
             slug[0] == "register" ? await ExpenseService.saveExpense({ ...expense, portions }) : null
             // slug[0] == "edit" ? await ProductServices.editProduct(!expense.type ? { ...expense, type: 'edição' } : expense) : null
             // setExpense(initialExpense)
-            handleClose
+            handleClose()
             toast.success("Despesa Salvo com sucesso!")
-            // goBack
+            goBack()
         } catch (error) {
+            console.log('error', error)
             toast.error("Algo deu errado ao salvar o Despesa")
         }
     }
@@ -126,7 +132,7 @@ const ExpenseRegisterOrUpdate = ({ params }: IProps) => {
             <ContainerCustom title="Dados da Despesa">
                 <DGrid>
                     <CustomTextInput fullWidth value={expense?.name} label={"Nome"} name={"name"} required={true} changeFunction={changeValues} error={errorInput?.name} />
-                    <CustomTextInput fullWidth value={expense?.value} label={"Valor"} name={"value"} required={true} changeFunction={changeValues} error={errorInput?.value} />
+                    <CustomTextInput fullWidth value={expense?.value} adorment="currency" label={"Valor"} name={"value"} required={true} changeFunction={changeValues} error={errorInput?.value} />
                     <CustomTextInput fullWidth value={expense?.repeat} label={"Esta Despesa Se Repete Por Quantos Meses?"} name={"repeat"} required={true} changeFunction={changeValues} error={errorInput?.repeat} type="number" />
                 </DGrid>
                 <Box sx={{ display: 'flex', placeContent: 'flex-end' }}>
