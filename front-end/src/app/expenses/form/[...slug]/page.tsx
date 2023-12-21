@@ -90,7 +90,6 @@ const ExpenseRegisterOrUpdate = ({ params }: IProps) => {
             }
         })
 
-        console.log('Object.keys(error).length', Object.keys(error))
         if (Object.keys(error).length !== 0) {
             return setErrorInput(error)
         }
@@ -108,7 +107,6 @@ const ExpenseRegisterOrUpdate = ({ params }: IProps) => {
             toast.success("Despesa Salvo com sucesso!")
             goBack()
         } catch (error) {
-            console.log('error', error)
             toast.error("Algo deu errado ao salvar o Despesa")
         }
     }

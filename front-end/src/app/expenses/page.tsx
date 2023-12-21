@@ -119,7 +119,6 @@ const Products: NextPage = () => {
             setListExpenses(list)
         } catch (error) {
             toast.error("Algo deu errado")
-            console.log("aqui", error)
         }
     }
 
