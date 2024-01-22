@@ -85,8 +85,12 @@ const ProductRegisterOrUpdate = ({ params }: IProps) => {
             value = parseFloat(value)
         }
 
-        if (value !== "" && (name == "qtdMin" || name == "qtdCurrent")) {
+        if (value !== "" && name == "qtdMin") {
             value = parseInt(value)
+        }
+
+        if (name == "qtdCurrent") {
+            value != 0 ? value = parseInt(value) : false
         }
 
         let salePrice = 0

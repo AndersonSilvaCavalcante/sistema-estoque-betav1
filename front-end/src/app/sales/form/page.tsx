@@ -94,6 +94,10 @@ const SalesForm = () => {
             case "valueBeforeDIscount":
             case "amountPaid":
                 value = parseFloat(value)
+            case "qtd":
+                value = parseInt(value)
+            default:
+                false
         }
         setSale({ ...sale, [name]: value })
     }
@@ -159,7 +163,7 @@ const SalesForm = () => {
 
     const confirmPrintRecepeit = async () => {
         try {
-            responseSaleMade && await generateTermalPrintSale({...responseSaleMade, products: JSON.parse(responseSaleMade.productsString)})
+            responseSaleMade && await generateTermalPrintSale({ ...responseSaleMade, products: JSON.parse(responseSaleMade.productsString) })
             goBack()
         } catch (error) {
             toast.error("Algo deu errado")
@@ -237,7 +241,7 @@ const SalesForm = () => {
             error = { ...error, produtoId: true }
         }
 
-        if (productSelecioned && productSelecioned.qtdCurrent && sale.qtd && productSelecioned.qtdCurrent < sale.qtd) {
+        if (productSelecioned && productSelecioned.qtdCurrent !== undefined && (sale.qtd && (sale.qtd < 0 || productSelecioned.qtdCurrent < sale.qtd ))) {
             return toast.info(`Só existe ${productSelecioned.qtdCurrent} unidades de ${productSelecioned.name} no estoque`)
         }
 

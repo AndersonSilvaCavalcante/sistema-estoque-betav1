@@ -1,6 +1,6 @@
 {
   "name": "inventory-managment-app",
-  "version": "2.84.20",
+  "version": "2.85.20",
   "private": true,
   "scripts": {
     "dev": "next dev",
