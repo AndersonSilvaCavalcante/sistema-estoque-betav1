@@ -61,7 +61,7 @@ export const CustomPopup = ({ toggle, title, message, children, cancelButtonEnab
                 {children}
             </DialogContent>
             <DialogActions>
-                {cancelButtonEnable &&
+                {cancelButtonEnable !== false &&
                     <Button variant="outlined" color="error" onClick={() => cancelFunction()} startIcon={<CancelIcon />} >Cancelar</Button>
                 }
                 <Button color="success" variant="contained" onClick={confirmAction} startIcon={confirmButtonIcon || <CheckIcon />}>{confirmButtonTitle || "Confirmar"}</Button>
