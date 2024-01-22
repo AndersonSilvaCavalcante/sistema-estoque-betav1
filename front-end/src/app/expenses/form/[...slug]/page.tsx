@@ -1,5 +1,7 @@
 "use client"
-
+/**
+ * todo: permitir editar/ excluir despesas que sejam parceladas (editar/ excluir uma ou todas as parcelas)
+ */
 /**Dependencies */
 import { useRouter } from "next/navigation"
 import React, { useEffect, useState } from "react"
@@ -59,15 +61,16 @@ const ExpenseRegisterOrUpdate = ({ params }: IProps) => {
         const name = e.target.name
         let value: any = e.target.value
 
-        if (name == 'repeat') {
-            value = parseInt(value)
-        }
+        if (name == 'repeat') value = parseInt(value)
+        if (name == 'value') value = parseFloat(value)
 
         setExpense({ ...expense, [name]: value })
     }
 
     const getExpenseById = async (id: number) => {
         try {
+            const { data } = await ExpenseService.getExpense(id)
+            setExpense(data[0])
         } catch (error) {
             toast.error("Algo deu errado ao exibir a Despesa")
         }
@@ -94,14 +97,13 @@ const ExpenseRegisterOrUpdate = ({ params }: IProps) => {
             return setErrorInput(error)
         }
 
-        const portions: IPortionsList[] =  expense.repeat && expense.repeat > 0 ? Array.from(new Array(expense.repeat - 1)).map((value, index) => ({
+        const portions: IPortionsList[] = expense.repeat && expense.repeat > 0 ? Array.from(new Array(expense.repeat - 1)).map((value, index) => ({
             datePortion: moment(moment().add(index + 1, 'M'), '', true).format()
         })) : []
 
-
         try {
-            slug[0] == "register" ? await ExpenseService.saveExpense({ ...expense, portions }) : null
-            //slug[0] == "edit" ? await ProductServices.editProduct(!expense.type ? { ...expense, type: 'edição' } : expense) : null
+            slug[0] == "register" ? await ExpenseService.saveExpense({ ...expense, portions}) : null
+            slug[0] == "edit" ? await ExpenseService.edittExpense(expense) : null
             setExpense(initialExpense)
             handleClose()
             toast.success("Despesa Salva com sucesso!")
@@ -130,8 +132,10 @@ const ExpenseRegisterOrUpdate = ({ params }: IProps) => {
             <ContainerCustom title="Dados da Despesa">
                 <DGrid>
                     <CustomTextInput fullWidth value={expense?.name} label={"Nome"} name={"name"} required={true} changeFunction={changeValues} error={errorInput?.name} />
-                    <CustomTextInput fullWidth value={expense?.value} adorment="currency" label={"Valor"} name={"value"} required={true} changeFunction={changeValues} error={errorInput?.value} />
-                    <CustomTextInput fullWidth value={expense?.repeat} label={"QTD de parcelas"} name={"repeat"} changeFunction={changeValues} error={errorInput?.repeat} type="number" />
+                    <CustomTextInput fullWidth value={expense?.value} adorment="currency" type="number" label={"Valor"} name={"value"} required={true} changeFunction={changeValues} error={errorInput?.value} />
+                    {slug[0] !== "edit" && (
+                        <CustomTextInput fullWidth value={expense?.repeat} label={"QTD de parcelas"} type="number" name={"repeat"} changeFunction={changeValues} error={errorInput?.repeat} />
+                    )}
                 </DGrid>
                 <Box sx={{ display: 'flex', placeContent: 'flex-end' }}>
                     <Stack direction="row" spacing={2}>
