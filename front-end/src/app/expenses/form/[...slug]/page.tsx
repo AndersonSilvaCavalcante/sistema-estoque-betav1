@@ -101,9 +101,14 @@ const ExpenseRegisterOrUpdate = ({ params }: IProps) => {
             datePortion: moment(moment().add(index + 1, 'M'), '', true).format()
         })) : []
 
+        let expenseValueFormated: number = 0
+        if (expense.value) {
+            expenseValueFormated = parseFloat(expense.value.toFixed(2))
+        }
+
         try {
-            slug[0] == "register" ? await ExpenseService.saveExpense({ ...expense, portions}) : null
-            slug[0] == "edit" ? await ExpenseService.edittExpense(expense) : null
+            slug[0] == "register" ? await ExpenseService.saveExpense({ ...expense, portions, value: expenseValueFormated }) : null
+            slug[0] == "edit" ? await ExpenseService.edittExpense({...expense, value: expenseValueFormated}) : null
             setExpense(initialExpense)
             handleClose()
             toast.success("Despesa Salva com sucesso!")
