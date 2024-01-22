@@ -36,7 +36,7 @@ function Row(props: { row: IListExpenses }) {
     const [open, setOpen] = React.useState(false);
     let valueExpanse: number = 0
     row.values.map((expense: IExpense) => {
-        valueExpanse = expense.value + valueExpanse
+        valueExpanse = expense.value ? expense.value + valueExpanse : 0
     })
 
     return (
@@ -142,10 +142,8 @@ const Products: NextPage = () => {
                 <ButtonPlus onCLick={() => router.push("/expenses/form/register")} title="Cadastrar Despesa" />
             </PageHeader>
             <Filter cleanFunction={cleanFilters} filterFucntion={() => getExpenses(false)}>
-
-                <DatePicker views={['month', 'year']} value={filter.firstDate} onChange={newValue => changeFilterValues(newValue, "firstDate")} />
-                <DatePicker views={['month', 'year']} value={filter.lastDate} onChange={newValue => changeFilterValues(newValue, "lastDate")} />
-
+                <DatePicker views={['month', 'year']} value={filter.firstDate} label={"Período Inicial"} onChange={newValue => changeFilterValues(newValue, "firstDate")} />
+                <DatePicker views={['month', 'year']} value={filter.lastDate} label={"Período Final"} onChange={newValue => changeFilterValues(newValue, "lastDate")} />
             </Filter>
             <TableContainer component={Paper}>
                 <Table aria-label="collapsible table">

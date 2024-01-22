@@ -89,8 +89,8 @@ declare global {
     interface IExpense {
         id: number,
         name: string,
-        value: number,
-        repeat: number,
+        value: number | undefined,
+        repeat: number | undefined,
         portions: Array<IPortionsList> | [],
         dateCreated: Date,
         dateUpdate: Date,
