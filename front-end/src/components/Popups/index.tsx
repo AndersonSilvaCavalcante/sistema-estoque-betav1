@@ -15,6 +15,7 @@ interface IProps {
     children?: React.ReactNode
     confirmButtonTitle?: string
     confirmButtonIcon?: React.ReactNode
+    cancelButtonEnable?: boolean
     confirmAction: () => void
     cancelFunction: () => void
 }
@@ -45,7 +46,7 @@ export const ConfirmPopup = ({ toggle, title, message, confirmAction, cancelFunc
     )
 }
 
-export const CustomPopup = ({ toggle, title, message, children, confirmButtonTitle, confirmButtonIcon, confirmAction, cancelFunction }: IProps) => {
+export const CustomPopup = ({ toggle, title, message, children, cancelButtonEnable, confirmButtonTitle, confirmButtonIcon, confirmAction, cancelFunction }: IProps) => {
     return (
         <Dialog open={toggle} onClose={() => cancelFunction()} maxWidth={"lg"}>
             <DialogTitle>{title}</DialogTitle>
@@ -60,7 +61,9 @@ export const CustomPopup = ({ toggle, title, message, children, confirmButtonTit
                 {children}
             </DialogContent>
             <DialogActions>
-                <Button variant="outlined" color="error" onClick={() => cancelFunction()} startIcon={<CancelIcon />} >Cancelar</Button>
+                {cancelButtonEnable &&
+                    <Button variant="outlined" color="error" onClick={() => cancelFunction()} startIcon={<CancelIcon />} >Cancelar</Button>
+                }
                 <Button color="success" variant="contained" onClick={confirmAction} startIcon={confirmButtonIcon || <CheckIcon />}>{confirmButtonTitle || "Confirmar"}</Button>
             </DialogActions>
         </Dialog>
