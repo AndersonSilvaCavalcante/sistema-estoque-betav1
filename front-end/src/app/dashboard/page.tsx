@@ -61,7 +61,7 @@ const Dashboard: NextPage = () => {
                 { title: "Lucro Líquido", value: 'R$' + parseFloat(data[0].profit).toFixed(2) },
                 { title: "Investimento", value: 'R$' + parseFloat(data[0].investment).toFixed(2) },
                 //{ title: "Despesas", value: 'R$' + parseFloat(data[0].expenses).toFixed(2) },
-                { title: "Em Caixa", value: 'R$' + parseFloat(data[0].cashier).toFixed(2) },
+                //{ title: "Em Caixa", value: 'R$' + parseFloat(data[0].cashier).toFixed(2) },
             ])
         } catch { }
     }

@@ -1,4 +1,4 @@
-import { Divider } from "@mui/material";
+import { Divider, Typography } from "@mui/material";
 import styled from "styled-components";
 
 
@@ -17,11 +17,11 @@ interface IProps {
 const ContainerCustom = ({ children, title }: IProps) => {
     return (
         <ContainerStyle>
-            {typeof title == 'string' ? (<>
-                <label>{title}</label>
+            {title && <>
+                <Typography component={"label"}>{title}</Typography>
                 <Divider></Divider>
             </>
-            ) : null}
+            }
             {children}
         </ContainerStyle>
     )
