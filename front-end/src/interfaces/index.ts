@@ -20,9 +20,9 @@ declare global {
         barcode: string,
         supplierId: number,
         qtdMin: number | undefined,
-        qtdCurrent: number| undefined,
-        costPrice: number| undefined,
-        salePrice: number| undefined,
+        qtdCurrent: number | undefined,
+        costPrice: number | undefined,
+        salePrice: number | undefined,
         type: string,
         oldQtd: number,
         qtdChange: number,
@@ -86,6 +86,20 @@ declare global {
         salePrice: number,
     }
 
+    interface IExpense {
+        id: number,
+        name: string,
+        value: number | undefined,
+        repeat: number | undefined,
+        portions: Array<IPortionsList> | [],
+        dateCreated: Date,
+        dateUpdate: Date,
+        datePortion: Date
+    }
+
+    interface IPortionsList {
+        datePortion: string
+    }
     // Tabela
     interface ITitles {
         label: string,
@@ -98,7 +112,7 @@ declare global {
         title: string,
         click: (data: any) => void,
         viewButton: (data: any) => boolean,
-        color: "inherit" | "error" | "primary" | "secondary" | "info" | "success" | "warning" 
+        color: "inherit" | "error" | "primary" | "secondary" | "info" | "success" | "warning"
     }
 
 }

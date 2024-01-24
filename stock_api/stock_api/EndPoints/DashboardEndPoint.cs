@@ -8,9 +8,19 @@ namespace stock_api.EndPoints
     {
         public static void MapDashboardEndPoint(this WebApplication app)
         {
-            app.MapGet("ListDashboard", async () => {
+            //app.MapGet("ListDashboard", async () => {
+            //    List<ParametroValor> pv = new List<ParametroValor>();
+            //    return Persistencia.ExecutarSql<Dashboard>(@"get_dashboard", pv, tipoconsulta: TipoConsulta.STORED_PROCEDURE).ToList();
+            //}).WithTags("dashboard");
+
+            app.MapGet("ResumeDay", async () => {
                 List<ParametroValor> pv = new List<ParametroValor>();
-                return Persistencia.ExecutarSql<Dashboard>(@"get_dashboard", pv, tipoconsulta: TipoConsulta.STORED_PROCEDURE).ToList();
+                return Persistencia.ExecutarSql<Dashboard>(@"get_resumeDay", pv, tipoconsulta: TipoConsulta.STORED_PROCEDURE).ToList();
+            }).WithTags("dashboard");
+
+            app.MapGet("ResumeMonth", async () => {
+                List<ParametroValor> pv = new List<ParametroValor>();
+                return Persistencia.ExecutarSql<Dashboard>(@"get_resumeMonth", pv, tipoconsulta: TipoConsulta.STORED_PROCEDURE).ToList();
             }).WithTags("dashboard");
 
             app.MapGet("ListNoticeProducts", async () => {

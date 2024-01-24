@@ -36,6 +36,9 @@ const menuOptions =
         {
             name: "Clientes",
             path: "/clients"
+        }, {
+            name: "Despesas",
+            path: "/expenses"
         }
         // , {
         //     name: "Configurações",

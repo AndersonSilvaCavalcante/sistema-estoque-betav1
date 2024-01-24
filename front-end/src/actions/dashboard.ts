@@ -1,11 +1,6 @@
 import api from "./api"
 
 class DashboardService {
-
-    static getDashboard() {
-        return api.get(`ListDashboard`)
-    }
-
     static getNoticeProducts() {
         return api.get(`ListNoticeProducts`)
     }
@@ -13,6 +8,15 @@ class DashboardService {
     static getRecordStock() {
         return api.get(`ListRecordStock`)
     }
+
+    static getResumeDay() {
+        return api.get(`ResumeDay`)
+    }
+
+    static getResumeMonth() {
+        return api.get(`ResumeMonth`)
+    }
+
 }
 
 export default DashboardService

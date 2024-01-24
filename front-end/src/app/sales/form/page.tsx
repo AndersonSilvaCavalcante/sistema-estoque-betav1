@@ -16,8 +16,10 @@ import { CustomTextInput } from "@/components/CustomInputs";
 import { Box, Button, Stack, TextField, SelectChangeEvent, FormControl, FormHelperText, Autocomplete, InputLabel, Select, MenuItem, Typography } from "@mui/material"
 
 /**Icons */
+import PrintIcon from '@mui/icons-material/Print';
 import SaveIcon from '@mui/icons-material/Save';
 import CloseIcon from '@mui/icons-material/Close';
+import PrintDisabledIcon from '@mui/icons-material/PrintDisabled';
 
 /**Service */
 import Client from "@/actions/client";
@@ -78,10 +80,11 @@ const SalesForm = () => {
 
     const [productSelecioned, setProductSelecioned] = useState<IProduct | null>(null)
     const [clientSelecioned, setClientSelecioned] = useState<ICLient | null>(null)
-
     const [openAddDiscount, setOpenAddDiscount] = useState<boolean>(false)
-
     const [discountInput, setDiscountInput] = useState<number | undefined>(undefined)
+
+    const [showConfirmPopupPrintRecepeit, setShowConfirmPopupPrintRecepeit] = useState<boolean>(false)
+    const [responseSaleMade, setResponseSaleMade] = useState<ISale>()
 
     const changeValues = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | SelectChangeEvent<string> | React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const name = e.target.name
@@ -91,6 +94,10 @@ const SalesForm = () => {
             case "valueBeforeDIscount":
             case "amountPaid":
                 value = parseFloat(value)
+            case "qtd":
+                value = parseInt(value)
+            default:
+                false
         }
         setSale({ ...sale, [name]: value })
     }
@@ -146,14 +153,22 @@ const SalesForm = () => {
             }
 
             const { data } = await SalesService.saveSale(payload)
+            await setResponseSaleMade(data[0])
             toast.success("Sucesso ao realizar venda!")
-            await generateTermalPrintSale({ ...data[0], products: JSON.parse(data[0].productsString) })
-            goBack()
+            setShowConfirmPopupPrintRecepeit(true)
         } catch (err) {
             toast.error("Erro ao realizar venda!")
         }
     }
 
+    const confirmPrintRecepeit = async () => {
+        try {
+            responseSaleMade && await generateTermalPrintSale({ ...responseSaleMade, products: JSON.parse(responseSaleMade.productsString) })
+            goBack()
+        } catch (error) {
+            toast.error("Algo deu errado")
+        }
+    }
     const getListClients = async () => {
         try {
             const { data } = await Client.getListClients()
@@ -226,7 +241,7 @@ const SalesForm = () => {
             error = { ...error, produtoId: true }
         }
 
-        if (productSelecioned && productSelecioned.qtdCurrent && sale.qtd && productSelecioned.qtdCurrent < sale.qtd) {
+        if (productSelecioned && productSelecioned.qtdCurrent !== undefined && (sale.qtd && (sale.qtd < 0 || productSelecioned.qtdCurrent < sale.qtd ))) {
             return toast.info(`Só existe ${productSelecioned.qtdCurrent} unidades de ${productSelecioned.name} no estoque`)
         }
 
@@ -437,6 +452,25 @@ const SalesForm = () => {
                     gridGap: 20
                 }}>
                     <CustomTextInput value={discountInput} adorment="percentage" type={"number"} label={"Desconto *"} name={"discount"} changeFunction={e => setDiscountInput(e.target.value)} error={errorInput?.discount} />
+                </Box>
+            </CustomPopup>
+
+            {/* Popup para confirmação de impressão de recibo */}
+            <CustomPopup
+                toggle={showConfirmPopupPrintRecepeit}
+                title={"Impressão de recibo"}
+                confirmButtonTitle="Não emitir recibo"
+                confirmButtonIcon={<PrintDisabledIcon />}
+                confirmAction={() => goBack()}
+                cancelFunction={() => setShowConfirmPopupPrintRecepeit(false)}
+                cancelButtonEnable={false}
+            >
+                <Box sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gridGap: 20
+                }}>
+                    <Button color="secondary" variant="contained" onClick={() => confirmPrintRecepeit()} endIcon={<PrintIcon />}>Imprimir Recibo</Button>
                 </Box>
             </CustomPopup>
         </React.Fragment>

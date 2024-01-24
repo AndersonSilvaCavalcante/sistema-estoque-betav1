@@ -3,9 +3,8 @@ import './globals.css'
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import StyledComponentsRegistry from '@/lib/registry'
-import { Box, Container } from '@mui/material'
-import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css';
+import ApplicationView from '@/components/AplicationView'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -18,18 +17,15 @@ export default function RootLayout({
 }: {
   children: React.ReactNode
 }) {
+
   return (
     <html lang="pt-br">
       <body suppressHydrationWarning={true} className={inter.className}>
-        <StyledComponentsRegistry>
-          <Header />
-          <ToastContainer theme="colored" />
-          <Container sx={{ minWidth: '90vw' }}>
-            <Box pt={3} pb={3}>
+          <StyledComponentsRegistry>
+            <ApplicationView>
               {children}
-            </Box>
-          </Container>
-        </StyledComponentsRegistry>
+            </ApplicationView>
+          </StyledComponentsRegistry>
       </body>
     </html>
   )
