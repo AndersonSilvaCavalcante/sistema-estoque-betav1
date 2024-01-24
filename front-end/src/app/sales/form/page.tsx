@@ -372,6 +372,7 @@ const SalesForm = () => {
                         valueSale={sale.value}
                         valueBeforeDIscount={sale.valueBeforeDIscount}
                         discountPercent={sale.discount}
+                        viewPagination={false}
                     />
                 )}
                 <DGrid>

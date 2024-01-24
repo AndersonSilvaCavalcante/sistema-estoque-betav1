@@ -312,6 +312,7 @@ const OrderServicesRegister = ({ params }: IProps) => {
                         remove={typeScreen !== 'Visualizar'}
                         removeFunction={deleteServicesToBePerformed}
                         sum={true}
+                        viewPagination={false}
                     />
                 )}
                 <Stack spacing={2} mb={2} mt={2}>

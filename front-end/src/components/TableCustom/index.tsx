@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 
 /**Components */
-import { Box, Button, Skeleton, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material"
+import { Box, Button, Skeleton, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Typography } from "@mui/material"
 import { ConfirmPopup } from "@/components/Popups";
 
 /**Icons */
@@ -31,7 +31,8 @@ interface IProps {
     valueBeforeDIscount?: number,
     discountPercent?: number,
     addStock?: boolean,
-    othersButtons?: Array<IOthersButtons>
+    othersButtons?: Array<IOthersButtons>,
+    viewPagination?: boolean
 }
 
 interface IPopupData {
@@ -41,11 +42,29 @@ interface IPopupData {
 
 const valuePrefixes = { currency: "R$", percentage: "%" }
 
-const TableCustom = ({ titles, data, edit, remove, valueSale = 0, valueBeforeDIscount = 0, editFunction, removeFunction, sum, discountPercent = 0, view, viewFunction, addStock, othersButtons }: IProps) => {
+const TableCustom = ({ titles, data, edit, remove, valueSale = 0, valueBeforeDIscount = 0, viewPagination = true, editFunction, removeFunction, sum, discountPercent = 0, view, viewFunction, addStock, othersButtons }: IProps) => {
     const [popupData, setPopupData] = useState<IPopupData>({ toggle: false, id: 0 })
+
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(10);
+
     const handleClose = () => {
         setPopupData({ toggle: false, id: 0 })
     }
+    const handleChangePage = (
+        event: React.MouseEvent<HTMLButtonElement> | null,
+        newPage: number,
+    ) => {
+        setPage(newPage);
+    };
+
+    const handleChangeRowsPerPage = (
+        event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    ) => {
+        setRowsPerPage(parseInt(event.target.value, 10));
+        setPage(0);
+    };
+
     const router = useRouter()
 
     return (
@@ -77,49 +96,50 @@ const TableCustom = ({ titles, data, edit, remove, valueSale = 0, valueBeforeDIs
                                 ))}
                             </TableRow>
                         ))}
-                        {data && data.map((data: any) => (
-                            <TableRow
-                                key={data.id}
-                                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                            >
-                                {titles.map((title: ITitles, index: number) => (
-                                    title.date ? (
-                                        <TableCell key={index} >{moment(data[title.value]).format("DD/MM/YYYY HH:mm:ss")}</TableCell>
-                                    ) : (
-                                        title.valuePrefix ? (
-                                            title.valuePrefix === "currency" ? (
-                                                <TableCell key={index} >{valuePrefixes[title.valuePrefix]}{data[title.value]}</TableCell>
-                                            ) : (
-                                                <TableCell key={index} >{data[title.value]}{valuePrefixes[title.valuePrefix]}</TableCell>
-                                            )
+                        {data && (viewPagination ? data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                            : data).map((data: any) => (
+                                <TableRow
+                                    key={data.id}
+                                    sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                                >
+                                    {titles.map((title: ITitles, index: number) => (
+                                        title.date ? (
+                                            <TableCell key={index} >{moment(data[title.value]).format("DD/MM/YYYY HH:mm:ss")}</TableCell>
                                         ) : (
-                                            <TableCell key={index} >{data[title.value]}</TableCell>
-                                        )
-                                    )
-                                ))}
-                                <TableCell key={"actions"}>
-                                    <Stack direction="row" spacing={2}>
-                                        {edit && editFunction && (
-                                            <Button variant="outlined" color="warning" startIcon={<EditIcon />} onClick={() => editFunction(data)} >Editar</Button>
-                                        )}
-                                        {remove && removeFunction && (
-                                            <Button onClick={() => setPopupData({ toggle: true, id: data.id })} color="error" variant="outlined" startIcon={<DeleteIcon />}>Deletar</Button>
-                                        )}
-                                        {view && viewFunction && (
-                                            <Button onClick={() => viewFunction(data)} color="warning" variant="outlined" startIcon={<RemoveRedEyeIcon />}>Visualizar</Button>
-                                        )}
-                                        {addStock && (
-                                            <Button onClick={() => router.replace(`/products/form/edit/${data.id}`)} color="success" variant="outlined" startIcon={<AddIcon />}>Adicionar estoque</Button>
-                                        )}
-                                        {othersButtons?.map(o =>
-                                            o.viewButton(data) && (
-                                                <Button key={o.title} onClick={() => o.click(data)} color={o.color} variant="outlined" startIcon={<AddIcon />}>{o.title}</Button>
+                                            title.valuePrefix ? (
+                                                title.valuePrefix === "currency" ? (
+                                                    <TableCell key={index} >{valuePrefixes[title.valuePrefix]}{data[title.value]}</TableCell>
+                                                ) : (
+                                                    <TableCell key={index} >{data[title.value]}{valuePrefixes[title.valuePrefix]}</TableCell>
+                                                )
+                                            ) : (
+                                                <TableCell key={index} >{data[title.value]}</TableCell>
                                             )
-                                        )}
-                                    </Stack>
-                                </TableCell>
-                            </TableRow>
-                        ))}
+                                        )
+                                    ))}
+                                    <TableCell key={"actions"}>
+                                        <Stack direction="row" spacing={2}>
+                                            {edit && editFunction && (
+                                                <Button variant="outlined" color="warning" startIcon={<EditIcon />} onClick={() => editFunction(data)} >Editar</Button>
+                                            )}
+                                            {remove && removeFunction && (
+                                                <Button onClick={() => setPopupData({ toggle: true, id: data.id })} color="error" variant="outlined" startIcon={<DeleteIcon />}>Deletar</Button>
+                                            )}
+                                            {view && viewFunction && (
+                                                <Button onClick={() => viewFunction(data)} color="warning" variant="outlined" startIcon={<RemoveRedEyeIcon />}>Visualizar</Button>
+                                            )}
+                                            {addStock && (
+                                                <Button onClick={() => router.replace(`/products/form/edit/${data.id}`)} color="success" variant="outlined" startIcon={<AddIcon />}>Adicionar estoque</Button>
+                                            )}
+                                            {othersButtons?.map(o =>
+                                                o.viewButton(data) && (
+                                                    <Button key={o.title} onClick={() => o.click(data)} color={o.color} variant="outlined" startIcon={<AddIcon />}>{o.title}</Button>
+                                                )
+                                            )}
+                                        </Stack>
+                                    </TableCell>
+                                </TableRow>
+                            ))}
                         {valueBeforeDIscount !== 0 && (
                             <TableRow
                                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
@@ -138,7 +158,7 @@ const TableCustom = ({ titles, data, edit, remove, valueSale = 0, valueBeforeDIs
                                 </TableRow>
                             </>
                         )}
-                        {valueSale !== 0  && (
+                        {valueSale !== 0 && (
                             <TableRow
                                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                             >
@@ -149,6 +169,17 @@ const TableCustom = ({ titles, data, edit, remove, valueSale = 0, valueBeforeDIs
                     </TableBody>
                 </Table>
             </TableContainer>
+            {viewPagination && (
+                <TablePagination
+                    component="div"
+                    count={data ? data.length : 0}
+                    page={page}
+                    onPageChange={handleChangePage}
+                    rowsPerPage={rowsPerPage}
+                    labelRowsPerPage={'Linhas por página'}
+                    onRowsPerPageChange={handleChangeRowsPerPage}
+                />
+            )}
             {data && data.length == 0 && (
                 <Box mt={5} mb={5} sx={{
                     display: 'grid',
